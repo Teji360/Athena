@@ -1,0 +1,685 @@
+﻿country_name,country_iso2,country_iso3,version,admin_level_full,admin_level_max,admin_1_name,admin_2_name,admin_3_name,admin_4_name,admin_5_name,admin_1_count,admin_2_count,admin_3_count,admin_4_count,admin_5_count,admin_notes,date_source,date_updated,date_reviewed,date_metadata,date_valid_on,date_valid_to,update_frequency,update_type,source,contributor,methodology_dataset,methodology_pcodes,caveats
+Afghanistan,AF,AFG,v02,2,2,Province,District,,,,34,401,,,,,2019-10-22,2019-10-22,2024-07-30,2025-10-22,2021-11-17,,1,major,Afghanistan Geodesy and Cartography Head Office (AGCHO),OCHA Field Information Services Section (FISS),FISS processing,,"This COD-AB uses the 401 district administrative model.  Although other lists exist, this arrangement has been adopted by the humanitarian community."
+Angola,AO,AGO,v01,3,3,Province,Municipality,,,,18,161,539,,,,2018-08-30,2018-08-30,2025-01-28,2025-10-22,2018-09-04,,1,major,www.gadm.org and Instituto Nacional de Estatística (INE - www.ine.gov.ao) - see methodology,OCHA Regional Office for Southern and Eastern Africa (ROSEA),"The source of the Angola data is the [GADM (Global Administrative Boundaries Database)](https://gadm.org/)  administrative boundary level 3 (Communes), edited by OCHA based on the Angola [Instituto Nacional de Estatística (INE)]( http://www.ine.gov.ao) Census 2014 Preliminary report maps in order to facilitate a join to the Census 2014 population data.
+ 
+OCHA added new Census 2014 districts by digitizing the general areas from map images in the Angola INE census pdf report that were geo-referenced . The edited boundaries therefore do not have a high spatial accuracy, however may still be beneficial for planning and population purposes. 
+
+Edits were made to the Commune (Admin 3) data and dissolved to Administrative Boundary 2/1/0 levels to ensure nesting, and topology checked.
+
+The following boundary changes were made based on the INE Census 2014 data and maps: 
+
+•	Added new Catumbela Municipality in Benguela Province
+
+•	Added new Cacula Municipality in Huila Province
+
+•	Merged municipalities into new Luanda Municipality (there are fewer municipalities in the new data set as Ingombota, Kilamba Kiaxi Maianga, Rangel and Sambizanga have been merged to create the new Luanda municipality, as per Census 2014 data and maps).
+
+•	Adjusted boundaries of Cazenga, Viana and Belas/Samba, Cacuaco, Cazenga and Dande municipalities as per Census 2014 data and maps.
+
+•	Adjusted Province boundaries, based on Census 2014 data and maps (boundary changes for Luanda, Lunda Norte, Lunda Sul, Beng ,Cuanza Norte,  and Malanje Provinces )
+
+•	Changed Province for Icolo e Bengo municipality from Bengo to Luanda, as per Census 2014 reports from INE.
+
+•	Changed Province for Bula Aumba, Dembos and Pangol Alquem municipalities from Cuanze Norte to Bengo, as per Census 2014 reports from INE.
+
+•	Changed Province for part of Muxima/Quassama from Bengo to Luanda, as per Census 2014 reports from INE.
+
+Municipality names have been updated as per INE Census 2014 data.
+",,
+United Arab Emirates,AE,ARE,v01,1,1,Emirate,,,,,7,,,,,,2023-05-19,2023-05-19,2024-12-19,2025-10-22,2023-05-15,,1,major,"Federal Competitiveness and Statistics Centre, UAE Ministry of Cabinet Affairs",OCHA Field Information Services Section (FISS),"Acquired from Federal Competitiveness and Statistics Centre, UAE Ministry of Cabinet Affairs",,
+Armenia,AM,ARM,v01,2,2,Province,Community,,,,11,39,,,,,2014-10-01,2014-10-01,2024-01-31,2025-10-22,2023-10-02,,1,major,Government of Armenia (various agencies - see metadata),OCHA Field Information Services Section (FISS),Downloaded from Government of Armenia (various agencies - see metadata),,"Please note that the second administrative level is not an official administrative level, but sometimes used by Government agencies.
+"
+Azerbaijan,AZ,AZE,v01,1,1,,,,,,74,,,,,,2020-11-24,2020-11-24,2024-01-31,2025-10-22,2023-10-17,,1,major,www.gadm.org and Open Street Map,OCHA Field Information Services Section (FISS),"Downloaded from www.gadm.org; approximate adjustments to Nakhchivan region made with reference to Open Street Map.  Polygon reconciliation to P-codes and official features and used in [Azerbaijan - Subnational Population Statistics](https://data.humdata.org/dataset/azerbaijan-population-statistics).
+ ",,Although general topology and feature attributes etc. are valid the www.gadm.org source data is of particularly poor quality that does not withstand close comparison to features in other sources.
+Burundi,BI,BDI,v01,2,2,Province,Commune,,,,18,119,,,,,2015-03-26,2015-03-26,2024-12-23,2025-10-22,2017-11-03,,1,major,IGEBU and OCHA Burundi,OCHA Field Information Services Section (FISS),"Quality assured, configured, and published as live services by ITOS.",,"P-codes prefixed as 'BI' instead of the '003BDI' prefix previously used.
+
+The 'Shape_Area' data in the 'BDI_AdminBoundaries_TabularData.xlsx' gazetteer file are in 'square degrees' which vary in size by latitude and should not be used for actual area calculations."
+Benin,BJ,BEN,v01,2,2,,,,,,12,77,,,,,2015-08-07,2015-08-07,2025-10-30,2025-10-22,2019-08-16,,1,major,"Secondary Administrative Level Boundary (SALB) Project, OCHA ROWCA",OCHA West and Central Africa (ROWCA),Other,,
+Burkina Faso,BF,BFA,v03,3,3,Région,Province,Commune,,,17,47,351,,,,2020-03-23,2025-07-01,,2025-11-26,2025-08-01,,2,major,Institut Geographique Burkina (IGB),OCHA Burkina Faso,Government,OCHA standards,
+Bangladesh,BD,BGD,v03,3,3,Division,District,Upazila,,,8,64,507,,,The normal administrative level 3 feature type(s) are Upazila (495 features) and City Corporation (12 units).,2010-01-01,2025-06-01,2025-06-01,2025-03-17,2023-05-21,,2,major,Bangladesh Bureau of Statistics (BBS),ROAP,government surveys,National p-coding system adapted to OCHA standards,"Boundary alignments are based on the latest updates from the Bangladesh Bureau of Statistics (BBS) as of March 2025. Any discrepancies with other datasets (e.g., OpenStreetMap, other UN datasets) are due to different data sources or update cycles.
+ADM3 (Upazilas + Metropolitan Thanas) includes 600 features. However, the official count of upazilas is 495, with the remaining features representing thanas within city corporations. For COD purposes, only 495 upazilas and 12 city corporations are included to align with national census data.
+ADM4 (Ward level) is not officially confirmed or maintained consistently at the national level. It is provided as a non-COD dataset and may not align perfectly with the official administrative structure. Users should verify with local sources before applying ADM4 for official analysis."
+Bulgaria,BG,BGR,v01,2,2,province (oblast) or metropolitan capital province,municipality,,,,28,265,,,,,2022-10-18,2022-10-18,2024-11-21,2025-10-22,2022-10-12,,1,major,UNICEF,OCHA Field Information Services Section (FISS),"Prepared by UNICEF.
+
+Configured to COD-AB standards by OCHA.",,
+Belarus,BY,BLR,v01,2,2,,,,,,7,119,,,,,2019-07-30,2019-07-30,2024-11-21,2025-10-22,2022-07-27,,1,major,UNICEF,OCHA Field Information Services Section (FISS),adapted from GAUL,,
+Belize,BZ,BLZ,v01,1,1,,,,,,6,,,,,,2017-09-08,2017-09-08,2024-11-07,2025-10-22,2021-09-10,,1,major,www.gadm.org,OCHA Field Information Services Section (FISS),downloaded from www.gadm.org,,
+Bolivia (Plurinational State of),BO,BOL,v02,3,3,,,,,,9,112,339,,,,2013-01-01,2013-01-01,2025-10-30,2025-10-22,2024-09-16,,1,major,Ministerio de Desarrollo Rural y Tierras,OCHA Field Information Services Section (FISS),Downloaded from Ministerio de Desarrollo Rural y Tierras,,"Administrative level 2 and 3 exclude seven hydrological features:
+""Salar de Uyuni"", ""Salar de Coipasa"", ""Lago Uru Uru"", ""Lago Poopó"", ""Lago Titicaca"",  and two additional water bodies.  These are left as 'holes' in ADM2 and ADM3, but are enclosed within surrounding features in ADM1 and ADM0."
+Bhutan,BT,BTN,v01,2,2,,,,,,20,205,,,,,2020-01-01,2020-01-01,2025-10-30,2025-10-22,2020-10-26,,1,major,OCHA ROAP,OCHA Regional Office for Asia and the Pacific (ROAP),Other,,"UPDATES
+
+2019 02 01:  
+P-code prefix changed from 'BTN' to 'BT';  EMF files and geodatabase added; Corresponding COD-PS made available"
+Central African Republic,CF,CAF,v01,3,4,Prefecture,Sub-prefecture,Commune,Locality,,17,72,175,202,,,2020-12-31,2020-12-31,2024-03-04,2025-10-22,2015-06-15,,1,major,Agency for Technical Cooperation and Development(ACTED),OCHA Central African Republic," SIGCAF was a GIS effort conducted in 1996 and correspond with the 2003 census, with cartography prepared in 1:200,000 scale, on admin boundaries.
+
+Quality assured, configured, and published as live services by ITOS.
+",,"Administrative boundaries have been officially changed to 20 prefectures and 84 sub-prefectures.  However, the ICASEES (Institut Centrafricain des Statistiques et des Etudes Economiques et Sociales, Central African Institute for Statistics and Economic and Social Studies) has not yet implemented the changes and the humanitarian community continues to use the existing structure."
+Chile,CL,CHL,v01,3,3,,,,,,16,56,345,,,,2018-09-05,2018-09-05,2025-02-17,2025-10-22,2021-10-08,,1,major,La Biblioteca del Congreso Nacional de Chile (BCN),OCHA Latin America and the Caribbean (ROLAC),Prepared by OCHA from [La Biblioteca del Congreso Nacional de Chile (BCN)](https://www.bcn.cl/siit/mapas_vectoriales) source shapefiles. P-codes standardized using BCN feature numbers.,,"This dataset was corrected on 3 August 2021.  Data available previously placed administrative level 3 feature ""Paillaco"" [now CL14107] incorrectly in administrative level 2 feature ""Ranco"", instead of the correct administrative level 2 feature ""Valdivia"" [CL141].
+
+The source shapefiles included an overlapping polygon ‘Zona sin demarcar’ (‘Unmarked area’) polygon straddling the Argentinian border that polygon that has been removed.
+
+These shapefiles contain several hundred unresolved topology errors that cause minor errors in the administrative level tagging of the lines shapefile.  Lines surrounding internal topological gaps may be tagged as shorelines."
+Côte d'Ivoire,CI,CIV,v01,3,3,"District, Autonomous City",Region,Department,,,33,108,510,,,,2018-08-06,2018-08-06,2025-10-30,2025-10-22,2018-07-06,,1,major,Comité National de Télédétection et d'Information Géographique (CNTIG),OCHA West and Central Africa (ROWCA),"Quality assured, configured, and published as live services by ITOS.",,"The edge-matched layers are subject to the following potential limitations:
+
+Where countries border each other, one or even both boundaries may be less accurate than the original, definitive boundaries. The UN Geospatial Hub boundary is generally of lower quality than the definitive COD-AB layers.
+
+Peripheral polygon feature shapes and the relationship of their areas to those of their internal neighbouring features may be distorted, while internal features are untouched.
+
+Peripheral polygon features may artificially appear to touch different, incorrect features belonging the same country.
+
+*In theory, peripheral polygon features may be eliminated. This is monitored and will be specially treated if it occurs."
+Cameroon,CM,CMR,v01,3,3,Region (Région),Department (Département),Arrondissement,,,10,58,360,,,,1987-08-22,1987-08-22,2025-10-30,2025-10-22,2019-01-04,,1,major,Institut National de Cartographie (INC),OCHA Cameroon,"Files verified and configured by ITOS.  Live services provided by ITOS.
+
+Consolidated by OCHA in conjunction with the IMWG in Yaoundé and REACH  in conjunction with the IMWG in the SW region where clusters are activated.",,The gazetteer contains reference at the administrative 3 (arrondissement) level to OSM feature IDs and to a former 'COG' feature code where available.
+Democratic Republic of the Congo,CD,COD,v01,2,3, Province,Territory / Territorie,Health zone / Zone de santé,,,26,189,519,,,,2019-09-12,2019-09-12,2024-12-20,2025-10-22,2019-09-11,,1,major,Referenciel Géographique Commun,OCHA Democratic Republic of the Congo (DRC),"Admin0: Le fichier a été récupéré auprès de la MONUC. Les frontières de RDC et des pays voisins ont été ajustées par UNDP suivant quelques modifications observées sur images satellites 
+Admin1: Le fichier a été généré par agrégation des territoires.
+Admin2: Le fichier est issu de la digitalisation par OCHA de l’atlas de l’organisation administrative de la RDC réalisé par le père Léon de Saint Moulin. Lorsque les limites de territoires sont définies par un cours d’eau, la géométrie a été partagée. Une validation topologique a été effectuée par UNDP et les limites de communes de Kinshasa ont été ajoutées. L’ensemble des communes de 19 autres villes sont détourées au moyen d’un seul polygone. La toponymie a été validée par l’INS.
+",,"[HDX dataset name edited 2018 05 10]
+Tous les territoires ruraux,  les communes urbaines sont en cours d’intégration. Etant donné le changement de codification INS opéré en mai 2008, la structure des Pcode a été adaptée mais les localités existantes dans la base conservent leur Pcode même si leur position géographique est ajustée par la suite. Un Pcode disparaît donc si et seulement si la localité correspondante est éliminée de la base (car il a été prouvé qu’elle n’existe pas sur le terrain). Ce code ne sera en aucun cas affecté à une nouvelle localité. La couche admin3 ne reflète pas la configuration réelle des limites de différentes entités, le travail de mise à jour se poursuit par les différents membres du groupe de travail IM."
+Congo,CG,COG,v01,2,2,Department,District,,,,12,89,,,,,2017-07-06,2017-07-06,2025-10-30,2025-10-22,2019-06-17,,1,major,Global Administrative Unit Layers (GAUL),OCHA West and Central Africa (ROWCA),Other,,"**Most Recent Changes:** Adding columns: Rowca Pcode, for the departments and districts. The rowcapcode is a harmonized Pcode, 
+
+
+**Languages:** EN
+"
+Colombia,CO,COL,v02,2,3,Departement,Municipality (municipio or distrito),corregimiento or comuna,,,33,1122,31880,,,,2019-12-01,2019-12-01,2024-11-20,2025-10-22,2020-04-16,,1,major,Departamento Administrativo Nacional de Estadística (DANE),OCHA Latin America and the Caribbean (ROLAC),"Prepared by OCHA
+
+Vetting and live service provision by Information Technology Outreach Services (ITOS) with funding from USAID.",,
+Comoros,KM,COM,v01,3,3,,,,,,3,17,55,,,,2019-12-05,2019-12-05,2025-10-30,2025-12-29,2019-12-05,,1,major,Comoros National Disaster Management Agency (COSEP-Centre des secours et de la protection civil),OCHA Field Information Services Section (FISS),"Dataset: Initially acquired from the Comoros National Disaster Management Agency (COSEP-Centre des secours et de la protection civil) and cleaned by UN OCHA in 2018.
+
+Vetting and live service provision by Information Technology Outreach Services (ITOS) with funding from USAID.
+
+",,"Administrative level 2 feature Kartala (KM29) is an unpopulated active volcano.
+
+Population statistics are available for administrative levels 0, 1, 2, 4, and 5.  Administrative levels 4 (locality) and 5 (village) P-codes are not certain to be correct and the population data do not roll up to administrative level 3 (commune). Administrative level 3 data are unavailable.
+"
+Cabo Verde,CV,CPV,v01,2,2,,,,,,22,32,,,,,2017-12-27,2017-12-27,2025-10-30,2025-10-22,2024-06-07,,1,major,Second Administrative Level Boundaries (SALB) Project,OCHA West and Central Africa (ROWCA),Other,,"The Island P-codes (CV0 to 10) are unofficial.
+
+Previous versions incorrectly P-coded administrative level 2 feature 'Sao Joao Baptista' [CV1002] as [CV1003].
+
+The administrative level 1 name attribute of the administrative level 2 feature CV2201 was corrected from 'Tarrafal de Sao Nicolau' to 'Tarrafal De Sao Nicolau' for consistency on 2018 05 10."
+Costa Rica,CR,CRI,v01,3,3,,,,,,7,84,492,,,,2022-06-21,2022-06-21,2024-12-06,2025-10-22,2024-12-03,,1,major,Costa Rica National Statistics Office (NSO),OCHA Field Information Services Section (FISS),"Downloaded from National Statistics Office.  P-codes adapted from the official administrative level 1 ('Codprov'), 2, ('Codcan'), and 3 ('Código') numerical codes (by prefixing with 'CR') by OCHA.",,"**  The P-codes in this dataset (and the accompanying [Costa Rica - Subnational Population Statistics](https://data.humdata.org/dataset/costa-rica-subnational-population-statisticsx) were adapted from the official codes in January 2022.  *The earlier dataset used incompatible, unofficial P-codes.*
+
+The ADM3 feature “Alfaro Ruiz” in the COD-PS corresponds to “Zarcero” in this COD-AB. They are linked by the P-code CR21101.
+
+These layers contain two topological overlap errors and five topological gap errors.  These will be corrected in a future update.
+
+Neither the COD-PS nor the COD-AB feature the ADM2 feature, ""Caldera"" which was formed from parts of ""Espiritu Santo"" [CR60201] and ""San Juan Grande"" [CR60602] in 2014."
+Cuba,CU,CUB,v01,2,2,Province,Municipio,,,,16,168,,,,,2017-09-07,2019-06-21,2019-06-21,,2019-06-21,,1,,www.gadm.org,OCHA Field Information Services Section (FISS),downloaded from www.gadm.org,,"Version history: 21 June 2019 P-coding and administrative hierarchical adjustments to reflect new COD-PS.  
+  
+17 September 2017 Initial upload"
+Dominican Republic,DO,DOM,v01,4,4,region,province or national district (distrito nacional),municipio,dm(?),,10,32,155,386,,,2017-09-06,2017-09-06,2025-02-17,2025-10-22,2021-06-29,,1,major,Oficina Nacional de Estadística,OCHA Field Information Services Section (FISS),"Downloaded from https://www.one.gob.do/informaciones-cartograficas/shapefiles.
+",,
+Algeria,DZ,DZA,v01,2,2,,,,,,48,1541,,,,,2020-04-28,2020-04-28,2024-12-19,2025-10-22,2021-01-20,,1,major,UNHCR (from GAUL),OCHA Middle East and North Africa (ROMENA),"Sourced from GAUL.  P-codes harmonization by UNHCR FICSS towards enhanced integration between different systems and humanitarian agencies.  P-coded reformulated by UNICEF.
+
+ ",,
+Ecuador,EC,ECU,v01,3,3,,,,,,25,224,1040,,,,2017-05-30,2017-05-30,2024-12-18,2025-10-22,2019-07-24,,1,major,INEC - Instituto Nacional de Estadística y Censos,OCHA Latin America and the Caribbean (ROLAC),"Source:
+
+http://www.ecuadorencifras.gob.ec/clasificador-geografico-estadistico-dpa/",,"Small topological errors have been identified which prohibited the automated production of a lines layer.
+
+Administrative level 3, with 1,040 features does not match the Ecuador COD Population Statistics (COD-PS) tables which have 1,025 features."
+Egypt,EG,EGY,v01,2,3,Governorate,Region,,,,27,365,5716,,,,2017-08-14,2017-08-14,2024-12-19,2025-10-22,2017-04-21,,1,major,Central Agency for Public Mobilization and Statistics (CAPMAS),OCHA Middle East and North Africa (ROMENA),"Source data was provided by CAPMAS, government of Egypt.  CODs developed by OCHA with standard coding and classification system.  Processed by ITOS for verification, packaging, and live services.",,"Adm3 covers towns, districts and neighborhoods
+
+23 English names are translated to multiple Arabic names in the Admin 2 layer; there is not a 1:1 relationship between the English and Arabic names in the admin2 layer.
+
+19 Admin2 units along the Nile have duplicate English names within the same Admin1 unit.   All of these features have unique Arabic names.
+
+The Admin2 layer has 14 units with an Admin2 name of ""Zemam Out"" and each one belongs to a unique Admin1 unit.  However, there are no ""Zemam Out"" Admin2 units in the Admin3 layer. "
+Eritrea,ER,ERI,v01,2,2,Zoba,Sub-Zoba,,,,6,58,,,,,2020-04-29,2020-04-29,2025-10-30,2025-10-22,2020-04-27,,1,major,OCHA ROSEA,OCHA Regional Office for Southern and Eastern Africa (ROSEA),Prepared by OCHA,,
+Western Sahara,EH,ESH,v01,1,1,,,,,,4,,,,,,2021-04-08,2021-04-08,2024-12-19,2025-10-22,2021-04-05,,1,major,www.gadm.org,OCHA Middle East and North Africa (ROMENA),"downloaded from www.gadm.org
+
+P-coded by ITOS",,
+Ethiopia,ET,ETH,v03,3,3,Region,Zone,Woreda,,,13,92,1082,,,,2021-11-23,2021-11-23,2024-12-19,2025-10-22,2021-12-14,,1,major,CSA (Central Statistics Agency) + Regional Bureau of Finance and Economic Development (BoFED),OCHA Ethiopia,Obtained from CSA (Central Statistics Agency) + Regional Bureau of Finance and Economic Development (BoFED); modified by OCHA,,"The Ethiopia - Subnational Administrative Boundaries dataset is due to be updated in October/November 2024. 
+
+Lake T’ana is not shown in administrative level 1 as it lies completely within the Amhara [ET03] kilil (region).  Similarly Lake Awasa is not shown in level 1 as it lies within (although bordering the edge of) SNNP (Southern Nations, Nationalities, and Peoples') [ET07] kilil.  Both lakes form holes in administrative levels 2 and 3.
+
+
+In the administrative boundary dataset, two administrative level 3 units cannot be represented on maps because of their contested boundaries, but they are being used in all types of analysis. These are Dawe Serer (ET042199) in Oromia region and Quarsadula (ET050905) in Somali region. These two are included on HDX in other datasets, for example on the population statistics and humanitarian profile, and in the gazetteer provided with this dataset."
+Georgia,GE,GEO,v01,1,2,"Region, city, or autonomous republic",District or self-governing city,,,,13,70,,,,,2019-08-28,2019-08-28,2024-01-31,2025-10-22,2019-10-18,,1,major,National Statistics Office of Georgia [Administraciuli erTeulebi],OCHA Middle East and North Africa (ROMENA),"Accessed from ""administraciuli erTeulebi"", National Statistics Office of Georgia; modifications by OCHA.
+
+The (transliterated) names in Georgian language was reviewed and corrected by the Ministry of Emergency Situations.
+
+The administrative level 0-2 gazetteer was prepared by ITOS.  An  administrative level 3 supplementary gazetteer is also provided.",,"The gazetteer defines administrative level 3 features, but level 3 polygons are unavailable.
+
+Administrative level 2 features are unavailable for Tbilisi, the Autonomous Republic of Abkhazia, and for the area known as the Provisional Administration."
+Ghana,GH,GHA,v01,2,2,,,,,,16,260,,,,,2021-03-10,2021-03-10,2025-10-30,2025-10-22,2021-03-08,,1,major,Ghana Statistical Services (GSS),OCHA West and Central Africa (ROWCA),Other,,"The projected COD-PS source data maintains the 2010 census administrative structure (with 216 ADM2 features) while the COD-AB reflects the evolved structure (with 260 ADM2 features). However, 187 of the 216 COD-PS features exactly match COD-AB features and are given the corresponding ADM2 P-codes. ADM1 has also evolved since the census, but every COD-PS feature can be P-coded to the COD-PS structure."
+Guinea,GN,GIN,v01,3,3,Region,Prefecture,Sub-prefecture,,,8,34,340,,,,2017-08-03,2017-08-03,2024-10-24,2025-10-22,2016-03-04,,1,major,World Food Programme,OCHA West and Central Africa (ROWCA),"Data collected from WFP (World Food Programme) and cleaned and pcoded by OCHA and ITOS.
+
+Conakry ADM4 shapefile prepared and P-coded by OCHA.  ",,"The edge-matched layers are subject to the following potential limitations:
+
+- Where countries border each other, one or even both boundaries may be less accurate than the original, definitive boundaries.  The UN Geospatial Hub boundary is generally of lower quality than the definitive COD-AB layers.
+
+- Peripheral polygon feature shapes and the relationship of their areas to those of their internal neighbouring features may be distorted, while internal features are untouched.
+
+- Peripheral polygon features may artificially appear to touch different, incorrect features belonging the same country.
+
+- *In theory, peripheral polygon features may be eliminated.  This is monitored and will be specially treated if it occurs.
+"
+Gambia,GM,GMB,v01,3,3,,,,,,8,49,115,,,,2022-08-17,2022-08-17,2025-10-30,2025-10-22,2022-09-01,,1,major,Gambia National Disaster Management Agency (NDMA),OCHA Field Information Services Section (FISS),Adapted from Gambia National Disaster Management Agency (NDMA) source,,The polygon layers include one small topological error that will be fixed shortly.
+Guinea-Bissau,GW,GNB,v01,2,2,,,,,,9,39,,,,,2021-06-14,2021-06-14,2024-10-24,2025-10-22,2021-06-09,,1,major,Second Administrative Level Boundaries (SALB),OCHA Field Information Services Section (FISS),Developed from Second Administrative Level Boundaries (SALB) features.  P-coding by OCHA.,,"The edge-matched layers are subject to the following potential limitations:
+
+- Where countries border each other, one or even both boundaries may be less accurate than the original, definitive boundaries.  The UN Geospatial Hub boundary is generally of lower quality than the definitive COD-AB layers.
+
+- Peripheral polygon feature shapes and the relationship of their areas to those of their internal neighbouring features may be distorted, while internal features are untouched.
+
+- Peripheral polygon features may artificially appear to touch different, incorrect features belonging the same country.
+
+- *In theory, peripheral polygon features may be eliminated.  This is monitored and will be specially treated if it occurs.
+"
+Equatorial Guinea,GQ,GNQ,v01,2,2,,,,,,7,32,,,,,2021-07-27,2021-07-27,2025-10-30,2025-10-22,2021-07-15,,1,major,www.gadm.org,OCHA West and Central Africa (ROWCA),Other,,Downloaded from www.gadm.org.  P-coded by OCHA.
+Grenada,GD,GRD,v01,1,1,Parish,,,,,8,,,,,,2017-09-08,2017-09-08,2024-07-07,2025-10-22,2024-07-09,,1,major,Caribbean Disaster Emergency Management Agency (CDEMA),OCHA Field Information Services Section (FISS),acquired by MapAction from CEDEMA GeoCris,,"Grenada is formed of six parishes and one dependency (""Carriacou and Petite Martinique"")"
+Guatemala,GT,GTM,v01,2,2,,,,,,22,342,,,,,2019-02-15,2019-02-15,2025-10-30,2025-10-22,2019-02-07,,1,major,Coordinadora Nacional Para La Reducción De Desastres,OCHA Field Information Services Section (FISS),"Downloaded by OCHA from [Coordinadora Nacional Para La Reducción De Desastres](https://conred.gob.gt), small topological errors fixed, and features P-coded.
+
+The 'gtm_admbdl_ALL_OCHA_2018' line shapefile and geodatabase class contains a field identifying the neighboring countries.
+
+VETTED, CONFIGURED, and LIVE SERVICES PROVIDED by ITOS.",,"Two lake features, ‘Lago De Amatitlan [GT0100]’ and ‘Lago De Atitlan [GT0700]’, are associated with administrative level 1 features but form their own [P-code GTxx00] administrative level 2 features.
+
+This COD-AB excludes the UN recognized sovereign territory of Belize. Users are responsible for the way they depict the Guatemala / Belize border and territories."
+Honduras,HN,HND,v01,2,2,,,,,,18,298,,,,,2015-06-25,2015-06-25,2025-10-30,2025-10-22,2016-10-05,,1,major,"Sistema Nacional de Información Territorial (SINIT), Secretaria Técnica de Planificación y Cooperación Externa (SEPLAN), 2010",OCHA Latin America and the Caribbean (ROLAC),Other,,"Administrative level 3:  37 of the 3,730 ADM3 features (in  parts of Gracias and Dios and Santa Barbara departments) have incorrect or partly incorrect parent attribute data and boundaries.   ALL existing P-codes in the layer are unique and usable but are not fully compatible with administrative level 0-2."
+Haiti,HT,HTI,v01,3,3,Departement,Commune,section communale / Communal Section,,,10,140,570,,,,1987-03-29,1987-03-29,2025-01-06,2025-10-22,2018-11-29,,1,major,Centre National de l'Information Géo-Spatiale (CNIGS),OCHA Haiti,"received from government Centre National de l'Information Géo-Spatiale (C.N.I.G.S) with pcodes created from government IDs. Spatial Data is from 2013
+
+These shapefiles incorporate improvements developed in 2017.  Apart from certain corrections, the P-code system is redesigned to be a constant character width.
+
+Administrative levels 2, 1, and 0 are geometrically dissolved from administrative level 3.",,
+Hungary,HU,HUN,v01,2,2,,,,,,20,197,,,,,2022-03-09,2022-03-09,2024-12-18,2025-10-22,2022-07-20,,1,major,OSM,OCHA Field Information Services Section (FISS),Provided by UNHCR from OSM,,Minor differences between the ADM1/2 and the ADM0 boundary exist.
+Indonesia,ID,IDN,v01,3,4,province (provinsi),"city, district, regency (kota, kabupaten)",,,,34,522,7069,81912,,,2020-04-08,2020-04-08,2025-10-30,2025-10-22,2020-04-01,,1,major,Badan Pusat Statistik (BPS - Statistics Indonesia),OCHA Regional Office for Asia and the Pacific (ROAP),"The data was obtained and provided by the World Food Programme from ArcGIS REST Services from various government GIS portals, accessed through QGIS REST interface.  ",,"Administrative level 1P-codes are not consecutive; level 1 P-codes start with p-code ""ID11"" instead of ""ID01”.
+
+Some administrative level 3 and 4 names include slashes (/ or \) that may indicate alternate names. They may need to be separated and placed into alternate name fields."
+Iran (Islamic Republic of),IR,IRN,v01,2,2,provincen (ostān),district (baxš),,,,31,429,,,,,2019-05-20,2019-05-20,2024-10-22,2025-10-22,2019-05-14,,1,major,UNHCR,OCHA Middle East and North Africa (ROMENA),Accessed from Open Street Map by UNHCR,,"May 20, 2019 update:
+ITOS vetted and configured files and gazetteer substituted
+ITOS live services added
+
+April 26, 2019 update:
+Persian feature names added.
+
+April 19, 2019 update:
+The administrative level 0 shapefile was replaced into the shapefile resource because it had been an inconsistent projection.
+
+April 18, 2019 update:
+The shapefile resource was replaced with the correct zip file.
+
+The source document, obtained from UNCHR, contained P-codes like '20IRN031003'. These are standardized to the ‘IR031003’ format in the shapefiles and under the standard field names in the gazetteer."
+Iraq,IQ,IRQ,v01,3,3,Governorate,District,Sub-district,,,18,101,294,,,,2019-06-05,2019-06-05,2024-12-19,2025-10-22,2019-06-03,,1,major,Iraq Central Statistics Office,OCHA Middle East and North Africa (ROMENA),Downloaded from Central Statistics Office.  Modified by OCHA.,,"Version history:
+6 June 2019
+ITOS vetted and configured COD-AB files loaded to HDX
+ITOS live services enabled
+
+26 March 2019
+Updated COD-AB files loaded to HDX
+
+21 May 2017
+Initial upload to HDX"
+Jamaica,JM,JAM,v01,3,3,,,,,,14,131,775,,,,2017-09-09,2017-09-09,2024-07-24,2025-10-22,2024-08-02,,1,major,Jamaica Social Development Commission (sdc.gov.jm),OCHA Field Information Services Section (FISS),Data derived from Jamaica Social Development Commission,,
+Kenya,KE,KEN,v01,2,2,,,,,,47,290,,,,,2018-07-03,2018-07-03,2025-01-28,2025-10-22,2019-10-31,,1,major,IEBC,OCHA Regional Office for Southern and Eastern Africa (ROSEA),"Extensive  amount of topological errors (gaps and overlaps) were fixed by using ArcMap Integrate tool. Applying 30 meters tolerance allowed to preserve relatively high level of resolution.
+Afterwards Align edge tool was used to correct all the remaining errors that were not rectified by the Integrate tool.
+
+Codes were reformatted to meet FICSS-UNHCR standards. New generation of codes is based on original County_cod and Const_Code. (Codes are preserve in the dataset in DSCodeAdm2 and DSCodeAdm1 fields– DSC (Data Source Code))
+
+Moreover, a large part of the Belgut and Konoin Admin2 units were overlapping.  The issue was resolved using https://softkenya.com/kenya/belgut-constituency/ as a reference.
+
+Due to the discrepancies between Admin1 and Admin 2 boundaries listed in the previous email, the Admin1 layer was created by dissolving Admin2 boundaries based on constituency name field.
+
+",,"This dataset is not an official administrative layer from the National authorities but was agreed and endorsed for operational use by IMWG in October 2016
+
+The administrative level 2 boundaries do not conform to the COD-PS.
+
+The boundaries and names shown and the designations used on this map do not imply official endorsement or acceptance by the United Nations."
+Kyrgyzstan,KG,KGZ,v01,1,3,"province, independent city [EN];  область, город [RU];  облусу, шаар [KY])","district [EN]; район, [RU]; району [KY]",community [EN]; айылный аймак [RU]; айыл аймаг [KY],,,9,53,737,,,,2018-11-21,2018-11-21,2024-01-31,2025-10-22,2018-11-19,,1,major,Ministry of Emergency Situations of the Kyrgyz Republic,OCHA Middle East and North Africa (ROMENA),"Boundaries were digitized by the Ministry of Emergency Situations (MoES).  The MoES published these administrative boundaries online and made publicly available.
+
+The United Nations Office for the Coordination of Humanitarian Affairs (OCHA) for Caucasus and Central Asia with support from OCHA FIS cleaned the administrative level 3 dataset, integrated P-codes according to the State Classification of Administrative and Territorial Units (COATE) of the Kyrgyz Republic, 2018, names in 3 languages (English, Kyrgyz, Russian) and place types.  Twelve independent cities (from the same source but a different dataset) were added to the administrative level 3 dataset to ensure it fully corresponds to the COATE. 
+
+ITOS live services will be added at a later date.
+
+The Kyrgyz administrative boundary system does not designate administrative level 3 (community) features outside administrative level urban areas although those areas are characterized by rural type.  This administrative level 3 shapefile and KMZ file includes ‘expanded’ units with special P-code suffixes which characterize the features according to an OCHA developed coding system.  For instance, the Forestry in Uzgen district (KG06255000000) has a Pcode of KG06255000901. 
+
+Some source polygons were indicated as ‘Unknown’ and are designated as such in the gazetteer.
+
+The gazetteer contains the standard administrative level 3 table and an 'expanded' administrative level 3 table.
+
+The ‘expanded’ administrative level 3 P-code suffix system is described below:
+ADM3_PCODE suffix	ADM3Type_EN	ADM3Type_RU	ADM3Type_KY
+
+901	Forestry	Лесхоз	Токой чарба
+
+902	Government reserved land	Госземзапас	Мамлекеттик жер запасы
+
+903	Lake	Озеро	Көл
+
+904	National park	Национальный парк	Улуттук парк
+
+905	Nature reserve	Заповедник	Корук
+
+906	Water reservoir	Водохранилище	Суу сактагыч
+
+907	Unknown	Неизвестно	Белгисиз
+
+…	…	…	…
+
+921	Unknown	Неизвестно	Белгисиз
+
+The administrative level 2 (district) shapefile and KMZ file contain 'placeholder' polygons corresponding to the administrative level 1 independent city features that the Kyrgyz administrative boundary system does not recognize at administrative level 2.
+
+Similarly the administrative level 3 (community) shapefile and KMZ file contains 'placeholder' polygons for the  administrative level 1 and administrative level 2 features that the Kyrgyz administrative boundary system does not recognize at administrative level 3.",,"Community Users should be aware that 277 Admin3 names are blank. 
+
+Administrative boundaries at the administrative level 3 (community) are missing 20 polygons that were not digitized. They are:
+ADM3_PCODE	ADM3_EN	ADM3_RU	ADM3_KY	ADM3TYPE_EN
+
+KG02210810000	Ak-Shyyrаk	Ак-Шыйракский	Ак-Шыйрак	community
+
+KG04230826000	Chon-Dobon	Чон-Добонский	Чоң-Дөбө	community
+
+KG04230835000	Suyumbаev	Суюмбаевский	Сүйүмбаев	community
+
+KG04230837000	Kyzyl-Jyldyz	Кызыл-Жылдызский	Кызыл-Жылдыз	community
+
+KG04245860000	Sаry-Oy	Сары-Ойский	Сары-Ой	community
+KG05258610020	Kаdаmjаy (city)	Кадамжай	Кадамжай	independent city
+
+KG06207823000	Kаbylаn-Kol	Кабылан-Колский	Кабылан-Кол	community
+
+KG06207839000	Sаry-Mogol	Сары-Моголский	Сары-Могол	community
+
+KG06207841000	Jany-Alay	Жаны-Алайский	Жаңы-Алай	community
+
+KG06211809000	S.Yusupov	С.Юсуповский	С.Юсупов	community
+
+KG06211824000	Nurаbаd	Нурабадский	Нурабад	community
+
+KG06226840000	Sаry-Kolot	Сары-Колотский	Сары-Колот	community
+
+KG06242600010	Nookаt (city)	Ноокат	Ноокат	independent city
+
+KG06242838000	Kok-Bel	Кок-Бельский	Көк-Бел	community
+
+KG06242856000	Mirmаkhmudov	Мирмахмудовский	Мирмахмудов	community
+
+KG06246815000	Kenesh	Кенешский	Кеңеш	community
+
+KG06255828000	Chаnget	Чангетский	Чаңгет	community
+
+KG06255860000	Altyn-Bulаk	Алтын-Булакский	Алтын-Булак	community
+
+KG07215806000	Bаkyyan	Бакыянский	Бакыян	community
+
+KG11201510010	Chon-Aryk	Чон-Арык	Чоң-Арык	semi-urban settlement"
+Cambodia,KH,KHM,v01,3,3,,,,,,25,197,1633,,,,2018-01-01,2018-01-01,2024-10-31,2025-10-22,2018-10-04,,1,major,"Department of Geography of the Ministry of Land Management, Urbanization and Construction in 2008, WFP",OCHA Regional Office for Asia and the Pacific (ROAP),"Other
+
+UPDATES
+2018 10 16  The ITOS processed boundaries and live services were substituted into the dataset.
+2018 09 06  The administrative level 0 (country) shapefile was corrected.",,"**Languages:** EN
+
+ The boundaries used on this map do not imply official endorsement or acceptance by the United Nations and HRF members.
+
+Six administrative level 3 records do not correspond to any of the level 3 shapefile features.  These are:
+Kdol Saen Chey [KH040809]
+Kronhoung Saen Chey[KH100506]
+Ou Baek K'am [KH120808]
+Kouk Khleang [KH120809]
+Koah Rung Sonlem [KH180106]
+Ta Ney [KH180215]"
+Kuwait,KW,KWT,v01,1,1,,,,,,6,,,,,,2015-11-30,2015-11-30,2024-12-19,2025-10-22,2022-02-01,,1,major,"GADM database (www.gadm.org), version 2.8, November 2015",OCHA Middle East and North Africa (ROMENA),"Admin boundaries obtained from GDAM, and populated places clipped from World shape-file. ",,
+Lao People's Democratic Republic,LA,LAO,v01,2,2,province (khoueng) or prefecture (kampheng nakhon),district (muang),,,,18,148,,,,,2019-01-01,2019-01-01,2025-10-30,2025-10-22,2019-11-12,,1,major,National Geographic Department (NGD),OCHA Regional Office for Asia and the Pacific (ROAP),"Downloaded from National Geographic Department (NGD)
+
+Projection transformations and other improvements by UNICEF
+
+Additional files prepared by FIS",,The administrative level 2 (district / muang) features do not correspond exactly to the [Lao PDR - Population Statistics](https://data.humdata.org/dataset/lao-pdr-population-statistics) tables.  This is being analyzed and it is hoped that a solution will be provided soon.
+Lebanon,LB,LBN,v02,3,3,Governorate (Mouhafaza),District (Kaza),Cadaster (Manatek Ikaria),,,8,26,1627,,,,2014-05-02,2014-05-02,2025-10-30,2025-10-22,2024-11-13,,1,major,Council for Development and Reconstruction (CDR),OCHA Field Information Services Section (FISS),Prepared by ITOS to match the UN GIS boundaries,,"The Lebanon administrative level 1 P-codes are based on the post-2014 structure of eight features, including ""Akkar"" [LB7] and ""Baalbek-Hermel"" [LB8] governorates.  The administrative level 2 P-codes are based on the previous six-feature structure, thus maintaining a P-code nesting conflict.
+
+Furthermore the administrative level 3 features have purely numeric P-codes which follow the administrative level 1 P-code squence but with different numeric values.
+
+
+"
+Liberia,LR,LBR,v01,2,2,,,,,,15,136,,,,,2017-12-27,2017-12-27,2025-10-30,2025-10-22,2019-11-04,,1,major,UNMIL,OCHA West and Central Africa (ROWCA),acquired from UNMIL; enhanced by OCHA,,"The edge-matched layers are subject to the following potential limitations:
+
+Where countries border each other, one or even both boundaries may be less accurate than the original, definitive boundaries. The UN Geospatial Hub boundary is generally of lower quality than the definitive COD-AB layers.
+
+Peripheral polygon feature shapes and the relationship of their areas to those of their internal neighbouring features may be distorted, while internal features are untouched.
+
+Peripheral polygon features may artificially appear to touch different, incorrect features belonging the same country.
+
+*In theory, peripheral polygon features may be eliminated. This is monitored and will be specially treated if it occurs."
+Libya,LY,LBY,v01,2,2,province,governorate (muhafazat),,,,3,22,,,,,2018-11-13,2018-11-13,2024-12-19,2025-10-22,2018-05-07,,1,major,"UNITAR-UNOSAT, Libyan Bureau of Statistics, WFP, and Global Logistics Cluster, International Organisation for Migration (IOM)",OCHA Middle East and North Africa (ROMENA),"Updated by IOM’s Displacement Tracking Matrix in coordination with OCHA and Libya’s Ministry of Planning Bureau of Statistics (BSc).
+
+Vetted, configured, and live services provided by ITOS",,Boundaries for administrative level 3 (baladiya) are anticipated to be prepared in late 2019.
+Sri Lanka,LK,LKA,v03,4,4,,,,,,9,25,339,14043,,,2022-08-02,2022-08-02,2025-10-30,2025-10-22,2022-08-16,,1,major,Survey Department of Sri Lanka (http://www.survey.gov.lk),OCHA Regional Office for Asia and the Pacific (ROAP),downloaded from [Survey Department of Sri Lanka](http://www.survey.gov.lk).,,"Numerous administrative level 4 features appear to have feature name discrepancies.  The ""Admin4_EN_SI_Conflicts.xlsx"" table lists the 530 features (from the 14,043 total) that belong to sets with identical English names (admin4Name_en) for which there are multiple Sinhalese name (admin4Name_si) variants.  It is presumed that at least one of the variants is wrong.
+
+65 administrative level 4 features have unknown English names."
+Morocco,MA,MAR,v01,2,2,,,,,,10,69,,,,,2023-09-26,2023-09-26,2024-12-19,2025-10-22,2020-12-03,,1,major,Le Haut Commissariat au Plan data (HCP),OCHA Field Information Services Section (FISS),Sourced from Le Haut Commissariat au Plan data (HCP).  See description for note about P-codes.,,
+Republic of Moldova,MD,MDA,v01,1,1,,,,,,37,,,,,,2022-05-13,2022-05-13,2024-12-18,2025-10-22,2022-05-10,,1,major,UNHCR,OCHA Field Information Services Section (FISS),Provided by UNHCR,,
+Maldives,MV,MDV,v02,2,2,,,,,,21,1556,,,,,2024-01-01,2024-01-01,2025-10-30,2025-10-22,2024-10-22,,1,major,Government of the republic of Maldives,OCHA Regional Office for Asia and the Pacific (ROAP),Typical surveying methods,,"18 administrative level 2 islands have duplicate names within their administrative level 1 atoll.
+
+Within administrative level 1 atoll “Gaafu Dhaalu” [MV017] these are:  two administrative level 2 islands called “Aakirahuttaa” [MV017014] and [MV017015], three islands called “Bodehuttaa” [MV017021], [MV017022], and [MV017023], three called “Dhoonirehaa” [MV017009], [MV017038] and [MV017039], two called “Haveyyerataa” [MV017067] and [MV017068], and two called “Maarehaa” [MV017141] and [MV017142].
+
+Within atoll “Laamu” [MV015] these are two called “Bodufinolhu” [MV015018] and [MV015019] and two called “Boduhuraa” [MV015020] and [MV015021].
+
+Finally, within atoll “Gaafu Alifu” [MV016] there are two called “Maadhigavara” [MV016083] and [MV016084].
+"
+Mexico,MX,MEX,v02,2,2,,,,,,32,2457,,,,,2020-06-23,2020-06-23,2024-12-20,2025-10-22,2021-06-18,,1,major,Instituto Nacional de Estadística y Geografía (INEGI),OCHA Latin America and the Caribbean (ROLAC),Download from Instituto Nacional de Estadística y Geografía (INEGI) site,,
+Mali,ML,MLI,v03,2,2,Région,Cercle,,,,20,160,,,,The normal administrative level 2 feature type(s) are region (20 features) and cercle (160units).,2025-02-20,2025-05-13,2025-06-10,2025-08-25,2025-09-04,,2,major,Mali Institut Géographique  (IGM),OCHA,government surveys,National p-coding system adapted to OCHA standards,
+Myanmar,MM,MMR,v01,3,5,State/Region,District,Township,Town / Village tract,,18,80,330,14174,1999,,2024-03-11,2024-03-11,2025-10-30,2025-10-22,2024-02-15,,1,major,Myanmar Information Management Unit (MIMU),OCHA Field Information Services Section (FISS),"This COD-AB was developed from various existing Myanmar Information Management Unit (MIMU) ""v9.4"" HDX datasets, which are understood to be the final versions expected from MIMU. These datasets have been assembled into this COD-AB without correcting existing errors. Known errors are documented in the file titled ""MMR COD-AB ITOS Error Documentation.pdf"", which is included with this dataset. Administrative Level 5 covers urban areas only and is not represented in the mmr_polbndl_adm01234_250k_mimu_itos_20240215 lines layer.",,Please see the 'MMR COD-AB ITOS error documentation.pdf' provided in this dataset.
+Mongolia,MN,MNG,v01,2,2,Aimag,Soum,,,,22,339,,,,,2020-10-26,2020-10-26,2025-10-30,2025-10-22,2020-10-19,,1,major,National Statistical Office of Mongolia,OCHA Regional Office for Asia and the Pacific (ROAP),Typical surveying methods,,
+Mozambique,MZ,MOZ,v01,3,3,Province,District,Posto,,,11,159,411,,,,1954-10-20,1954-10-20,2024-03-24,2025-10-22,2019-06-07,,1,major,Mozambique Instituto Nacional de Estatistica (INE) and partners,OCHA Regional Office for Southern and Eastern Africa (ROSEA),"Mozambique Administrative Boundaries Level 3 Postos from WFP Geonode / INE  (Census 2007), cleaned by UN OCHA ROSEA. ",,"10 JUNE 2019 UPDATE:
+The administrative level 3 (posto) feature for “Mieze” (formerly MZ0117, in its own “Pemba” district) has been corrected to belong in the “Metuge” district and has been P-coded MZ010902.
+
+
+25 APRIL 2019 UPDATE:
+Lines file with administrative level coding added to shapefiles.
+
+
+
+
+April 10, 2019 update:
+
+Shapefile projections changed to WGS94
+Underscore (""_"") characters in feature names changed to spaces.
+NO CHANGES MADE TO P-CODES.
+
+Affected resources:
+gazetteer:  moz_admbnda_2019_gazetteer_v4
+EMF files:  moz_adm_2019_EMF_v2.zip
+KMZ files:  moz_adm_2019_KMZ_v2.zip
+shapefiles:  moz_adm_2019_SHP_v3
+
+
+April 8, 2019 update:
+
+EMF files added
+KMZ files added
+COD-AB data sheet added.
+
+The changes do not alter the previous shapefiles.
+
+The administrative level 1 (province) KMZ file was generated from a generalized shapefile (tolerance 0.001 degree) because of the number of vertices.  The shapefile resource on this dataset is the original.
+
+
+
+April 3, 2019 update:  administrative level 4 (settlement) features added for the Maputo City area."
+Mauritania,MR,MRT,v03,2,2,,,,,,15,63,,,,,2024-10-31,2024-10-31,2025-10-30,2025-10-22,2024-03-27,,1,major,"Agence Nationale de la Statistique, de l'Analyse Démographique et Economique (ANSADE)",OCHA Field Information Services Section (FISS),"Adapted from Agence Nationale de la Statistique, de l’Analyse Démographique et Economique (ANSADE) data",,"Several topology errors exist, and are particularly obvious at administrative level 0.  These will be fixed shortly."
+Malawi,MW,MWI,v02,3,3,,,,,,3,32,433,,,,2018-10-22,2018-10-22,2024-10-04,2025-10-22,2023-04-05,,1,major,National Statistics Office of Malawi,OCHA Field Information Services Section (FISS),"Downloaded from the [National Statistics Office of Malawi](http://www.nsomalawi.mw/) 2008 files.  Topology and P-codes cleaned by OCHA.
+
+Final processing and quality control performed by ITOS.",,
+Malaysia,MY,MYS,v01,2,2,,,,,,16,144,,,,,2021-01-01,2021-01-01,2025-10-30,2025-10-22,2021-02-11,,1,major,UNHCR,OCHA Regional Office for Asia and the Pacific (ROAP),Acquired by UNCHR from www.gadm.org with verification and additional inputs from other sources.,,The gazetteer and COD-PS extend beyond the boundary data to administrative levels 3 and 4.
+Namibia,NA,NAM,v01,2,2,Region,Constituency,,,,14,107,,,,,2011-01-01,2011-01-01,2025-01-28,2025-10-22,2020-01-09,,1,major,Namibia Statistics Agency (NSA),OCHA Field Information Services Section (FISS),Downloaded from Namibia Statistics Agency (NSA),,"The ‘//Karas’ administrative level 1 feature name includes the click consonant that is symbolized with a non-Latin character. The ADM1_EN attribute field includes only Roman characters but the ADM1ALT1EN field includes the click consonant symbol.
+
+This dataset fits the former 107 constituency system but does reflect the split of Kavango region into Kavango East and West, and Caprivi to Zambezi name change.  Namibia has adopted a new 121 constituency system ."
+Niger,NE,NER,v02,3,3,Region (Région),SD0,Commune,,,8,67,266,,,,2006-01-01,2006-01-01,2025-10-30,2025-10-22,2023-07-20,,1,major,IGNN,OCHA Niger,Other,,"**Languages:** FR
+
+The ITOS live services included in this dataset are for the previous versions of the administrative level 0, 1, and 2 boundary polygons.  These will be updated, and administrative level 3 added, as soon as possible."
+Nigeria,NG,NGA,v01,2,3,State,Local Governement Area,Ward,,,37,774,714,,,,1996-10-01,1996-10-01,2025-10-30,2025-10-22,2019-04-17,,1,major,"Office for the Surveyor General of the Federation of Nigeria (OSGOF), Ehealth, United Nations Cartographic Section (UNCS)",OCHA Nigeria,"Admin Level 3 (Wards) boundaries were developed by Ehealth Africa through the collation of settlements referred to as “Microplan” within each Local Government Area (LGA).
+
+The list is then sent to Ward focal points and traditional leaders from respective LGAs to verify which Wards the settlements belong. This confirmation forms the basis for demarcating the ward boundaries. The ehealth boundaries are operational and constantly being updated. 
+
+The Ehealth boundaries are also cross-checked with the list of wards available from the Independent National Electoral Commission to harmonise the two available sources of ward level information. 
+
+The Nigeria boundaries from OSGOF and wards from Ehealth were reviewed by ITOS to clean and align the wards with the boundaries for Admin 0, 1 and 2 and international boundaries. 
+
+The complete evaluation report for the ITOS process can be found [here](https://docs.google.com/spreadsheets/d/1eEzVP_X2lGRFSrm69_iCTo5SOO67FeuxRppHbCg2oYE/edit#gid=0)
+",,"ADM2 feature ""Bakassi"" [NG009005] is not represented in the COD-PS, but is thought to be uninhabited. Any actual population will be incorporated in the ""Akpabuyo"" ]NG009003] COD-PS record.
+
+Admin level 3 are developed for operational purposes only.
+ 
+Two wards in the Administrative registry file (Sagir and Wurge) in Ngala, Borno State are not demarcated in the shapefile due to access constraint. 
+
+The COD replaces the following datasets: 
+<br />
+https://data.humdata.org/dataset/nigeria-admin-level-0-1-and-2-administrative-boundaries
+<br />
+https://data.humdata.org/dataset/nigeria-borno-operational-boundaries-admin-1-3-state-lga-ward<br />
+"
+Nicaragua,NI,NIC,v02,2,2,Department or autonomous region (Departamento o región autónoma),municipality (municipio),,,,17,153,,,,,2017-10-11,2017-10-11,2024-11-07,2025-10-22,2023-11-27,,1,major,www.gadm.org,OCHA Field Information Services Section (FISS),"downloaded from www.gadm.org
+
+Vetting and live service provision by [Information Technology Outreach Services (ITOS)\(https://cviog.uga.edu/international-center/) with funding from USAID.",,
+Nepal,NP,NPL,v02,3,3,,,,,,7,77,775,,,,2024-01-01,2024-01-01,2025-10-30,2025-10-22,2024-03-14,,1,major,"Survey Department of Nepal (http://ngiip.gov.np/index.php), UN Resident Coordinators Office in Nepal (https://un.org.np/)",OCHA Field Information Services Section (FISS),"Data was generated by the Survey Department,  presumably through field surveys. Some processing was done by the UN Resident Coordinators Office in Nepal.
+
+Quality assured, configured, and published as live services by ITOS in August 2018.  (Names corrected, metadata developed, administrative level 1 and 2 P-codes developed.)
+
+16 June 2016 update:
+
+Boundaries adapted by MapAction to reflect new Nepali policy.
+
+2019 02 14 UPDATE:
+Dataset and data sheet updated to reflect launch of NPL COD-PS
+
+17 November 2020:  administrative level 1 names updated.
+
+March 2023 update:   administrative structure naming changed from ADM0-ADM1-District-ADM2 to ADM0-ADM1-ADM2-ADM3.",,
+Oman,OM,OMN,v01,2,2,,,,,,11,49,,,,,2021-06-04,2021-06-04,2024-12-19,2025-10-22,2021-06-03,,1,major,www.gadm.org,OCHA Middle East and North Africa (ROMENA),"downloaded from www.gadm.org.
+
+P-coding by ITOS",,
+Pakistan,PK,PAK,v01,3,3,Province or Territory,District,Tehsil,,,7,160,577,,,,2022-09-02,2022-09-02,2024-09-27,2025-10-22,2022-09-09,,1,major,World Food Programme SDI,OCHA Field Information Services Section (FISS),Obtained from the World Food Programme,,
+Panama,PA,PAN,v01,3,3,province or indigenous territory (provincia o comarca comarca indígena),district or indigenous territory (distrito o comarca indígena),municpiality (corregimiento),,,13,76,594,,,,2020-06-15,2020-06-15,2025-10-30,2025-10-22,2021-10-20,,1,major,www.gadm.org,OCHA Field Information Services Section (FISS),downloaded from www.gadm.org,,"The www.gadm.org source used for the previous version of this COD-AB assigns administrative level 2 feature ‘Taboga’ to ‘Panamá Oeste’ province instead of ‘Panamá’ province.  This has been corrected in this COD-AB.
+
+Users are guided to note that administrative level 1 feature Emberá [PA06] consists of two large non-continugous polygons (one of which is surrounded by Darién [PA05]), each containing only one administrative level 2 feature.
+"
+Peru,PE,PER,v01,3,3,,,,,,25,196,1873,,,,2015-07-24,2015-07-24,2025-10-30,2025-10-22,2020-07-14,,1,major,Instituto Geográfico Nacional - IGN,OCHA Latin America and the Caribbean (ROLAC),Direct Observational Data/Anecdotal Data,,[HDX dataset name edited 2018 05 10]
+Philippines,PH,PHL,v03,3,4,,,,,,17,88,1642,11920,,,2018-02-09,2018-02-09,2024-04-01,2025-10-22,2018-03-26,2020-05-29,1,major,"National Mapping and Resource Information Authority (NAMRIA), Philippines Statistics Authority (PSA)",OCHA Philippines,Census,,"Prepared by OCHA
+
+The two administrative level 2 features that were previously represented as comprising the ‘Negros Island Region’ administrative level 1 features [then coded PH1800000000] have been restored to administrative level 1 features PH060000000 and PH070000000. (Negros Island Region officially existed only from 29 May 2015 to 9 August 2017.) This adjustment has been propagated to administrative levels 2 and 3.
+
+ITOS have prepared three versions of the administrative 0 layer to assist mapping:
+• phl_admbnda_adm0_psa_namria_itos_20200529 with one part, as usual,
+• phl_admbnda_adm0_3part_psa_namria_20180130 with three multipart sections covering the North, middle and South portions of the country, and
+• phl_admbnda_adm0_singlepart_psa_namria_20180130 with all 3,656 polygons represented as separate features."
+Papua New Guinea,PG,PNG,v01,3,3,"Province, Autonomous Region, and National Capital District",District,Local Government Area,,,22,87,326,,,,2019-05-10,2019-05-10,2025-10-30,2025-10-22,2019-05-08,,1,major,Papua New Guinea National Statistics Office,OCHA Regional Office for Asia and the Pacific (ROAP),"Downloaded from Papua New Guinea National Statistics Office
+
+Database vetting, configuration, and live services provided by ITOS",,
+Poland,PL,POL,v01,2,2,,,,,,16,380,,,,,2022-04-19,2022-04-19,2024-12-18,2025-10-22,2022-04-14,,1,major,Państwowy Rejestr Granic (PRG),OCHA Field Information Services Section (FISS),Provided by UNHCR from OSM Państwowy Rejestr Granic (PRG),,
+Democratic People's Republic of Korea,KP,PRK,v01,2,2,"Province, Special City","County, City, Special City",,,,11,179,,,,,2008-01-01,2008-01-01,2024-10-31,2025-10-22,2019-06-24,,1,major,World Food Programme,OCHA Regional Office for Asia and the Pacific (ROAP),Normal Government boundary delineation,,Two of these COD-AB features ('Samchon' [KP0906] and 'Unjong Dist.' [KP1007]) do not have corresponding records in these population statistics tables. OCHA has not been able to determine the reason or whether or not those features' populations are represented by records for neighboring features.
+State of Palestine,PS,PSE,v01,2,2,Territory or Region?,Governorate,,,,2,16,,,,,1995-09-28,1995-09-28,2024-12-24,2025-10-22,2023-10-19,,1,major,Palestinian Authority Ministry of Planning,OCHA occupied Palestinian territory (oPt),"Digitized from historical maps by ministry of planning (Palestinian Authority)
+
+",,
+Qatar,QA,QAT,v02,1,3,Municipality,Zone,District,,,8,87,718,,,,2015-11-30,2015-11-30,2024-04-30,2025-10-22,2024-06-27,,1,major,Qatar planning and statistics authority,OCHA Middle East and North Africa (ROMENA),"Administrative boundaries acquired from the Qatar planning and statistics authority.
+
+P-codes developed by OCHA",,
+Romania,RO,ROU,v01,2,2,,,,,,8,42,,,,,2022-03-09,2022-03-09,2024-12-18,2025-10-22,2022-04-27,,1,major,ANCPI - Agenția Națională de Cadastru și publicitate imobiliară,OCHA Field Information Services Section (FISS),"Provided by UNHCR from ANCPI sources.
+
+P-codes updated 2022_03_15",,Minor differences between the ADM1/2 and the ADM0 boundary exist.
+Saudi Arabia,SA,SAU,v01,1,1,,,,,,13,,,,,,2015-11-30,2015-11-30,2024-12-19,2025-10-22,2021-05-25,,1,major,www.gadm.org,OCHA Middle East and North Africa (ROMENA),Admin boundaries obtained from www.gadm.org,,
+Sudan,SD,SDN,v03,2,2,State,Locality,,,,19,189,,,,,2013-08-13,2013-08-13,2025-10-30,2025-10-22,2020-08-31,,1,major,"Information Management Working Group (IMWG), OCHA",OCHA Regional Office for Southern and Eastern Africa (ROSEA),"Prepared by OCHA
+
+Vetting and live service provision by Information Technology Outreach Services (ITOS) with funding from USAID.
+",,"The state boundaries and names assigned to the states does not imply official endorsement or acceptance by the United Nations. Final boundary between the Republic of Sudan and the Republic of South Sudan has not yet been determined. Final status of the Abyei area is not yet determined.
+
+The lines boundary layer was updated in September 2020 to include arcs enclosing Bir Tawil (not claimed by Sudan) and the Halayib triangle (claimed by Sudan) to assist cartography.  These features are attributed in the admLevel field as 81 and 82 respectively but do not form boundaries of any OCHA administrative boundary polygons."
+Senegal,SN,SEN,v02,3,3,region,departement,arrondissement,,,14,46,125,,,,2019-04-30,2019-04-30,2025-10-30,2025-10-22,2024-05-20,,1,major,"Government of Senegal, 2009 (updated by OCHA/ROWCA) 04 august 2018",OCHA West and Central Africa (ROWCA),Data collected from the government and cleaned and pcoded by OCHA and ITOS,,"**Most Recent Changes:** 
+
+April 30, 2019:
+ITOS resources added
+
+October 26, 2018:   
+Kaffrine, Kedougou and Sedhiou regions have been created in 2011.
+Government data cleaned and pcoded by OCHA and ITOS
+
+**Languages:** FR
+"
+Sierra Leone,SL,SLE,v02,4,4,,,,,,5,16,167,1316,,,2017-08-16,2017-08-16,2025-10-30,2025-10-22,2023-12-15,,1,major,Government of Sierra Leone,OCHA West and Central Africa (ROWCA),"Data collected from the government and cleaned and pcoded by OCHA and ITOS
+Admin4 : Data provided by OCHA, attribute fields and geometries have been checked by UNMEER IM (Ghana) Will be replaced if/when official Government data is provided",,"[HDX dataset name edited 2018 05 10]
+**Most Recent Changes: **
+Last update 2017-03-06 with ITOS cleaning
+(2014-11-25) The dataset have been well cleaned and OCHA pcodes, WHO pcodes and HRinfo have been added with government codes.
+
+Last update March 2017
+(2015-02-19) Updated file with new structure
+
+**Languages:** EN"
+El Salvador,SV,SLV,v02,3,3,departamento,municipio,distrito,,,14,48,266,,,,2020-05-29,2020-05-29,2025-10-30,2025-10-22,2024-08-19,,1,major,www.gadm.org,OCHA Field Information Services Section (FISS),downloaded from www.gadm.org,,
+Somalia,SO,SOM,v03,2,2,Region,District,,,,18,91,,,,,1984-06-23,1984-06-23,2025-10-30,2025-10-22,2025-01-08,,1,major,OCHA Somalia,OCHA Field Information Services Section (FISS),Developed by OCHA Somalia with the Information Management Working Group,,
+South Sudan,SS,SSD,v03,3,3,State,County,Payam,,,10,79,512,,,,2020-11-01,2020-11-01,2024-10-09,2025-10-22,2022-12-19,,1,major,"South Sudan Information Management Working Group (IMWG), National Bureau of Statistics (NBS), International Organization for Migration (IOM) and OCHA",OCHA South Sudan,Spatial and Topology edited and new pcodes generated based on agreements by IMWG.,,The ADM3 layer and lines files will be provided shortly.
+Slovakia,SK,SVK,v01,2,2,,,,,,8,79,,,,,2022-03-09,2022-03-09,2024-12-17,2025-10-22,2022-07-07,,1,major,Geoportal.SK,OCHA Field Information Services Section (FISS),"Provided by UNHCR from Geoportal.SK
+
+P-codes updated 2022_03_15",,
+Eswatini,SZ,SWZ,v01,2,2,,,,,,4,55,,,,,2020-05-13,2020-05-13,2025-10-30,2025-10-22,2021-01-27,,1,major,Central Statistics Office,OCHA Regional Office for Southern and Eastern Africa (ROSEA),"OCHA was unable to obtain shapefile data from the 2017 Census; however Census 2007 shapefile data was obtained from the Central Statistics Office previously. The number of records and names in the preliminary census 2017 report match the 2007 Census for Administrative Boundary Levels 1 and 2. Therefore the 2017 preliminary census data was extracted from the pdf and joined to the Census 2007 GIS shapefile boundaries.
+
+Topology was cleaned in the Census 2007 data and the data was dissolved to create the Administrative Boundary 0 (Country), Administrative Boundary 1 (Regions) and Administrative Boundary 2 (Tinkhundla) shapefiles.
+
+The UNHCR (GAUL) boundaries received only contain 53 Tinkhundla (Admin 2) records, however 55 records are required to facilitate an accurate join to the preliminary Census 2017 population data. Therefore the CSO Census 2007 data set which contains 55 Tinkhundla records was used (includes the split between Mbabane West/East and Manzini North/South). The spelling of Madlangempisi Tinkhundla was corrected, as per online sources.
+",,
+Sint Maarten (Dutch part),SX,SXM,v01,1,1,,,,,,8,,,,,,2018-09-14,2018-09-14,2024-11-07,2025-10-22,2024-01-22,,1,major,"Sint Maarten Ministry of Public Housing, Spatial Planning, Environment and Infrastructure (VROMI)",OCHA Field Information Services Section (FISS),"Downloaded from [Open GIS Data Sint Maarten site](https://gis-vromi-sxm.opendata.arcgis.com/datasets).
+
+P-code system created by OCHA",,
+Syrian Arab Republic,SY,SYR,v02,3,3,Governorate,District,Sub-district,,,14,62,272,,,,1960-01-01,1960-01-01,2024-04-01,2025-10-22,2020-12-17,,1,major,United Nations Cartographic Section (UNCS) and partners,OCHA Syria,Other,,"**Most Recent Changes: ** 
+
+**11 July 2024**
+added **257** New community.
+added **3** Columns:
+**Admin 1 Capital**: Indicates whether the community is an Admin 1 capital (Yes/No).
+**Admin 3 Capital**: Indicates whether the community is an Admin 3 capital (Yes/No).
+**Hosting Individuals**: Contains a list of communities that host populations displaced from Quneitra in 1967. Although these populations reside in Dara, Damascus, and Rural Damascus governorates, many of them receive services from Quneitra Governorate. Therefore, it’s important for humanitarian partners to know which Governorate they need to coordinate with to reach these individuals.
+
+
+
+**24 January 2023 **
+added **100** Communities.
+
+Glide: EQ-2023-000015-TUR
+
+12 January 2021
+ITOS GeoServices, shapefiles, and geodatabase added.
+EMF files added.
+ITOS gazetteer added.
+
+
+**18-August-2020** 
+added **327** Communities.
+
+**21-March-2019** 
+added **14** Communities.
+
+**19-Dec-2018** 
+Use the Neighborhood as point loaded in the same layer/ Excel file called as a humanitarian Location
+added **11** Communities.
+
+**01-July-2018** 
+added **1528** Communities and some localities moved to their accurate locations
+
+**31-Jan-2018-** added 91 populated places and areas, some localities moved to their accurate locations, essential change in the admin boundary in Tartous Governorate at Admin 2 and Admin 3
+
+
+**1-June-2017-** added 24 populated places and areas
+
+**22-Feb-2017-** added three populated places and fixed some typos in admin4 and neighborhoods
+
+**04-Oct-2016 - ** Added two populated places 
+
+**20-Sept-2016 - ** Built-up polygonal layer  was created so that for each populated place there is a corresponding built-up poplygon; Added  populated places based on feedback from humanitarian partners ; Neighborhood layer now includes 11 main cities with new p-codes ; column names follow global standard;  reference names  are unique both in English and Arabic
+
+**12-Jan-2014 - **Shape file version posted. UTF-8 has been used to enable the correct display of Arabic characters.
+
+**19-May-2013** - New features added to Admin4 ; English Names edited to be consistent in all Admin levels; locations of few communities adjusted
+
+**07-Jan-2013** - Column with Capitals of Administrative Units (1 - 3) added to Populated Places (Admin 4). No changes.
+
+**19-Dec-2012** - Minor change: erroneous Admin 1 p-code for the populated place Arab Elmalik Jerkes (p-code = C3571) corrected (from SY010 to SY10).
+
+**12-Dec-2012 - **Added  neighborhoods , currently Damascus only.  Added ""C"" as leading character of pcodes at level 4 (populated places) to ensure uniqueness.  The digits remain the same from earlier versions. 
+
+**24-Sep-2012 - **Consolidated spelling between all 4 levels for all admin levels.  Pcodes added. 
+
+**24-Aug-2012** - Shapefile versions added.  Exported from the geodatabase version of 30-June-2011.
+
+**30-Jun-2012** - Topology cleaned, underscores removed from admin names.
+
+ 
+
+
+
+**Languages:** EN AR
+"
+Chad,TD,TCD,v01,2,2,Province,Departement,,,,23,70,,,,,2012-09-04,2012-09-04,2025-10-30,2025-10-22,2025-02-12,,1,major,"Institut National de la Statistique, des Etudes Economiques et Démographiques du Tchad",OCHA Field Information Services Section (FISS),Derived from source information by OCHA Chad.,,
+Togo,TG,TGO,v02,3,3,Region,Prefecture,,,,5,40,373,,,,2020-01-12,2020-01-12,2025-10-30,2025-10-22,2021-01-07,,1,major,Global Administrative Unit Layers (GAUL),OCHA West and Central Africa (ROWCA),"Downloaded from Global Administrative Unit Layers (GAUL) by World Food Programme.
+
+UPDATED JANUARY 2021 by OCHA to reflect new administrative level 1 boundaries.",,Administrative level 2 does not conform to the COD-PS.  The COD-PS does not extend to administrative level 3.
+Thailand,TH,THA,v01,3,3,Province,District,Sub-district (Tambon),,,77,928,7425,,,,2022-01-01,2022-01-01,2025-10-30,2025-10-22,2022-01-22,,1,major,Royal Thai Survey Department,OCHA Regional Office for Asia and the Pacific (ROAP),"Acquired by ICRC from the Royal Thai Survey Department by the and made available to OCHA.
+
+Vetted, configured, and live services provided by ITOS.",,"Currently the ADM2_TH (Thai language) name for administrative level 2 feature ""Pom Prap Sattru Phai"" [TH1008] is incorrect.  The correct name is  ป้อมปราบศัตรูพ่าย.
+
+Earlier problems with the live service rendering Thai labels are thought to be have been corrected.  Users experiencing any difficulties should contact the contributor.
+
+
+UPDATE (2019 03 01)
+Shapefiles have been replaced.  The previous versions were derived from the geodatabase and had truncated field names.  There is no change to the content."
+Timor-Leste,TL,TLS,v01,3,3,,,,,,13,65,442,,,,2020-01-01,2020-01-01,2025-10-30,2025-10-22,2020-09-11,,1,major,WHO,OCHA Regional Office for Asia and the Pacific (ROAP),Direct Observational Data/Anecdotal Data,,"The island of Atauro, formerly an administrative post (administrative level 2 feature) of the Dili administrative level 1 feature, became an independent administrative level 1 feature on 1 January 2022.  This is not reflected in this COD-AB (or in the COD-PS).
+
+Govt Decree Law No 16/2017 (31 March 2017) - created several new administrative level 3 units (sucos). GIS data is not yet available. The data included here for Admin level 3 are for information only and should not be considered official. Admin levels 0, 1, 2 are believed to be correct, except for the case of Atauro mentioned above."
+Tunisia,TN,TUN,v01,4,4,,,,,,6,24,264,2084,,,2022-08-15,2022-08-15,2024-12-19,2025-10-22,2022-11-15,,1,major,Institut National de la Statistique Tunisie,OCHA Field Information Services Section (FISS),Boundaries provided by UNICEF from Institut National de la Statistique Tunisie data accessed from [http://dataportal.ins.tn/en/Map](http://dataportal.ins.tn/en/Map).,,
+Türkiye,TR,TUR,v01,2,2,Province (İl),District (İlçe),,,,81,973,,,,,2014-03-30,2014-03-30,2025-01-16,2025-10-22,2022-01-01,,1,major,General Command of Mapping (obtained by Regional IM Working Group - Europe),OCHA Field Information Services Section (FISS),"Methodology of source dataset:
+
+""Administrative Divisions dataset was prepared at 1:1,000,000 scale and is the property of General Command of Mapping, Turkey. This dataset was shared through http://www.hgk.msb.gov.tr/u-23-turkiye-mulki-idare-sinirlari.html for humanitarian use only.
+
+The original administrative divisions data was shared as polyline. This was converted to polygon, cleaned and PCODE were assigned jointly by UNHCR and OCHA. The PCODE reference is based on the coding system of incremental increase by alphabetical order.""",,
+Uganda,UG,UGA,v01,4,4,Region,District,"Sub-county, parish, village",,,4,135,208,1520,,,2020-06-11,2020-06-11,2025-01-28,2025-10-22,2020-08-24,,1,major,Uganda Bureau of Statistics with support from WHO,OCHA Regional Office for Southern and Eastern Africa (ROSEA),Downloaded from the Uganda Bureau of Statistics [source](http://ubos.geo-solutions.it/layers/geonode:uganda_districts_2018).,,This COD-AB reflects the 135 district administrative system.
+Ukraine,UA,UKR,v05,3,4,Oblast (Region),Raion (District),Hromada (Community),Settlement,,27,139,1769,29706,,"This dataset is structured into 4 levels:
+- Admin 1: 27 oblast (region) with three exceptions
+- Admin 2: 139 raion (district) with three exceptions
+- Admin 3: 1769 hromada (community) with three exceptions
+- Admin 4: 29706 populated place (city, settlement or village), partial coverage",,2025-09-01,2025-12-18,2025-12-18,,,1,minor,"State Scientific Production Enterprise ""Kartographia""",OCHA Ukraine,"Dataset was sourced from SSPE ""Kartographia""",National system adapted to OCHA standards,"The Ukrainian government has not fully implemented its new administrative structure reforms in the Autonomous Republic of Crimea [UA01] and Sevastopol [UA85]. Consequently, 31 ADM4 features within the Sevastopol ADM3 polygon retain P-codes that do not correctly conform to [UA85]. This will be rectified in a COD-AB update once the government has regained control of the Crimean Peninsula and fulfilled its administrative structure reform.
+ADM3 Sevastopol [UA85] feature geometry does not align with ADM1, ADM2 and ADM4 Sevastopol [UA85] features.
+31 ADM4 features within the ADM3 Sevastopol [UA85] feature have P-codes that are not aligned with the parent ADM3 feature. At the same time, they are aligned with ADM1 and ADM2 levels.
+Names of some ADM3 features are still in the process of renaming by the Ukrainian government and are expected to be aligned with the respective ADM4 and ADM2 features in 2026. For consistency, new ADM3 names were incorporated into the dataset, while old names are still available in extra fields.
+ADM4 layer does not cover the entire country. ADM4 layer represents settlement (populated place) areas only."
+Saint Vincent and the Grenadines,VC,VCT,v01,1,1,,,,,,6,,,,,,2017-09-21,2017-09-21,2024-07-17,2025-10-22,2024-07-17,,1,major,www.gadm.org,OCHA Field Information Services Section (FISS),Downloaded from www.gadm.org,,
+Venezuela (Bolivarian Republic of),VE,VEN,v01,3,3,State,Municipality,"Parish (estados, municipios, parroquias)",,,25,335,1134,,,,2018-05-02,2018-05-02,2025-01-17,2025-10-22,2021-02-23,,1,major,Instituto Nacional de Estadística,OCHA Venezuela,Obtained from Instituto Nacional de Estadística,,
+Viet Nam,VN,VNM,v02,1,1,Province,,,,,34,,,,,,2025-07-01,2025-09-25,2025-09-25,2025-09-25,2025-09-25,,2,major,General Statistics Office of Vietnam (GSO),ROAP,"Boundary alignments are based on the latest updates from official Vietnamese government decrees, including Decree 19/2025/QĐ-TTg effective July 2025, as well as API data provided by the General Statistics Office of Vietnam (GSO).",National system adapted to OCHA standards,
+Vanuatu,VU,VUT,v01,2,2,,,,,,6,66,,,,,2017-10-31,2017-10-31,2024-10-31,2025-10-22,2018-08-24,,1,major,"PopGIS2: Secretarial of the Pacific Community (SPC), Statistics for Development Division (http://vanuatu.popgis.spc.int/#l=en;v=map4)",OCHA Office of the Pacific Islands,Government source,,"Administrative units have the following P-code structure:
+
+Administrative level 0 (country):  VU
+Administrative level 1 (province):  VUnn
+Administrative level 2 (area council):  VUnnnnn
+
+In addition, administrative level 1 includes the alternate national system:  VU-XXX
+"
+Yemen,YE,YEM,v01,2,2,Governorate,District,,,,22,335,,,,,2023-10-09,2023-10-09,2024-12-23,2025-10-22,2019-11-22,,1,major,Central Statistical Organization (CSO),OCHA Yemen,Downloaded from data source website,,"###Most Recent Changes:
+
+**27 November 2019**  ITOS files and geoservices added
+
+**25-November-2019-** Layers in TOPOJSON format  were added
+
+**24-November-2019-** Layers in [GEOPackage](https://www.geopackage.org) format were added
+
+**10-November-2019-** Admin3 layer was added along with updated admin 0, 1 and 2 layers. The layers were provided by Yemen Central Organization ( CSO ) and approved for use by Humanitarian Country Team (HCT)  in October 2019. 
+
+**8 November 2019**
+Geodatabase removed due to loading error.  It will be replaced when the administrative level 3 data are ready.
+
+**7-October-2017-**  Added unique reference names in both English and Arabic for admin2 (District) ; added ESRI file geodatabase and Excel formats; standard global field naming; redundant field names were removed.
+
+Admin Level 3 removed.  
+
+New governorate has been added (Socotra island).
+Districts pCodes of Hadramaut, Taiz and Raymah governorates have been updated based on the CSO's pCodes, 2 of Hadramaut's districts moved to Socotra governorate.
+
+The Admin level 3 boundaries shapefile does not contain a full set of admin level 3 boundaries for all governorates.
+
+
+**Languages:** AR EN
+"
+South Africa,ZA,ZAF,v01,4,4,Province,District,Local municipality,,,9,52,213,4392,,,2018-12-27,2018-12-27,2025-01-28,2025-10-22,2020-11-09,,1,major,South African Municipal Demarcation Board,OCHA Regional Office for Southern and Eastern Africa (ROSEA),Other,,"2018 12 27
+
+Replacement boundaries added
+
+2018 10 26 update:
+Administrative level 0 shapefile added.
+
+**Languages:** EN
+
+Based on 2016  shapefiles / kml from the [South African Municipal Demarcation Board](http://www.demarcation.org.za/) website  under:   http://www.demarcation.org.za/site/shapefiles/
+
+Data includes new Local Municipality names added in 2016. 
+"
+Zambia,ZM,ZMB,v02,4,4,,,,,,10,116,156,1853,,,2020-11-26,2020-11-26,2025-10-30,2025-10-22,2023-06-29,,1,major,Disaster Management and Mitigation Unit (DMMU) Zambia,OCHA Regional Office for Southern and Eastern Africa (ROSEA),Census,,
+Zimbabwe,ZW,ZWE,v01,3,3,Province,District,Ward,,,10,91,1961,,,,2018-08-31,2018-08-31,2025-01-28,2025-10-22,2018-09-11,,1,major,Zimbabwe National Statistics Agency (ZIMSTAT www.zimstat.co.zw) Central Statistics Office,OCHA Regional Office for Southern and Eastern Africa (ROSEA),"The following duplicate p-codes, which were inherited from the original Zimstat data, were corrected in the Administrative Boundary Level 3/Wards: 
+
+•	160621 to 160626
+
+•	160114 to 160116
+
+•	180420 to 180442
+
+The following changes were made to the Administrative Boundary 2 layer, in order to align the data with the Census 2012 data: 
+
+-Hwangwe Urban has been given the code 1521 as it is separate from Hwange (1503) in the Census 2012 district data (as per IOM and Github data). 
+
+-Changed district code for Harare Rural to 1924 from 1921 to separate from Harare (1921), in order to match with census 2012 districts 
+
+-Added district code 1209 (Mvurwi town) in 1204 (Mazowe) , in order to match with census 2012 districts 
+
+UN OCHA ROSEA dissolved the Administrative Boundaries for Level 2, 1 and 0 from the cleaned Administrative Boundaries level 3 boundaries, to ensure nesting.",,
