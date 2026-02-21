@@ -1,0 +1,23 @@
+{
+  "name": "athena-daily-hdx-pipeline",
+  "schedule": {
+    "quartz_cron_expression": "0 0 6 * * ?",
+    "timezone_id": "UTC"
+  },
+  "tasks": [
+    {
+      "task_key": "ingest_hdx",
+      "notebook_path": "/Repos/athena/databricks/notebooks/01_ingest_hdx"
+    },
+    {
+      "task_key": "transform_silver",
+      "depends_on": [{ "task_key": "ingest_hdx" }],
+      "notebook_path": "/Repos/athena/databricks/notebooks/02_transform_silver"
+    },
+    {
+      "task_key": "score_gold",
+      "depends_on": [{ "task_key": "transform_silver" }],
+      "notebook_path": "/Repos/athena/databricks/notebooks/03_score_gold"
+    }
+  ]
+}
