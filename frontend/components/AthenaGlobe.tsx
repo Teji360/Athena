@@ -1,10 +1,10 @@
 "use client";
 
 import "mapbox-gl/dist/mapbox-gl.css";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { MapLayerMouseEvent } from "react-map-gl";
 import MapGL, { Layer, Marker, Source, type LayerProps, type MapRef } from "react-map-gl";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
 const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
@@ -35,6 +35,9 @@ const countryBorderLayer: LayerProps = {
   }
 };
 
+const LABEL_OFFSET_LNG = -8;
+const LABEL_OFFSET_LAT = 5;
+
 type AthenaGlobeProps = {
   mode: GlobeMode;
   highlights?: GlobeHighlight[];
@@ -53,7 +56,14 @@ export default function AthenaGlobe({ mode, highlights = [] }: AthenaGlobeProps)
   const [selectedIso3, setSelectedIso3] = useState<string | null>(null);
   const [hoverInfo, setHoverInfo] = useState<HoverInfo | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [dismissed, setDismissed] = useState(false);
+  const [pixelPositions, setPixelPositions] = useState<{
+    dot: { x: number; y: number };
+    box: { x: number; y: number };
+  } | null>(null);
   const mapRef = useRef<MapRef | null>(null);
+  const activeRef = useRef<GlobeHighlight | null>(null);
+  const animFrameRef = useRef<number>(0);
 
   const riskByIso = useMemo(() => {
     const out = new Map<string, CountryRisk>();
@@ -61,10 +71,52 @@ export default function AthenaGlobe({ mode, highlights = [] }: AthenaGlobeProps)
     return out;
   }, [riskData]);
 
-  // Reset index when highlights change
+  const active = !dismissed && highlights.length > 0 ? highlights[activeIndex] : null;
+  activeRef.current = active;
+
+  const dismiss = useCallback(() => {
+    setDismissed(true);
+    setPixelPositions(null);
+    const map = mapRef.current?.getMap();
+    if (map) {
+      map.flyTo({ center: [0, 20], zoom: 1.5, duration: 1500 });
+    }
+  }, []);
+
+  function updatePixels() {
+    const map = mapRef.current;
+    const hl = activeRef.current;
+    if (!map || !hl) {
+      setPixelPositions(null);
+      return;
+    }
+    const dotPx = map.project(hl.center);
+    const boxPx = map.project([
+      hl.center[0] + LABEL_OFFSET_LNG,
+      hl.center[1] + LABEL_OFFSET_LAT,
+    ]);
+    setPixelPositions({
+      dot: { x: dotPx.x, y: dotPx.y },
+      box: { x: boxPx.x, y: boxPx.y },
+    });
+  }
+
+  // Reset index + dismissed when highlights change
   useEffect(() => {
     setActiveIndex(0);
+    setDismissed(false);
   }, [highlights]);
+
+  // Escape key dismisses annotations
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && highlights.length > 0 && !dismissed) {
+        dismiss();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [highlights, dismissed, dismiss]);
 
   // Fetch risk data
   useEffect(() => {
@@ -228,44 +280,42 @@ export default function AthenaGlobe({ mode, highlights = [] }: AthenaGlobeProps)
   const selectedCountry = selectedIso3 ? riskByIso.get(selectedIso3) ?? null : null;
   const hoveredCountry = hoverInfo ? riskByIso.get(hoverInfo.iso3) ?? null : null;
 
-  // Fly to active highlight
+  // Fly to highlight
   useEffect(() => {
     const map = mapRef.current?.getMap();
-    if (!map || highlights.length === 0) {
-      return;
-    }
-    const active = highlights[activeIndex];
-    if (!active) return;
+    if (!map || highlights.length === 0) return;
+    const hl = highlights[activeIndex];
+    if (!hl) return;
+
     map.flyTo({
-      center: active.center,
+      center: hl.center,
       zoom: 4,
       duration: 2000,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [highlights, activeIndex]);
 
-  const active = highlights.length > 0 ? highlights[activeIndex] : null;
+  // Continuously track pixel positions via rAF while a highlight is active
+  useEffect(() => {
+    if (!active) {
+      setPixelPositions(null);
+      return;
+    }
 
-  // Leader line offset: 8 right, 5 up from centroid
-  const labelOffset: [number, number] | null = active
-    ? [active.center[0] + 8, active.center[1] + 5]
-    : null;
+    let running = true;
+    function tick() {
+      if (!running) return;
+      updatePixels();
+      animFrameRef.current = requestAnimationFrame(tick);
+    }
+    animFrameRef.current = requestAnimationFrame(tick);
 
-  const leaderLineGeoJSON: GeoJSON.FeatureCollection | null =
-    active && labelOffset
-      ? {
-          type: "FeatureCollection",
-          features: [
-            {
-              type: "Feature",
-              properties: {},
-              geometry: {
-                type: "LineString",
-                coordinates: [active.center, labelOffset],
-              },
-            },
-          ],
-        }
-      : null;
+    return () => {
+      running = false;
+      cancelAnimationFrame(animFrameRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active]);
 
   if (!mapboxToken) {
     return (
@@ -305,38 +355,50 @@ export default function AthenaGlobe({ mode, highlights = [] }: AthenaGlobeProps)
           <Layer {...countryBorderLayer} />
         </Source>
 
-        {/* Annotation dot at active country */}
+        {/* Annotation dot */}
         {active && (
           <Marker longitude={active.center[0]} latitude={active.center[1]} anchor="center">
-            <div className="annotation-dot" />
-          </Marker>
-        )}
-
-        {/* Leader line */}
-        {leaderLineGeoJSON && (
-          <Source id="leader-line" type="geojson" data={leaderLineGeoJSON}>
-            <Layer
-              id="leader-line-layer"
-              type="line"
-              paint={{
-                "line-color": "#ef4444",
-                "line-width": 1.5,
-                "line-dasharray": [4, 2],
-              }}
-            />
-          </Source>
-        )}
-
-        {/* Summary textbox at offset */}
-        {active && labelOffset && (
-          <Marker longitude={labelOffset[0]} latitude={labelOffset[1]} anchor="bottom-left">
-            <div className="annotation-box">
-              <strong>{active.iso3}</strong>
-              <p style={{ margin: "4px 0 0" }}>{active.summary}</p>
-            </div>
+            <div className="annotation-dot annotation-dot-active" />
           </Marker>
         )}
       </MapGL>
+
+      {/* SVG overlay — line + box track in real time */}
+      {active && pixelPositions && (
+        <div className="annotation-overlay">
+          <svg className="annotation-svg" width="100%" height="100%">
+            <defs>
+              <filter id="line-glow">
+                <feGaussianBlur stdDeviation="2" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+            <line
+              className="annotation-line"
+              x1={pixelPositions.dot.x}
+              y1={pixelPositions.dot.y}
+              x2={pixelPositions.box.x}
+              y2={pixelPositions.box.y}
+              filter="url(#line-glow)"
+            />
+          </svg>
+          <div
+            className="annotation-box annotation-active"
+            style={{
+              left: pixelPositions.box.x,
+              top: pixelPositions.box.y,
+              transform: "translate(-100%, -50%)",
+            }}
+          >
+            <span className="annotation-iso">{active.iso3}</span>
+            <p style={{ margin: "4px 0 0" }}>{active.summary}</p>
+          </div>
+        </div>
+      )}
+
       {mode === "risk" ? (
         <div className="map-legend">
           <span className="dot green" /> Safe
@@ -394,29 +456,40 @@ export default function AthenaGlobe({ mode, highlights = [] }: AthenaGlobeProps)
         </div>
       ) : null}
 
-      {/* Navigation arrows */}
-      {highlights.length > 1 && (
+      {highlights.length > 0 && !dismissed && (
         <div className="annotation-nav">
+          {highlights.length > 1 && (
+            <>
+              <button
+                type="button"
+                className="icon-btn"
+                disabled={activeIndex === 0}
+                onClick={() => setActiveIndex((i) => i - 1)}
+                aria-label="Previous country"
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <span className="annotation-nav-counter">
+                {activeIndex + 1} / {highlights.length}
+              </span>
+              <button
+                type="button"
+                className="icon-btn"
+                disabled={activeIndex === highlights.length - 1}
+                onClick={() => setActiveIndex((i) => i + 1)}
+                aria-label="Next country"
+              >
+                <ChevronRight size={16} />
+              </button>
+            </>
+          )}
           <button
             type="button"
-            className="icon-btn"
-            disabled={activeIndex === 0}
-            onClick={() => setActiveIndex((i) => i - 1)}
-            aria-label="Previous country"
+            className="icon-btn annotation-close-btn"
+            onClick={dismiss}
+            aria-label="Close annotations"
           >
-            <ChevronLeft size={16} />
-          </button>
-          <span className="annotation-nav-counter">
-            {activeIndex + 1} / {highlights.length}
-          </span>
-          <button
-            type="button"
-            className="icon-btn"
-            disabled={activeIndex === highlights.length - 1}
-            onClick={() => setActiveIndex((i) => i + 1)}
-            aria-label="Next country"
-          >
-            <ChevronRight size={16} />
+            <X size={14} />
           </button>
         </div>
       )}
