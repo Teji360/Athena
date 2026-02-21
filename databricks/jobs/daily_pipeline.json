@@ -4,20 +4,54 @@
     "quartz_cron_expression": "0 0 6 * * ?",
     "timezone_id": "UTC"
   },
+  "max_concurrent_runs": 1,
+  "job_clusters": [
+    {
+      "job_cluster_key": "athena-job-cluster",
+      "new_cluster": {
+        "spark_version": "14.3.x-scala2.12",
+        "node_type_id": "i3.xlarge",
+        "num_workers": 1,
+        "data_security_mode": "SINGLE_USER"
+      }
+    }
+  ],
   "tasks": [
     {
       "task_key": "ingest_hdx",
-      "notebook_path": "/Repos/athena/databricks/notebooks/01_ingest_hdx"
+      "job_cluster_key": "athena-job-cluster",
+      "notebook_task": {
+        "notebook_path": "/Repos/athena/databricks/notebooks/01_ingest_hdx",
+        "base_parameters": {
+          "catalog": "athena_catalog",
+          "schema": "athena_schema",
+          "volume": "athena_volume"
+        }
+      }
     },
     {
       "task_key": "transform_silver",
       "depends_on": [{ "task_key": "ingest_hdx" }],
-      "notebook_path": "/Repos/athena/databricks/notebooks/02_transform_silver"
+      "job_cluster_key": "athena-job-cluster",
+      "notebook_task": {
+        "notebook_path": "/Repos/athena/databricks/notebooks/02_transform_silver",
+        "base_parameters": {
+          "catalog": "athena_catalog",
+          "schema": "athena_schema"
+        }
+      }
     },
     {
       "task_key": "score_gold",
       "depends_on": [{ "task_key": "transform_silver" }],
-      "notebook_path": "/Repos/athena/databricks/notebooks/03_score_gold"
+      "job_cluster_key": "athena-job-cluster",
+      "notebook_task": {
+        "notebook_path": "/Repos/athena/databricks/notebooks/03_score_gold",
+        "base_parameters": {
+          "catalog": "athena_catalog",
+          "schema": "athena_schema"
+        }
+      }
     }
   ]
 }

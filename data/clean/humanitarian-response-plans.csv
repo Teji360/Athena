@@ -10,7 +10,7 @@ RJORLBNTUR26,8179,2026-01-01,2026-12-31,Syrian Arab Republic Regional Refugee an
 HNGA26,8315,2026-01-01,2026-12-31,Nigeria Humanitarian Needs and Response Plan 2026,Humanitarian needs and response plan | sector | en,NGA,2026,516399423,516399423
 HSYR26,8103,2026-01-01,2026-12-31,Syrian Arab Republic Humanitarian Response Priorities 2026,Humanitarian needs and response plan | sector | en,SYR,2026,0,3190000000
 HSDN26,8122,2026-01-01,2026-12-31,Sudan Humanitarian Needs and Response Plan 2026,Humanitarian needs and response plan | cluster | en,SDN,2026,0,2866228594
-OVNM26,8312,2026-01-01,2026-12-31,Viet Nam 25-26 Joint Response Plan Multiple Typhoons and Floods 2026,sector | en | Other,VNM,2026,0,61132366
+OVNM26,8312,2026-01-01,2026-12-31,Viet Nam 25-26 Joint Response Plan Multiple Typhoons and Floods 2026,sector | en | Other,VNM,2026,0,61132366
 HAFG26,8282,2026-01-01,2026-12-31,Afghanistan Humanitarian Needs and Response Plan 2026,Humanitarian needs and response plan | cluster | en,AFG,2026,1714181496,1714181496
 HBFA26,8150,2026-01-01,2026-12-31,Burkina Faso Besoins Humanitaires et Plan de Réponse 2026,Humanitarian needs and response plan | cluster | fr,BFA,2026,0,662000000
 HSSD26,8300,2026-01-01,2026-12-31,South Sudan Humanitarian Needs and Response Plan 2026,Humanitarian needs and response plan | cluster | en,SSD,2026,0,1463046056
@@ -29,7 +29,7 @@ HCMR26,8152,2026-01-01,2026-12-31,Cameroon Humanitarian Needs and Response Plan 
 HCAF26,8307,2026-01-01,2026-12-31,République Centrafricaine Besoins Humanitaires et Plan de Réponse 2026,Humanitarian needs and response plan | cluster | fr,CAF,2026,0,264097388
 RUGA26,8098,2026-01-01,2026-12-31,Uganda Regional Refugee Response Plan 2026,sector | en | Regional response plan,UGA,2026,0,828700000
 OLKA2526,8268,2025-12-11,2026-04-30,Sri Lanka Humanitarian Priorities Plan Cyclone Ditwa 2026,sector | en | Other,LKA,2026,35300000,35300000
-OVNM25a,8196,2025-10-28,2025-12-31,Viet Nam 25-26 Joint Response Plan Multiple Typhoons and Floods 2025,sector | en | Other,VNM,2025,26591473,35036655
+OVNM25a,8196,2025-10-28,2025-12-31,Viet Nam 25-26 Joint Response Plan Multiple Typhoons and Floods 2025,sector | en | Other,VNM,2025,26591473,35036655
 OPAK25,8185,2025-10-20,2025-12-31,Pakistan Floods Support Plan 2025,sector | en | Other,PAK,2025,85687180,85687180
 HMMR25a,7332,2025-04-01,2025-12-31,Myanmar Earthquake HNRP Flash Addendum 2025,Humanitarian needs and response plan | cluster | en,MMR,2025,275150034,275150034
 RIRNPAK25,7470,2025-01-01,2025-12-31,Afghanistan Situation Regional Refugee Response Plan 2025,sector | en | Regional response plan,IRN | PAK,2025,622010264,622010264
@@ -70,7 +70,7 @@ HSDN25,8318,2025-01-01,2025-12-31,Sudan Humanitarian Needs and Response Plan 202
 HCOL25,7223,2025-01-01,2025-12-31,Colombia Necesidades Humanitarias y Plan de Respuesta 2025,Humanitarian needs and response plan | cluster | es,COL,2025,342308343,342308343
 HSSD25,7317,2025-01-01,2025-12-31,South Sudan Humanitarian Needs and Response Plan 2025,Humanitarian needs and response plan | cluster | en,SSD,2025,1669778643,1694778653
 RRHOAY25,7901,2025-01-01,2025-12-31,Regional Migrant Response Plan for Horn of Africa to Yemen and Southern Africa 2025,sector | en | Regional response plan,DJI | ETH | SOM | KEN | TZA,2025,61287055,61287055
-OVNM25b,8200,2025-01-01,2025-06-30,Viet Nam 24-25 Joint Response Plan for Typhoon Yagi and Floods 2025,sector | en | Other,VNM,2025,37218750,37218750
+OVNM25b,8200,2025-01-01,2025-06-30,Viet Nam 24-25 Joint Response Plan for Typhoon Yagi and Floods 2025,sector | en | Other,VNM,2025,37218750,37218750
 HHTI25,7960,2025-01-01,2025-12-31,Haiti Besoins Humanitaires et Plan de Réponse 2025,Humanitarian needs and response plan | cluster | fr,HTI,2025,908159989,908159989
 OPHL25,7896,2025-01-01,2025-04-30,Philippines Tropical Cyclones and Floods Humanitarian Needs and Priorities 2025,sector | en | Other,PHL,2025,8230297,16880751
 HAFG25,8257,2025-01-01,2025-12-31,Afghanistan Humanitarian Needs and Response Plan 2025,Humanitarian needs and response plan | cluster | en,AFG,2025,2416811546,2416811546
@@ -78,7 +78,7 @@ OPHL24,6581,2024-11-13,2024-12-31,Philippines Tropical Cyclones and Floods Human
 ONPL24,6258,2024-10-07,2024-12-31,Nepal Humanitarian Needs and Priorities Floods Response Plan 2024,sector | en | Other,NPL,2024,17530000,17530000
 FLBN24,6129,2024-10-01,2024-12-31,Lebanon Flash Appeal 2024,sector | en | Flash appeal,LBN,2024,425624500,425745000
 OSYR24,6948,2024-10-01,2024-12-31,Inter-Agency Emergency Appeal for the Influx from Lebanon to Syria 2024,sector | en | Other,SYR,2024,135664082,135664082
-OVNM24,8198,2024-09-27,2024-12-31,Viet Nam 24-25 Joint Response Plan for Typhoon Yagi and Floods 2024,sector | en | Other,VNM,2024,68935538,31716788
+OVNM24,8198,2024-09-27,2024-12-31,Viet Nam 24-25 Joint Response Plan for Typhoon Yagi and Floods 2024,sector | en | Other,VNM,2024,68935538,31716788
 FMOZ24,6400,2024-08-01,2024-12-31,Mozambique Drought Flash Appeal 2024,cluster | en | Flash appeal,MOZ,2024,89025047,89025047
 FMWI24,7030,2024-07-15,2024-12-31,Malawi Drought Response Flash Appeal 2024,sector | en | Flash appeal,MWI,2024,0,79032838
 FVCT24,7338,2024-07-03,2024-12-31,Saint Vincent and The Grenadines Hurricane Beryl Flash Appeal 2024,sector | en | Flash appeal,VCT,2024,0,8043236
@@ -131,7 +131,7 @@ OMOZ23,4540,2023-03-01,2023-09-30,"Mozambique Cyclone Freddy, Floods and Cholera
 FTUR23,4611,2023-02-16,2023-05-31,Türkiye Earthquake Flash Appeal 2023,sector | en | Flash appeal,TUR,2023,1006573130,1006545000
 FSYR23,4425,2023-02-13,2023-05-31,Syria Earthquake Flash Appeal 2023,sector | en | Flash appeal,SYR,2023,0,397623464
 HGTM23,5426,2023-01-01,2023-12-31,Guatemala Plan de Respuesta Humanitaria 2023,sector | es | Humanitarian response plan,GTM,2023,126145348,126145348
-HNGA23,5263,2023-01-01,2023-12-31,Nigeria Humanitarian Response Plan 2023,sector | en | Humanitarian response plan,| NGA |  |,2023,1311953516,1311953516
+HNGA23,5263,2023-01-01,2023-12-31,Nigeria Humanitarian Response Plan 2023,sector | en | Humanitarian response plan,| NGA | |,2023,1311953516,1311953516
 FMWI23,4511,2023-01-01,2023-12-31,Malawi Cholera and Floods Flash Appeal 2023,sector | en | Flash appeal,MWI,2023,0,115945732
 RETHKENUGA23,4497,2023-01-01,2023-12-31,South Sudan Regional Refugee Response Plan 2023,sector | en | Regional response plan,KEN | UGA | ETH,2023,950234784,950234784
 HHND23,5310,2023-01-01,2023-12-31,Honduras Plan de Respuesta Humanitaria 2023,cluster | es | Humanitarian response plan,HND,2023,280360869,280360869
@@ -152,7 +152,7 @@ HPSE23,5068,2023-01-01,2023-09-30,Occupied Palestinian Territory Humanitarian Re
 RREG23,4489,2023-01-01,2023-12-31,Venezuela Regional Refugee and Migrant Response Plan (RMRP) 2023,sector | en | Regional response plan,PRY | MEX | CUW | ECU | BRA | COL | PAN | CRI | ARG | GUY | CHL | ABW | TTO | PER | URY | DOM | BOL,2023,1715042189,1715042189
 HSLV23,4849,2023-01-01,2023-12-31,El Salvador Plan de Respuesta Humanitaria 2023,cluster | es | Humanitarian response plan,SLV,2023,98416155,98416155
 RAFG23,4505,2023-01-01,2023-12-31,Afghanistan Situation Regional Refugee Response Plan 2023,sector | en | Regional response plan,UZB | TKM | TJK | IRN | PAK,2023,613012986,613012986
-HMOZ23,5379,2023-01-01,2023-12-31,Mozambique Humanitarian Response Plan 2023,cluster | en | Humanitarian response plan,MOZ |  |  |,2023,512912994,512912994
+HMOZ23,5379,2023-01-01,2023-12-31,Mozambique Humanitarian Response Plan 2023,cluster | en | Humanitarian response plan,MOZ | | |,2023,512912994,512912994
 OPAK23,4191,2023-01-01,2023-05-31,Pakistan Floods Response Plan 2023,cluster | en | Other,PAK,2023,344007921,344007921
 HMMR23,5325,2023-01-01,2023-12-31,Myanmar Humanitarian Response Plan 2023,cluster | en | Humanitarian response plan,MMR,2023,764284069,886738899
 HNER23,5413,2023-01-01,2023-12-31,Niger Plan de Réponse Humanitaire 2023,cluster | fr | Humanitarian response plan,NER,2023,583906619,583906619
@@ -180,16 +180,16 @@ FUKR22,4398,2022-03-01,2022-12-31,Ukraine Flash Appeal 2022,cluster | en | Flash
 FMWI22,3805,2022-02-26,2022-05-31,Malawi Flash Appeal 2022,en | Flash appeal | sector,MWI,2022,0,29450000
 HNER22,4332,2022-01-01,2022-12-31,Niger Plan de Réponse Humanitaire 2022,cluster | fr | Humanitarian response plan,NER,2022,552598446,552598446
 HCMR22,4331,2022-01-01,2022-12-31,Cameroon Humanitarian Response Plan 2022,Humanitarian response plan | cluster | en,CMR,2022,376046051,376046051
-HHTI22,4323,2022-01-01,2022-12-31,Haïti Plan de Réponse Humanitaire 2022,sector | fr | Humanitarian response plan,| HTI |  |  |  |  |  |  |  |  |,2022,373165734,373165734
-HPSE22,4351,2022-01-01,2022-12-31,Occupied Palestinian Territory Humanitarian Response Plan 2022,cluster | en | Humanitarian response plan,|  | PSE,2022,509872202,509872202
-HUKR22,3797,2022-01-01,2022-12-31,Ukraine Humanitarian Response Plan 2022,cluster | en | Humanitarian response plan,UKR |  |,2022,190349122,0
+HHTI22,4323,2022-01-01,2022-12-31,Haïti Plan de Réponse Humanitaire 2022,sector | fr | Humanitarian response plan,| HTI | | | | | | | | |,2022,373165734,373165734
+HPSE22,4351,2022-01-01,2022-12-31,Occupied Palestinian Territory Humanitarian Response Plan 2022,cluster | en | Humanitarian response plan,| | PSE,2022,509872202,509872202
+HUKR22,3797,2022-01-01,2022-12-31,Ukraine Humanitarian Response Plan 2022,cluster | en | Humanitarian response plan,UKR | |,2022,190349122,0
 HMMR22,4350,2022-01-01,2022-12-31,Myanmar Humanitarian Response Plan 2022,cluster | en | Humanitarian response plan,MMR,2022,825698032,825698032
 OLBN22,4006,2022-01-01,2022-12-31,Lebanon Emergency Response Plan 2022,sector | en | Other,LBN,2022,215035166,378175867
 HHND22,4240,2022-01-01,2022-12-31,Honduras Plan de Respuesta Humanitaria 2022,cluster | es | Humanitarian response plan,HND,2022,155296363,155296363
 HCAF22,4340,2022-01-01,2022-12-31,République Centrafricaine Plan de Réponse Humanitaire 2022,fr | Humanitarian response plan | cluster,CAF,2022,461253975,461253975
 FKEN22,4339,2022-01-01,2022-10-31,Kenya Drought Flash Appeal 2022,cluster | en | Flash appeal,KEN,2022,250461585,289641587
 HTCD22,4387,2022-01-01,2022-12-31,Tchad Plan de Réponse Humanitaire 2022,sector | fr | Humanitarian response plan,TCD,2022,510909899,510909899
-HNGA22,4384,2022-01-01,2022-12-31,Nigeria Humanitarian Response Plan 2022,sector | en | Humanitarian response plan,|  |  | NGA,2022,1127211641,1127211641
+HNGA22,4384,2022-01-01,2022-12-31,Nigeria Humanitarian Response Plan 2022,sector | en | Humanitarian response plan,| | | NGA,2022,1127211641,1127211641
 HSOM22,4365,2022-01-01,2022-12-31,Somalia Humanitarian Response Plan 2022,cluster | en | Humanitarian response plan,SOM,2022,0,2267407090
 HLBY22,4419,2022-01-01,2022-12-31,Libya Humanitarian Response Plan 2022,Humanitarian response plan | cluster | en,LBY,2022,75287520,113799273
 HMLI22,4499,2022-01-01,2022-12-31,Mali Plan de Réponse Humanitaire 2022,fr | Humanitarian response plan | cluster,MLI,2022,685734819,685734819
@@ -225,11 +225,11 @@ HGTM21,3580,2021-08-01,2021-12-31,Guatemala Plan de Respuesta Humanitaria 2021,s
 HSLV21,3582,2021-08-01,2021-12-31,El Salvador Plan de Respuesta Humanitaria 2021,cluster | es | Humanitarian response plan,SLV,2021,42156698,42156698
 HHND21,3581,2021-08-01,2021-12-31,Honduras Plan de Respuesta Humanitaria 2021,cluster | es | Humanitarian response plan,HND,2021,221424684,66138378
 OMMR21,3195,2021-07-01,2021-12-31,Myanmar Interim Emergency Response Plan 2021,en | Other | cluster,MMR,2021,109161826,109161826
-FPSE21,4315,2021-05-27,2021-08-27,Escalation of Hostilities in the OPT  Flash Appeal 2021,cluster | en | Flash appeal,|  | PSE,2021,0,94862068
-ONPL21,5865,2021-05-01,2021-12-31,Nepal Intersectoral COVID-19 Response Plan 2021,sector | en | Other,|  |  |  |  |  |  | NPL,2021,83624000,83621252
+FPSE21,4315,2021-05-27,2021-08-27,Escalation of Hostilities in the OPT Flash Appeal 2021,cluster | en | Flash appeal,| | PSE,2021,0,94862068
+ONPL21,5865,2021-05-01,2021-12-31,Nepal Intersectoral COVID-19 Response Plan 2021,sector | en | Other,| | | | | | | NPL,2021,83624000,83621252
 FETH21,5424,2021-05-01,2021-12-31,Northern Ethiopia Response Plan 2021,en | Flash appeal | cluster,ETH |,2021,956952000,956952000
 RRWATZAUGA21,3244,2021-01-01,2021-12-31,Burundi Regional Refugee Response Plan 2021,sector | en | Regional response plan,TZA | RWA | UGA,2021,190668679,190668679
-HHTI21,3599,2021-01-01,2021-12-31,Haïti Plan de Réponse Humanitaire 2021,sector | fr | Humanitarian response plan,| HTI |  |  |  |  |  |  |  |  |,2021,235595167,235595167
+HHTI21,3599,2021-01-01,2021-12-31,Haïti Plan de Réponse Humanitaire 2021,sector | fr | Humanitarian response plan,| HTI | | | | | | | | |,2021,235595167,235595167
 HNER21,3857,2021-01-01,2021-12-31,Niger Plan de Réponse Humanitaire 2021,cluster | fr | Humanitarian response plan,NER,2021,523182880,523182880
 HCOL21,5962,2021-01-01,2021-12-31,Colombia Plan de Respuesta Humanitaria 2021,cluster | es | Humanitarian response plan,COL,2021,174010305,174010305
 RETHKENUGA21,3250,2021-01-01,2021-12-31,South Sudan Regional Refugee Response Plan 2021,sector | en | Regional response plan,UGA | KEN | ETH,2021,866908168,866908168
@@ -241,7 +241,7 @@ HUKR21,5367,2021-01-01,2021-12-31,Ukraine Humanitarian Response Plan 2021,cluste
 HBFA21,3706,2021-01-01,2021-12-31,Burkina Faso Plan de Réponse Humanitaire 2021,cluster | fr | Humanitarian response plan,BFA,2021,607875894,607875894
 HMOZ21,3655,2021-01-01,2021-12-31,Mozambique Humanitarian Response Plan 2021,en | Humanitarian response plan | cluster,MOZ,2021,253490356,254080356
 HSDN21,3891,2021-01-01,2021-12-31,Sudan Humanitarian Response Plan 2021,cluster | en | Humanitarian response plan,SDN,2021,1939814880,1939814880
-HCMR21,5349,2021-01-01,2021-12-31,Cameroon Humanitarian Response Plan  2021,cluster | en | Humanitarian response plan,CMR,2021,361554315,361554315
+HCMR21,5349,2021-01-01,2021-12-31,Cameroon Humanitarian Response Plan 2021,cluster | en | Humanitarian response plan,CMR,2021,361554315,361554315
 RBGD21,5872,2021-01-01,2021-12-31,Rohingya Humanitarian Crisis Joint Response Plan 2021,sector | en | Regional response plan,BGD,2021,943123350,943123350
 RDRCRRP21,4328,2021-01-01,2021-12-31,Democratic Republic of the Congo Regional Refugee Response Plan 2021,sector | en | Regional response plan,COG | RWA | ZMB | TZA | UGA | AGO | BDI,2021,534319123,534319123
 HAFG21,3682,2021-01-01,2021-12-31,Afghanistan Humanitarian Response Plan 2021,cluster | en | Humanitarian response plan,AFG,2021,1281635457,868666483
@@ -251,7 +251,7 @@ HTCD21,3941,2021-01-01,2021-12-31,Tchad Plan de Réponse Humanitaire 2021,fr | H
 HETH21,4647,2021-01-01,2021-12-31,Ethiopia Humanitarian Response Plan 2021,cluster | en | Humanitarian response plan,ETH,2021,1488027181,1488027181
 HVEN21,3848,2021-01-01,2021-12-31,Venezuela Plan de Respuesta Humanitaria 2021,cluster | es | Humanitarian response plan,VEN,2021,708278321,708098081
 RSYR21,4294,2021-01-01,2021-12-31,Syrian Arab Republic Regional Refugee and Resilience Plan (3RP) 2021,sector | en | Regional response plan,IRQ | EGY | JOR | LBN | TUR,2021,5852037239,5832737574
-HPSE21,4311,2021-01-01,2021-12-31,Occupied Palestinian Territory Humanitarian Response Plan 2021,cluster | en | Humanitarian response plan,PSE |  |,2021,417567330,417567330
+HPSE21,4311,2021-01-01,2021-12-31,Occupied Palestinian Territory Humanitarian Response Plan 2021,cluster | en | Humanitarian response plan,PSE | |,2021,417567330,417567330
 HSYR21,6717,2021-01-01,2021-12-31,Syrian Arab Republic Humanitarian Response Plan 2021,Humanitarian response plan | sector | en,SYR,2021,4224416702,4224416702
 HPAK21,3135,2021-01-01,2021-12-31,Pakistan Humanitarian Response Plan 2021,cluster | en | Humanitarian response plan,PAK,2021,332043165,332043165
 HSSD21,3565,2021-01-01,2021-12-31,South Sudan Humanitarian Response Plan 2021,en | Humanitarian response plan | cluster,SSD,2021,1677772788,1677772788
@@ -269,10 +269,10 @@ OMOZ20a,2296,2020-06-01,2020-12-31,Cabo Delgado Province Mozambique Rapid Respon
 OLBN20,5860,2020-05-01,2020-12-31,Lebanon Intersectoral COVID-19 Response Plan 2020,sector | en | Other,LBN,2020,70704000,136500000
 OIRN20,5859,2020-05-01,2020-12-31,Iran Intersectoral COVID-19 Response Plan 2020,sector | en | Other,IRN,2020,89517812,117284681
 OLBR20,5861,2020-05-01,2020-12-31,Liberia Intersectoral COVID-19 Response Plan 2020,Other | sector | en,LBR,2020,57000000,57000000
-OGLBL20b,5969,2020-05-01,2020-12-31,GHRP (COVID) Famine Prevention 2020,Other | sector | en,ZWE | YEM | BFA | BGD | VEN | ZMB | TUR | JOR | AGO | SDN | SLE | EGY | COL | TZA | SYR | RWA | TGO | SSD | SOM | PAK | PSE | MMR | LBR | LSO | IRN | COD | TCD | CMR | BEN | AFG |  | LBY | UKR | UGA | HTI | PHL | NGA | NER | MOZ | MLI | LBN | KEN | IRQ | ETH | ECU | PRK | DJI | CAF | BDI,2020,500000000,500000000
+OGLBL20b,5969,2020-05-01,2020-12-31,GHRP (COVID) Famine Prevention 2020,Other | sector | en,ZWE | YEM | BFA | BGD | VEN | ZMB | TUR | JOR | AGO | SDN | SLE | EGY | COL | TZA | SYR | RWA | TGO | SSD | SOM | PAK | PSE | MMR | LBR | LSO | IRN | COD | TCD | CMR | BEN | AFG | | LBY | UKR | UGA | HTI | PHL | NGA | NER | MOZ | MLI | LBN | KEN | IRQ | ETH | ECU | PRK | DJI | CAF | BDI,2020,500000000,500000000
 OUGA20,2294,2020-05-01,2020-12-31,Uganda Intersectoral COVID-19 Response Plan 2020,sector | en | Other,UGA,2020,200157127,200157127
 OECU20,5857,2020-05-01,2020-12-31,Ecuador Plan de Respuesta Intersectorial COVID-19 2020,es | Other | sector,ECU,2020,46425000,46425000
-OGLBL20a,5968,2020-05-01,2020-12-31,GHRP (COVID) Unallocated supplementary NGO envelope 2020,sector | en | Other,AFG | ZWE | VEN | UKR | BEN | BDI | LSO | LBR | LBY | MLI | MOZ | MMR | NER | NGA | EGY | ETH | PSE | PAK | PHL | RWA | SLE | SOM | SSD | SDN | SYR | TZA | TGO | TUR | UGA | YEM | ZMB |  | BGD | AGO | BFA | CMR | CAF | TCD | DJI | PRK | COD | COL | ECU | HTI | IRN | IRQ | JOR | KEN | LBN,2020,300000000,300000000
+OGLBL20a,5968,2020-05-01,2020-12-31,GHRP (COVID) Unallocated supplementary NGO envelope 2020,sector | en | Other,AFG | ZWE | VEN | UKR | BEN | BDI | LSO | LBR | LBY | MLI | MOZ | MMR | NER | NGA | EGY | ETH | PSE | PAK | PHL | RWA | SLE | SOM | SSD | SDN | SYR | TZA | TGO | TUR | UGA | YEM | ZMB | | BGD | AGO | BFA | CMR | CAF | TCD | DJI | PRK | COD | COL | ECU | HTI | IRN | IRQ | JOR | KEN | LBN,2020,300000000,300000000
 OBEN20,5853,2020-05-01,2020-12-31,Bénin Plan de Réponse Intersectorielle COVID-19 2020,sector | fr | Other,BEN,2020,17230000,17930000
 O20,5970,2020-05-01,2020-12-31,GHRP (COVID) Global Operational Support 2020,sector | en | Other,,2020,1005000000,376000000
 OJOR20,2316,2020-05-01,2020-12-31,Jordan Intersectoral COVID-19 Response Plan 2020,sector | en | Other,JOR,2020,52845731,52845731
@@ -286,12 +286,12 @@ OPRK20c,5858,2020-05-01,2020-12-31,DPR Korea Intersectoral COVID-19 Response Pla
 OTZA20,2292,2020-05-01,2020-12-31,Tanzania Intersectoral COVID-19 Response Plan 2020,sector | en | Other,TZA,2020,158874105,158874105
 OTGO20,5855,2020-05-01,2020-12-31,Togo Plan de Réponse Intersectorielle COVID-19 2020,sector | fr | Other,TGO,2020,19382534,19757534
 OBGD20,2846,2020-05-01,2020-12-31,Bangladesh Intersectoral COVID-19 Response Plan 2020,sector | en | Other,BGD,2020,0,205934700
-OCOVD20,6700,2020-03-25,2020-12-31,GHRP (COVID) Global Humanitarian Response Plan 2020,sector | en | Other,NER | PRK | KEN | NGA | GUY | PAN | MEX | BRA | CUW |  | TTO | PER | URY | EGY | DJI | JOR | CRI | BFA | YEM | RWA | AGO | COG | ETH | TUR | PRY | ECU | SSD | SDN | SOM | IRQ | COD | LBN | CAF | MLI | BGD | ABW | CMR | UKR | UGA | VEN | TZA | ZMB | BOL | DOM | CHL | COL | TCD | AFG | SYR | ARG | LBY | IRN | PSE | MMR | HTI | BDI,2020,2010000000,0
+OCOVD20,6700,2020-03-25,2020-12-31,GHRP (COVID) Global Humanitarian Response Plan 2020,sector | en | Other,NER | PRK | KEN | NGA | GUY | PAN | MEX | BRA | CUW | | TTO | PER | URY | EGY | DJI | JOR | CRI | BFA | YEM | RWA | AGO | COG | ETH | TUR | PRY | ECU | SSD | SDN | SOM | IRQ | COD | LBN | CAF | MLI | BGD | ABW | CMR | UKR | UGA | VEN | TZA | ZMB | BOL | DOM | CHL | COL | TCD | AFG | SYR | ARG | LBY | IRN | PSE | MMR | HTI | BDI,2020,2010000000,0
 OKEN20,2289,2020-01-05,2020-12-31,Kenya Intersectoral COVID-19 Response Plan 2020,cluster | en | Other,KEN,2020,254870684,254870684
 OCOG20,5854,2020-01-05,2020-12-31,République du Congo Plan de Réponse Intersectorielle COVID-19 2020,sector | fr | Other,COG,2020,11989124,11989124
 OPAK20,5862,2020-01-05,2020-12-31,Pakistan Intersectoral COVID-19 Response Plan 2020,cluster | en | Other,PAK,2020,126820000,145788878
 HCAF2021,5731,2020-01-02,2021-01-01,République Centrafricaine Plan de Réponse Humanitaire 2020,cluster | fr | Humanitarian response plan,CAF,2020,400810000,553622290
-HNGA20,5732,2020-01-01,2020-12-31,Nigeria Humanitarian Response Plan 2020,sector | en | Humanitarian response plan,NGA |  |  |,2020,996281653,1080446613
+HNGA20,5732,2020-01-01,2020-12-31,Nigeria Humanitarian Response Plan 2020,sector | en | Humanitarian response plan,NGA | | |,2020,996281653,1080446613
 RREG20,5876,2020-01-01,2020-12-31,Venezuela Regional Refugee and Migrant Response Plan (RMRP) 2020,sector | en | Regional response plan,PER | ECU | GUY | BRA | CUW | BOL | COL | DOM | URY | ARG | ABW | PRY | CRI | PAN | TTO | CHL | MEX,2020,0,1407580167
 RSYR20,4295,2020-01-01,2020-12-31,Syrian Arab Republic Regional Refugee and Resilience Plan (3RP) 2020,Regional response plan | sector | en,IRQ | EGY | JOR | TUR | LBN,2020,0,5995975760
 OPRK20b,2345,2020-01-01,2020-12-31,DPR Korea Needs and Priorities 2020,Other | sector | en,PRK,2020,107000000,107000000
@@ -380,13 +380,13 @@ HETH18,538,2018-01-01,2018-12-31,Ethiopia Humanitarian and Disaster Resilience P
 HSDN18,5681,2018-01-01,2018-12-24,Sudan Humanitarian Response Plan 2018,Humanitarian response plan | cluster | en,SDN,2018,1007555093,1007555093
 HNER18,7419,2018-01-01,2018-12-31,Niger Plan de Réponse Humanitaire 2018,cluster | fr | Humanitarian response plan,NER,2018,329483843,338303089
 HUKR18,1121,2018-01-01,2018-12-31,Ukraine Humanitarian Response Plan 2018,Humanitarian response plan | cluster | en,UKR,2018,186909122,186909122
-OMRT18,5873,2018-01-01,2018-12-31,Mauritania  Plan de Travail Humanitaire 2018,sector | fr | Other,MRT,2018,116000000,116000000
+OMRT18,5873,2018-01-01,2018-12-31,Mauritania Plan de Travail Humanitaire 2018,sector | fr | Other,MRT,2018,116000000,116000000
 HMLI18,5564,2018-01-01,2018-12-31,Mali Plan de Réponse Humanitaire 2018,cluster | fr | Humanitarian response plan,MLI,2018,247073801,329565482
 HPSE18,5717,2018-01-01,2018-12-31,Occupied Palestinian Territory Humanitarian Response Strategy 2018,cluster | en | Humanitarian response plan,PSE,2018,539721755,539721755
 OPAK18,6580,2018-01-01,2018-12-31,Pakistan Transition Plan: Humanitarian Component 2018,cluster | en | Other,PAK,2018,123004259,123004259
 HAFG18,5562,2018-01-01,2018-12-31,Afghanistan Humanitarian Response Plan 2018,Humanitarian response plan | cluster | en,AFG,2018,598923998,598923998
 OPRK18,540,2018-01-01,2018-12-31,DPR Korea Needs and Priorities 2018,sector | en | Other,PRK,2018,111217000,111217000
-HNGA18,5688,2018-01-01,2018-12-31,Nigeria Humanitarian Response Plan 2018,sector | en | Humanitarian response plan,|  |  | NGA,2018,1047768587,1047768587
+HNGA18,5688,2018-01-01,2018-12-31,Nigeria Humanitarian Response Plan 2018,sector | en | Humanitarian response plan,| | | NGA,2018,1047768587,1047768587
 HSOM18,5690,2018-01-01,2018-12-31,Somalia Humanitarian Response Plan 2018,cluster | en | Humanitarian response plan,SOM,2018,1542514570,1542514570
 FDMA17,1112,2017-09-28,2017-12-29,Dominica Hurricane Maria Flash Appeal 2017,sector | en | Flash appeal,DMA,2017,31116613,31116613
 OCUB17,1111,2017-09-18,2017-12-31,Cuba Plan of Action 2017,sector | es | Other,CUB,2017,60572174,55572174
@@ -414,8 +414,8 @@ OPRK17,1105,2017-01-01,2017-12-31,DPR Korea Needs and Priorities 2017,sector | e
 HNGA17,430,2017-01-01,2017-12-31,Nigeria Humanitarian Response Plan 2017,sector | en | Humanitarian response plan,NGA,2017,1054431494,1054431494
 HMLI17,1153,2017-01-01,2017-12-31,Mali Plan de Réponse Humanitaire 2017,cluster | fr | Humanitarian response plan,MLI,2017,293098319,304734494
 HPAK17,1117,2017-01-01,2017-12-31,Pakistan Humanitarian Strategic Plan 2017,Other | sector | en,PAK,2017,339403724,339403724
-HAFG17,526,2017-01-01,2017-12-31,Afghanistan Humanitarian Response Plan 2017,cluster | en | Humanitarian response plan,AFG |  |  |  |  |  |  |  |,2017,409413812,409413812
-HPSE17,1140,2017-01-01,2017-12-31,Occupied Palestinian Territory Humanitarian Response Plan 2017,cluster | en | Humanitarian response plan,PSE |  |,2017,551126643,551876643
+HAFG17,526,2017-01-01,2017-12-31,Afghanistan Humanitarian Response Plan 2017,cluster | en | Humanitarian response plan,AFG | | | | | | | |,2017,409413812,409413812
+HPSE17,1140,2017-01-01,2017-12-31,Occupied Palestinian Territory Humanitarian Response Plan 2017,cluster | en | Humanitarian response plan,PSE | |,2017,551126643,551876643
 HCAF17,1034,2017-01-01,2017-12-31,République Centrafricaine Plan de Réponse Humanitaire 2017,Humanitarian response plan | cluster | fr,CAF,2017,497300000,497300000
 HMMR17,1103,2017-01-01,2017-12-31,Myanmar Humanitarian Response Plan 2017,Humanitarian response plan | cluster | en,MMR,2017,150300000,150300000
 HIRQ17,1106,2017-01-01,2017-12-31,Iraq Humanitarian Response Plan 2017,en | Humanitarian response plan | cluster,IRQ,2017,984647064,984647064
@@ -625,7 +625,7 @@ ONPL10,348,2010-01-01,2010-12-31,Nepal Humanitarian Transition Appeal 2010,Other
 CYEM10,223,2010-01-01,2010-12-31,Yemen Humanitarian Response Plan 2010,Consolidated appeals process,YEM,2010,180596567,186121370
 CKEN10,912,2010-01-01,2010-12-31,Kenya Emergency Humanitarian Response Plan 2010,Consolidated appeals process,KEN,2010,508546127,603544553
 FSLV0910,5176,2009-11-01,2010-05-31,El Salvador Flash Appeal (Revised) (November 2009 - May 2010),Flash appeal,SLV,2010,13064447,14457401
-FPHL0910,349,2009-10-03,2010-03-31,Philippines Flash Appeal  (Revised) (October 2009 - March 2010),Flash appeal,PHL,2009,74021809,143774080
+FPHL0910,349,2009-10-03,2010-03-31,Philippines Flash Appeal (Revised) (October 2009 - March 2010),Flash appeal,PHL,2009,74021809,143774080
 FIDN09,143,2009-10-01,2009-12-31,Indonesia West Sumatra Earthquake Humanitarian Response Plan 2009,Flash appeal,IDN,2009,38031101,38031101
 FLAO0910,470,2009-10-01,2010-04-30,Lao PDR Flash Appeal (Revised) (October 2009 - April 2010),Flash appeal,LAO,2009,10153872,12808836
 FBFA0910,315,2009-09-10,2010-03-09,Burkina Faso Flash Appeal (September 2009 - February 2010),Flash appeal,BFA,2009,18449092,18449092
@@ -754,14 +754,14 @@ CXGLR06,678,2006-01-01,2006-12-31,Great Lakes Region 2006,Consolidated appeals p
 R0506,91,2005-11-01,2006-05-31,West and Central Africa Region Cholera 2005,Regional response plan,,2005,3241637,3241637
 R0506,773,2005-10-11,2006-04-10,South Asia Earthquake 2005,Regional response plan,,2005,311876000,561321321
 CNPL0506,78,2005-10-01,2006-12-31,Nepal 2005-2006,Consolidated appeals process,NPL,2006,64506025,67588618
-FGTM0506,116,2005-10-01,2006-03-31,Guatemala  2005,Flash appeal,GTM,2005,24670000,31860000
+FGTM0506,116,2005-10-01,2006-03-31,Guatemala 2005,Flash appeal,GTM,2005,24670000,31860000
 OSLV05,176,2005-10-01,2005-12-31,El Salvador Joint UN Agency Appeal 2005,Other,SLV,2005,8471913,13704547
-FMWI0506,62,2005-09-01,2006-03-31,Malawi  2005,Flash appeal,MWI,2005,87760869,73827747
-FNER05,53,2005-06-01,2005-09-30,Niger  2005,Flash appeal,NER,2005,16191000,81393876
-FBEN05,772,2005-05-01,2005-10-31,Benin  2005,Flash appeal,BEN,2005,5951780,5891780
-FDJI05,115,2005-04-01,2005-10-31,Djibouti Drought  2005,Flash appeal,DJI,2005,7494198,7494198
-FAGO05,675,2005-04-01,2005-06-30,Angola Marburg VHF  2005,Flash appeal,AGO,2005,3556000,4027000
-FGUY05,61,2005-02-01,2005-08-01,Guyana  2005,Flash appeal,GUY,2005,2975000,2562392
+FMWI0506,62,2005-09-01,2006-03-31,Malawi 2005,Flash appeal,MWI,2005,87760869,73827747
+FNER05,53,2005-06-01,2005-09-30,Niger 2005,Flash appeal,NER,2005,16191000,81393876
+FBEN05,772,2005-05-01,2005-10-31,Benin 2005,Flash appeal,BEN,2005,5951780,5891780
+FDJI05,115,2005-04-01,2005-10-31,Djibouti Drought 2005,Flash appeal,DJI,2005,7494198,7494198
+FAGO05,675,2005-04-01,2005-06-30,Angola Marburg VHF 2005,Flash appeal,AGO,2005,3556000,4027000
+FGUY05,61,2005-02-01,2005-08-01,Guyana 2005,Flash appeal,GUY,2005,2975000,2562392
 CCIV05,38,2005-01-01,2005-12-31,Cote d'Ivoire 2005,Consolidated appeals process,CIV,2005,34245916,36431798
 CUGA05,289,2005-01-01,2005-12-31,Uganda 2005,Consolidated appeals process,UGA,2005,157686167,188777892
 CRUS05,761,2005-01-01,2005-12-31,Chechnya and Neighbouring Republics (RF) 2005,Consolidated appeals process,RUS,2005,59444073,67771622
@@ -777,16 +777,16 @@ CBDI05,888,2005-01-01,2005-12-31,Burundi 2005,Consolidated appeals process,BDI,2
 CCOD05,709,2005-01-01,2005-12-31,Democratic Republic of the Congo 2005,Consolidated appeals process,COD,2005,185394640,219757245
 CTCD05,840,2005-01-01,2005-12-31,Chad 2005,Consolidated appeals process,TCD,2005,182691840,227333619
 R05,673,2005-01-01,2005-12-31,Great Lakes Region 2005,Regional response plan,,2005,103195070,114527238
-R05,52,2005-01-01,2005-06-30,Indian Ocean Earthquake-Tsunami  2005,Regional response plan,,2005,978180467,1409095486
-FPHL0405,173,2004-12-15,2005-03-15,Philippines  2004,Flash appeal,PHL,2004,6395635,6395635
-FBOL0405,291,2004-11-01,2005-05-31,Bolivia  2004,Flash appeal,BOL,2004,1809217,1809217
-FHTI0405,222,2004-10-01,2005-03-31,Haiti Floods  2004,Flash appeal,HTI,2004,31983516,37363304
+R05,52,2005-01-01,2005-06-30,Indian Ocean Earthquake-Tsunami 2005,Regional response plan,,2005,978180467,1409095486
+FPHL0405,173,2004-12-15,2005-03-15,Philippines 2004,Flash appeal,PHL,2004,6395635,6395635
+FBOL0405,291,2004-11-01,2005-05-31,Bolivia 2004,Flash appeal,BOL,2004,1809217,1809217
+FHTI0405,222,2004-10-01,2005-03-31,Haiti Floods 2004,Flash appeal,HTI,2004,31983516,37363304
 OAFG04,383,2004-09-01,2004-12-31,Afghanistan UN-Government Drought Appeal 2004,Other,AFG,2004,72841021,72841021
-FGRD0405,161,2004-09-01,2005-03-31,Grenada  2004,Flash appeal,GRD,2004,27640760,27640760
-FBGD0405,708,2004-08-01,2005-01-31,Bangladesh  2004,Flash appeal,BGD,2004,210077952,209905410
-FKEN04,886,2004-07-01,2004-12-31,Kenya  2004,Flash appeal,KEN,2004,96936756,83249327
-FMDG04,839,2004-03-19,2004-06-19,Madagascar  2004,Flash appeal,MDG,2004,8984679,15724318
-FHTI04,819,2004-03-01,2004-08-31,Haiti  2004,Flash appeal,HTI,2004,35074862,35797594
+FGRD0405,161,2004-09-01,2005-03-31,Grenada 2004,Flash appeal,GRD,2004,27640760,27640760
+FBGD0405,708,2004-08-01,2005-01-31,Bangladesh 2004,Flash appeal,BGD,2004,210077952,209905410
+FKEN04,886,2004-07-01,2004-12-31,Kenya 2004,Flash appeal,KEN,2004,96936756,83249327
+FMDG04,839,2004-03-19,2004-06-19,Madagascar 2004,Flash appeal,MDG,2004,8984679,15724318
+FHTI04,819,2004-03-01,2004-08-31,Haiti 2004,Flash appeal,HTI,2004,35074862,35797594
 CTCD04,160,2004-03-01,2004-12-31,Chad 2004,Consolidated appeals process,TCD,2004,30059635,165478646
 CTJK04,105,2004-01-01,2004-12-31,Tajikistan 2004,Consolidated appeals process,TJK,2004,53669456,39161698
 CUGA04,284,2004-01-01,2004-12-31,Uganda 2004,Consolidated appeals process,UGA,2004,127901055,142880013
@@ -818,7 +818,7 @@ CLSO0304,235,2003-07-01,2004-06-30,Humanitarian Crisis in Southern Africa - LESO
 CMOZ0304,427,2003-07-01,2004-06-30,Humanitarian Crisis in Southern Africa - MOZAMBIQUE (July 2003 - June 2004),Consolidated inter-agency appeal,MOZ,2003,21549761,20060140
 R0304,236,2003-07-01,2004-06-30,Humanitarian Crisis in Southern Africa - REGION (July 2003 - June 2004),Regional response plan,,2003,327779739,464103581
 RCIV03,702,2003-04-01,2003-12-31,Cote d'Ivoire + 5 2003,Regional response plan,CIV,2003,83862481,90891786
-FCAF03,753,2003-04-01,2003-06-30,Central African Republic  2003,Flash appeal,CAF,2003,9100864,9100864
+FCAF03,753,2003-04-01,2003-06-30,Central African Republic 2003,Flash appeal,CAF,2003,9100864,9100864
 FIRQ03,926,2003-04-01,2003-12-31,Iraq Crisis 2003,Flash appeal,IRQ,2003,2218417415,2223143026
 OHTI03,216,2003-03-01,2003-08-31,Haiti (PIR) 2003,Other,HTI,2003,14400757,14400757
 CTJK03,698,2003-01-01,2003-12-31,Tajikistan 2003,Consolidated inter-agency appeal,TJK,2003,62006309,61968685

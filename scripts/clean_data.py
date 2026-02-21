@@ -46,6 +46,33 @@ NUMERIC_COLUMNS = {
     ],
 }
 
+KEEP_COLUMNS = {
+    "global_admin_boundaries_metadata_latest.csv": [
+        "country_name",
+        "country_iso2",
+        "country_iso3",
+        "version",
+        "admin_level_full",
+        "admin_level_max",
+        "admin_1_name",
+        "admin_2_name",
+        "admin_3_name",
+        "admin_4_name",
+        "admin_5_name",
+        "admin_1_count",
+        "admin_2_count",
+        "admin_3_count",
+        "admin_4_count",
+        "admin_5_count",
+        "date_updated",
+        "date_valid_on",
+        "update_frequency",
+        "update_type",
+        "source",
+        "contributor",
+    ]
+}
+
 
 def clean_numeric(value: str) -> str:
     value = value.strip()
@@ -60,6 +87,11 @@ def clean_numeric(value: str) -> str:
         return str(int(dec))
     # Keep float-like values without scientific notation when possible
     return format(dec.normalize(), "f").rstrip("0").rstrip(".")
+
+
+def clean_text(value: str) -> str:
+    # Collapse multiline and repeated whitespace into single spaces.
+    return " ".join(value.strip().split())
 
 
 def is_metadata_row(row: dict[str, str], headers: list[str]) -> bool:
@@ -79,6 +111,7 @@ def clean_file(path: Path) -> tuple[int, int, int]:
         headers = reader.fieldnames or []
         rows = list(reader)
 
+    selected_headers = KEEP_COLUMNS.get(path.name, headers)
     cleaned_rows = []
     dropped_metadata = 0
     dropped_empty = 0
@@ -93,17 +126,19 @@ def clean_file(path: Path) -> tuple[int, int, int]:
             continue
 
         cleaned = {}
-        for h in headers:
+        for h in selected_headers:
             value = str(row.get(h, "")).strip()
             if h in numeric_cols:
                 value = clean_numeric(value)
+            else:
+                value = clean_text(value)
             cleaned[h] = value
         cleaned_rows.append(cleaned)
 
     out_path = CLEAN_DIR / path.name
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with out_path.open("w", encoding="utf-8", newline="") as outfile:
-        writer = csv.DictWriter(outfile, fieldnames=headers)
+        writer = csv.DictWriter(outfile, fieldnames=selected_headers)
         writer.writeheader()
         writer.writerows(cleaned_rows)
 
@@ -115,10 +150,14 @@ def main() -> None:
         raise SystemExit(f"Data directory not found: {RAW_DIR}")
 
     files = sorted([p for p in RAW_DIR.glob("*.csv") if p.is_file()])
+    source_dir = RAW_DIR
+    if not files and CLEAN_DIR.exists():
+        files = sorted([p for p in CLEAN_DIR.glob("*.csv") if p.is_file()])
+        source_dir = CLEAN_DIR
     if not files:
         raise SystemExit("No CSV files found in data/")
 
-    print(f"Cleaning {len(files)} files into {CLEAN_DIR}")
+    print(f"Cleaning {len(files)} files from {source_dir} into {CLEAN_DIR}")
     for file_path in files:
         total, metadata, empty = clean_file(file_path)
         print(
