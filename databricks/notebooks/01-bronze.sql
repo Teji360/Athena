@@ -51,6 +51,22 @@ SELECT
 FROM workspace.default.global_admin_boundaries_metadata_latest
 WHERE TRIM(country_iso3) RLIKE '^[A-Z]{3}$';
 
+CREATE OR REFRESH MATERIALIZED VIEW bronze_demographic AS
+SELECT
+  TRIM(iso3) AS iso3,
+  CAST(m49_code AS INT) AS m49_code,
+  TRIM(region_country_area) AS region_country_area,
+  CAST(year AS INT) AS year,
+  TRIM(series) AS series,
+  CAST(value AS DOUBLE) AS value,
+  TRIM(footnotes) AS footnotes
+FROM workspace.default.demographic_data_iso
+WHERE TRIM(iso3) RLIKE '^[A-Z]{3}$'
+  AND TRIM(region_country_area) IS NOT NULL
+  AND TRIM(region_country_area) <> ''
+  AND CAST(year AS INT) IS NOT NULL
+  AND CAST(value AS DOUBLE) IS NOT NULL;
+
 -- If your source table name is different, update this FROM target.
 CREATE OR REFRESH MATERIALIZED VIEW bronze_hrp_raw AS
 SELECT
@@ -65,3 +81,34 @@ SELECT
   CAST(origRequirements AS DOUBLE) AS orig_requirements_usd,
   CAST(revisedRequirements AS DOUBLE) AS revised_requirements_usd
 FROM workspace.default.humanitarian_response_plans;
+
+CREATE OR REFRESH MATERIALIZED VIEW bronze_country_dim AS
+WITH candidates AS (
+  SELECT iso3, country_name
+  FROM bronze_boundaries_meta
+  UNION ALL
+  SELECT iso3, country_name
+  FROM bronze_flood
+  UNION ALL
+  SELECT iso3, NULLIF(TRIM(description), '') AS country_name
+  FROM bronze_hno
+  UNION ALL
+  SELECT iso3, NULL AS country_name
+  FROM bronze_fts
+  UNION ALL
+  SELECT iso3, region_country_area AS country_name
+  FROM bronze_demographic
+  UNION ALL
+  SELECT TRIM(x.iso3) AS iso3, NULL AS country_name
+  FROM bronze_hrp_raw h
+  LATERAL VIEW explode(split(COALESCE(h.locations, ''), '\\|')) x AS iso3
+)
+SELECT
+  iso3,
+  COALESCE(
+    MAX(CASE WHEN country_name IS NOT NULL AND country_name <> '' THEN country_name END),
+    iso3
+  ) AS country_name
+FROM candidates
+WHERE iso3 RLIKE '^[A-Z]{3}$'
+GROUP BY iso3;

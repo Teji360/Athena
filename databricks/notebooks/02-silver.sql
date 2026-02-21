@@ -1,16 +1,7 @@
 CREATE OR REFRESH MATERIALIZED VIEW silver_country_spine AS
-SELECT DISTINCT iso3 FROM bronze_fts WHERE iso3 RLIKE '^[A-Z]{3}$'
-UNION
-SELECT DISTINCT iso3 FROM bronze_hno WHERE iso3 RLIKE '^[A-Z]{3}$'
-UNION
-SELECT DISTINCT iso3 FROM bronze_flood WHERE iso3 RLIKE '^[A-Z]{3}$'
-UNION
-SELECT DISTINCT iso3 FROM bronze_boundaries_meta WHERE iso3 RLIKE '^[A-Z]{3}$'
-UNION
-SELECT DISTINCT TRIM(x.iso3) AS iso3
-FROM bronze_hrp_raw h
-LATERAL VIEW explode(split(COALESCE(h.locations, ''), '\\|')) x AS iso3
-WHERE TRIM(x.iso3) RLIKE '^[A-Z]{3}$';
+SELECT DISTINCT iso3
+FROM bronze_country_dim
+WHERE iso3 RLIKE '^[A-Z]{3}$';
 
 CREATE OR REFRESH MATERIALIZED VIEW silver_fts AS
 WITH year_coverage AS (
@@ -70,6 +61,30 @@ FROM exploded
 WHERE iso3 RLIKE '^[A-Z]{3}$'
 GROUP BY iso3;
 
+CREATE OR REFRESH MATERIALIZED VIEW silver_demographic_latest AS
+WITH ranked AS (
+  SELECT
+    iso3,
+    series,
+    year,
+    value,
+    ROW_NUMBER() OVER (
+      PARTITION BY iso3, series
+      ORDER BY year DESC
+    ) AS rn
+  FROM bronze_demographic
+)
+SELECT
+  iso3,
+  MAX(CASE WHEN series = 'Population annual rate of increase (percent)' THEN value END) AS population_growth_pct,
+  MAX(CASE WHEN series = 'Total fertility rate (children per women)' THEN value END) AS fertility_rate,
+  MAX(CASE WHEN series = 'Under five mortality rate for both sexes (per 1,000 live births)' THEN value END) AS under5_mortality_per_1000,
+  MAX(CASE WHEN series = 'Maternal mortality ratio (deaths per 100,000 population)' THEN value END) AS maternal_mortality_per_100k,
+  MAX(CASE WHEN series = 'Life expectancy at birth for both sexes (years)' THEN value END) AS life_expectancy_years
+FROM ranked
+WHERE rn = 1
+GROUP BY iso3;
+
 CREATE OR REFRESH MATERIALIZED VIEW silver_country_daily AS
 SELECT
   s.iso3,
@@ -84,7 +99,12 @@ SELECT
   fl.flood_pop_exposed,
   fl.flood_area_pct,
   hr.revised_requirements_usd,
-  COALESCE(b.country_name, NULL) AS country_name,
+  d.population_growth_pct,
+  d.fertility_rate,
+  d.under5_mortality_per_1000,
+  d.maternal_mortality_per_100k,
+  d.life_expectancy_years,
+  COALESCE(c.country_name, NULL) AS country_name,
   b.admin_level_max,
   b.boundary_date_updated,
   CURRENT_DATE() AS as_of_date
@@ -93,4 +113,6 @@ LEFT JOIN silver_fts f ON s.iso3 = f.iso3
 LEFT JOIN silver_hno h ON s.iso3 = h.iso3
 LEFT JOIN silver_flood fl ON s.iso3 = fl.iso3
 LEFT JOIN silver_hrp hr ON s.iso3 = hr.iso3
+LEFT JOIN silver_demographic_latest d ON s.iso3 = d.iso3
+LEFT JOIN bronze_country_dim c ON s.iso3 = c.iso3
 LEFT JOIN bronze_boundaries_meta b ON s.iso3 = b.iso3;

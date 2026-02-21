@@ -1,0 +1,149 @@
+iso3,country_name,as_of_date,year,status,risk_score,requirements_usd,funding_usd,funding_gap_ratio,percent_funded_avg,in_need,flood_pop_exposed,flood_area_pct,recommended_actions,computed_at
+HND,Honduras,2026-02-21,,green,0.009068761894938979,,,,,,1983986,3.8384539260673995,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+LBR,Liberia,2026-02-21,,green,0.008886049784049213,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+COD,Democratic Republic of the Congo,2026-02-21,,red,0.25294526551377805,,,,,79037528,23068393,1.2421095111772347,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+VUT,Vanuatu,2026-02-21,,green,0.00005208227475415468,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+SOM,Somalia,2026-02-21,,red,0.33726422040149956,,,,,35351232,6684829,0.9331923195752773,Escalate monitoring and pre-position targeted resources.,2026-02-21 06:59:30
+CMR,Cameroon,2026-02-21,,green,0.03861056304233672,,,,,2900000,19011820,1.3611874214236421,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+SRB,,2026-02-21,,green,0.0009249817368371928,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+LKA,Sri Lanka,2026-02-21,,green,0.00779945655680863,,,,,,10102354,2.785883908398327,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+SEN,Senegal,2026-02-21,,green,0.0034331682662373676,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+ZWE,Zimbabwe,2026-02-21,,green,0.011059761130059317,,,,,,876689,0.655525165643895,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+KGZ,Kyrgyzstan,2026-02-21,,green,0.00015048935532483416,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+SLE,Sierra Leone,2026-02-21,,green,0.007634003547535255,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+FJI,,2026-02-21,,green,0.00005334205706077677,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+ECU,Ecuador,2026-02-21,,green,0.016226615227103832,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+TGO,Togo,2026-02-21,,green,0.004232182167403192,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+UZB,,2026-02-21,,green,0.0017073144518176008,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+NIC,Nicaragua,2026-02-21,,green,0.000078131189732974,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+BOL,Bolivia (Plurinational State of),2026-02-21,,green,0.013981168240113907,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+BEN,Benin,2026-02-21,,green,0.0038984168644167006,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+PRY,,2026-02-21,,green,0.014957291481559774,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+TJK,,2026-02-21,,green,0.0022041459070892048,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+IRQ,Iraq,2026-02-21,,yellow,0.10376247237436807,,,,,,18659778,1.8812361871840353,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+VEN,Venezuela (Bolivarian Republic of),2026-02-21,,green,0.09735329899730599,,,,,7900000,8196650,3.0674104966205515,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+SVN,,2026-02-21,,green,0.0009249817368371928,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+DOM,Dominican Republic,2026-02-21,,green,0.014982932126645252,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+PHL,Philippines,2026-02-21,,green,0.007983089080379917,,,,,,133482147,2.3378825010855664,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+BDI,Burundi,2026-02-21,,green,0.010326624251001027,,,,,,687131,1.7823197220751195,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+SYR,Syrian Arab Republic,2026-02-21,,red,0.262713724875977,,,,,16500000,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+SSD,South Sudan,2026-02-21,,red,0.34570284690677144,,,,,51871258,18413066,4.873730214716376,Escalate monitoring and pre-position targeted resources.,2026-02-21 06:59:30
+UKR,Ukraine,2026-02-21,,red,0.32576270740516655,,,,,48664624,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+VCT,Saint Vincent and the Grenadines,2026-02-21,,green,0.000011106451189468953,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+GHA,Ghana,2026-02-21,,green,0.0027779842043111646,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+AFG,Afghanistan,2026-02-21,,red,0.339087381959802,,,,,103436970,2475882,0.9890602509512542,Escalate monitoring and pre-position targeted resources.,2026-02-21 06:59:30
+MEX,Mexico,2026-02-21,,green,0.014957291481559774,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+IRN,Iran (Islamic Republic of),2026-02-21,,green,0.004769125941199281,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+NER,Niger,2026-02-21,,green,0.04574526948608539,,,,,2600000,9083620,1.6939534428217045,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+RWA,,2026-02-21,,green,0.007000812902893114,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+GUY,,2026-02-21,,green,0.014960829744228715,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+YEM,Yemen,2026-02-21,,red,0.22622617534383288,,,,,23100000,4499244,2.753745424479444,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+COG,Congo,2026-02-21,,green,0.005546841353969294,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+GTM,Guatemala,2026-02-21,,green,0.0010013663154144461,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+LBY,Libya,2026-02-21,,green,0.005713710402081526,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+ETH,Ethiopia,2026-02-21,,green,0.03865576016524333,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+MDA,Republic of Moldova,2026-02-21,,green,0.007244327264619214,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+HTI,Haiti,2026-02-21,,red,0.3187262163810728,,,,,31989741,7299095,3.2329347153636308,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+BGD,Bangladesh,2026-02-21,,green,0.03352094330175951,,,,,,425758105,9.9260184684741,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+TZA,,2026-02-21,,green,0.010698485914351255,,,,,,13156828,1.496210547516015,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+CRI,Costa Rica,2026-02-21,,green,0.014957291481559774,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+SDN,Sudan,2026-02-21,,red,0.2540960330499992,,,,,33699770,24465946,1.062020363877266,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+CAF,Central African Republic,2026-02-21,,red,0.3133162754488143,,,,,11655715,1839194,0.5128016313314179,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+JOR,,2026-02-21,,green,0.09619389221046472,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+MOZ,Mozambique,2026-02-21,,yellow,0.14350450120437575,,,,,15719515,20324670,2.4156425711412624,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+IDN,Indonesia,2026-02-21,,green,0.0005452422311358706,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+URY,,2026-02-21,,green,0.014957291481559774,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+KEN,Kenya,2026-02-21,,green,0.01769474066763719,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+TKM,,2026-02-21,,green,0.0017073144518176008,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+PSE,State of Palestine,2026-02-21,,green,0.032302770194638945,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+CHL,Chile,2026-02-21,,green,0.014957291481559774,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+EGY,Egypt,2026-02-21,,green,0.09473869156296055,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+PER,Peru,2026-02-21,,green,0.015064029549384456,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+MDG,,2026-02-21,,green,0.0054338045818488785,,,,,,23298695,2.1510545056523847,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+TLS,Timor-Leste,2026-02-21,,green,0.0003732806579548492,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+TUR,Türkiye,2026-02-21,,green,0.09792856515693156,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+CUW,,2026-02-21,,green,0.014957291481559774,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+PAK,Pakistan,2026-02-21,,green,0.018073021249344397,,,,,,135672973,2.4547735788561456,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+POL,Poland,2026-02-21,,green,0.007244327264619214,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+AGO,Angola,2026-02-21,,green,0.00942814978163137,,,,,,9467371,0.7350248170519192,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+BGR,Bulgaria,2026-02-21,,green,0.004772704173767916,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+MNG,Mongolia,2026-02-21,,green,0.00005103985380490625,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+GRD,Grenada,2026-02-21,,green,0.00004896709290732204,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+RUS,,2026-02-21,,green,0.0005777258125275267,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+GRC,,2026-02-21,,green,0.0009249817368371928,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+MMR,Myanmar,2026-02-21,,red,0.31875671269408296,,,,,68423330,86324315,3.64658938328602,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+CIV,Côte d'Ivoire,2026-02-21,,green,0.0038057537716072983,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+VNM,Viet Nam,2026-02-21,,green,0.01539790842902544,,,,,,149353750,7.58496242528185,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+COL,Colombia,2026-02-21,,green,0.06216531118011624,,,,,6900000,17307490,2.032245942891433,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+CUB,Cuba,2026-02-21,,green,0.00021789163032502314,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+LAO,Lao People's Democratic Republic,2026-02-21,,green,0.0032454138025607075,,,,,,6102912,1.606996466807716,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+LBN,Lebanon,2026-02-21,,green,0.09886351230415696,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+NPL,Nepal,2026-02-21,,green,0.003360075133955414,,,,,,11513430,0.9407490902542455,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+SLB,,2026-02-21,,green,6.90421814644563e-7,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+AIA,,2026-02-21,,green,0.000037358028445228144,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+UGA,Uganda,2026-02-21,,green,0.022595529778243834,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+MWI,Malawi,2026-02-21,,green,0.003546001562864535,,,,,,6396633,1.5084897933936248,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+CZE,,2026-02-21,,green,0.004772704173767916,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+ERI,Eritrea,2026-02-21,,green,0.0010877612646484857,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+GIN,Guinea,2026-02-21,,green,0.006170108179233332,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+BFA,Burkina Faso,2026-02-21,,green,0.06897964140582104,,,,,4400000,6664205,0.790723464129252,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+SLV,El Salvador,2026-02-21,,green,0.0006232335414091977,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+GMB,Gambia,2026-02-21,,green,0.0007974466726442981,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+TCD,Chad,2026-02-21,,red,0.3017937140777315,,,,,19232334,18000535,3.364463776653746,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+PAN,Panama,2026-02-21,,green,0.014957291481559774,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+TTO,,2026-02-21,,green,0.014957291481559774,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+ARG,,2026-02-21,,green,0.014957291481559774,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+ZMB,Zambia,2026-02-21,,green,0.009768055600650445,,,,,,3665643,1.447812913198482,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+TUN,Tunisia,2026-02-21,,green,0.0004642159204627329,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+ABW,,2026-02-21,,green,0.014957291481559774,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+DJI,,2026-02-21,,green,0.002585989589261521,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+MRT,Mauritania,2026-02-21,,green,0.004107344503912871,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+LSO,,2026-02-21,,green,0.0012485755827107928,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+NAM,Namibia,2026-02-21,,green,0.0025379829872234022,,,,,,276303,1.261486503542399,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+PRK,Democratic People's Republic of Korea,2026-02-21,,green,0.011932194568918761,,,,,,14909277,3.647024112148302,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+BRA,,2026-02-21,,green,0.014957291481559774,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+MLI,Mali,2026-02-21,,green,0.08164463129140691,,,,,5100000,23206181,3.23574470104464,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+NGA,Nigeria,2026-02-21,,green,0.06605749463627188,,,,,34676092,93279705,2.7416124851679093,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+THA,Thailand,2026-02-21,,green,0.00821347435315562,,,,,,50355691,4.10673717657781,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+KHM,Cambodia,2026-02-21,,green,0.020719288085223705,,,,,,36033486,10.359644042611853,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+SWZ,Eswatini,2026-02-21,,green,0.00004962380970981929,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+KWT,Kuwait,2026-02-21,,green,0,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+COM,Comoros,2026-02-21,,green,0,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+ARM,Armenia,2026-02-21,,green,0,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+OMN,Oman,2026-02-21,,green,0,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+ZAF,South Africa,2026-02-21,,green,0,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+MDV,Maldives,2026-02-21,,green,0,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+AZE,Azerbaijan,2026-02-21,,green,0,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+CPV,Cabo Verde,2026-02-21,,green,0.0004985216810585661,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+MYS,Malaysia,2026-02-21,,green,0,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+DZA,Algeria,2026-02-21,,green,0,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+SVK,Slovakia,2026-02-21,,green,0.007244327264619214,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+JAM,Jamaica,2026-02-21,,green,0,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+GNB,Guinea-Bissau,2026-02-21,,green,0.003105251469828141,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+ESH,Western Sahara,2026-02-21,,green,0,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+BLR,Belarus,2026-02-21,,green,0,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+SAU,Saudi Arabia,2026-02-21,,green,0,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+QAT,Qatar,2026-02-21,,green,0,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+SXM,Sint Maarten (Dutch part),2026-02-21,,green,0.000037358028445228144,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+PNG,Papua New Guinea,2026-02-21,,green,0,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+GEO,Georgia,2026-02-21,,green,0.00015777623285782839,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+BTN,Bhutan,2026-02-21,,green,0,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+HUN,Hungary,2026-02-21,,green,0.007244327264619214,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+MAR,Morocco,2026-02-21,,green,0,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+BLZ,Belize,2026-02-21,,green,0,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+GNQ,Equatorial Guinea,2026-02-21,,green,0,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+ROU,Romania,2026-02-21,,green,0.007244327264619214,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+ARE,United Arab Emirates,2026-02-21,,green,0,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+HRV,,2026-02-21,,green,0.0009249817368371928,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+MKD,,2026-02-21,,green,0.0009249817368371928,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+MAF,,2026-02-21,,green,0.000037358028445228144,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+TCA,,2026-02-21,,green,0.000037358028445228144,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+LTU,,2026-02-21,,green,0.004772704173767916,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+LVA,,2026-02-21,,green,0.004772704173767916,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+BHS,,2026-02-21,,green,0.000037358028445228144,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+EST,,2026-02-21,,green,0.004772704173767916,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+KNA,,2026-02-21,,green,0.000037358028445228144,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+VGB,,2026-02-21,,green,0.000037358028445228144,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+DMA,,2026-02-21,,green,0.0000429671768261052,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+BLM,,2026-02-21,,green,0.000037358028445228144,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30
+ATG,,2026-02-21,,green,0.000037358028445228144,,,,,,,,Maintain baseline support and preparedness.,2026-02-21 06:59:30

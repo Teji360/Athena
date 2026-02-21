@@ -13,6 +13,7 @@ from __future__ import annotations
 import csv
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
+from typing import Iterable
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -44,6 +45,7 @@ NUMERIC_COLUMNS = {
         "admin_4_count",
         "admin_5_count",
     ],
+    "demographic_data.csv": ["m49_code", "year", "value"],
 }
 
 KEEP_COLUMNS = {
@@ -70,7 +72,16 @@ KEEP_COLUMNS = {
         "update_type",
         "source",
         "contributor",
-    ]
+    ],
+    "demographic_data.csv": [
+        "m49_code",
+        "region_country_area",
+        "year",
+        "series",
+        "value",
+        "footnotes",
+        "source",
+    ],
 }
 
 
@@ -105,11 +116,66 @@ def is_empty_row(row: dict[str, str], headers: list[str]) -> bool:
     return all(str(row.get(h, "")).strip() == "" for h in headers)
 
 
+def read_csv_rows(path: Path) -> tuple[list[str], list[dict[str, str]]]:
+    # Some UN files are latin-1 encoded and/or have a title row before the header.
+    encodings: Iterable[str] = ("utf-8-sig", "latin-1")
+    last_error: UnicodeDecodeError | None = None
+
+    for encoding in encodings:
+        try:
+            with path.open("r", encoding=encoding, newline="") as infile:
+                reader = csv.reader(infile)
+                raw_rows = list(reader)
+            break
+        except UnicodeDecodeError as exc:
+            last_error = exc
+    else:
+        raise last_error or RuntimeError(f"Failed reading CSV: {path}")
+
+    if not raw_rows:
+        return [], []
+
+    header_idx = 0
+    if path.name == "demographic_data.csv":
+        # demographic_data.csv has a title row and then the real header on row 2.
+        header_idx = 1 if len(raw_rows) > 1 else 0
+
+    headers = [h.strip() for h in raw_rows[header_idx]]
+    rows: list[dict[str, str]] = []
+    for row in raw_rows[header_idx + 1 :]:
+        if len(row) < len(headers):
+            row = row + [""] * (len(headers) - len(row))
+        record = {headers[i]: str(row[i]) for i in range(len(headers))}
+        rows.append(record)
+
+    if path.name == "demographic_data.csv":
+        rows = [
+            {
+                "m49_code": str(r.get("Region/Country/Area", "")).strip(),
+                "region_country_area": str(r.get("", "")).strip(),
+                "year": str(r.get("Year", "")).strip(),
+                "series": str(r.get("Series", "")).strip(),
+                "value": str(r.get("Value", "")).strip(),
+                "footnotes": str(r.get("Footnotes", "")).strip(),
+                "source": str(r.get("Source", "")).strip(),
+            }
+            for r in rows
+        ]
+        headers = [
+            "m49_code",
+            "region_country_area",
+            "year",
+            "series",
+            "value",
+            "footnotes",
+            "source",
+        ]
+
+    return headers, rows
+
+
 def clean_file(path: Path) -> tuple[int, int, int]:
-    with path.open("r", encoding="utf-8-sig", newline="") as infile:
-        reader = csv.DictReader(infile)
-        headers = reader.fieldnames or []
-        rows = list(reader)
+    headers, rows = read_csv_rows(path)
 
     selected_headers = KEEP_COLUMNS.get(path.name, headers)
     cleaned_rows = []
