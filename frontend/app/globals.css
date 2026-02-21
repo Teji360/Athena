@@ -322,6 +322,51 @@ body {
   background: #223a67;
 }
 
+.ssd-priority-panel {
+  border: 1px solid #334a72;
+  border-radius: 10px;
+  background: #0f1b2f;
+  padding: 8px 10px;
+}
+
+.ssd-priority-title {
+  font-size: 12px;
+  color: #9bb0d2;
+  margin-bottom: 6px;
+}
+
+.layer-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #dce6f6;
+  margin: 4px 0;
+}
+
+.layer-check input {
+  accent-color: #4f79bd;
+}
+
+.ssd-priority-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  padding: 4px 0;
+  border-bottom: 1px solid #223355;
+}
+
+.ssd-priority-row:last-child {
+  border-bottom: 0;
+}
+
+.ssd-priority-error {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #fca5a5;
+}
+
 .ai-panel-header {
   padding: 12px 14px;
   border-bottom: 1px solid #223355;

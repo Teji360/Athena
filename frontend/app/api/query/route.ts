@@ -9,14 +9,26 @@ type AgentIntent =
   | "flood_hotspots"
   | "crisis_hotspots"
   | "stable_countries"
-  | "top_risk_countries";
+  | "top_risk_countries"
+  | "ssd_hunger_hotspots"
+  | "ssd_system_stress";
 
-type CountryResult = {
+type AgentResult = {
   iso3: string;
   country: string | null;
   status: "green" | "yellow" | "red";
   riskScore: number;
   floodPopExposed: number | null;
+  adm1State?: string | null;
+  adm2County?: string | null;
+  hungerGamPct?: number | null;
+  priorityScore?: number | null;
+  healthFacilityCount?: number | null;
+  marketCount?: number | null;
+  idpIndividuals?: number | null;
+  returneesInternal?: number | null;
+  femaleSharePct?: number | null;
+  ethnicSummary?: string | null;
 };
 
 function toNumberOrNull(value: unknown): number | null {
@@ -34,14 +46,28 @@ function readField(row: Record<string, unknown>, named: string, positional: stri
   return row[positional];
 }
 
-function toCountryResult(row: Record<string, unknown>): CountryResult | null {
+function normalizeStatus(value: unknown): "green" | "yellow" | "red" | null {
+  const status = typeof value === "string" ? value.trim().toLowerCase() : "";
+  if (status === "green" || status === "yellow" || status === "red") {
+    return status;
+  }
+  return null;
+}
+
+function toAgentResult(row: Record<string, unknown>): AgentResult | null {
   const iso3Value = readField(row, "iso3", "col_0");
-  const statusValue = readField(row, "status", "col_2");
-  const riskScoreValue = readField(row, "risk_score", "col_3");
+  const statusValue =
+    readField(row, "status", "col_2") ??
+    readField(row, "priority_band", "col_5") ??
+    readField(row, "hunger_status", "col_4");
+  const riskScoreValue =
+    readField(row, "risk_score", "col_3") ??
+    readField(row, "priority_score", "col_6") ??
+    readField(row, "stress_score", "col_11");
   const iso3 = typeof iso3Value === "string" ? iso3Value : "";
-  const status = typeof statusValue === "string" ? statusValue : "";
+  const status = normalizeStatus(statusValue);
   const riskScore = toNumberOrNull(riskScoreValue);
-  if (!iso3 || (status !== "green" && status !== "yellow" && status !== "red") || riskScore == null) {
+  if (!iso3 || status == null || riskScore == null) {
     return null;
   }
   return {
@@ -52,12 +78,44 @@ function toCountryResult(row: Record<string, unknown>): CountryResult | null {
         : null,
     status,
     riskScore,
-    floodPopExposed: toNumberOrNull(readField(row, "flood_pop_exposed", "col_4"))
+    floodPopExposed: toNumberOrNull(readField(row, "flood_pop_exposed", "col_4")),
+    adm1State:
+      typeof readField(row, "adm1_state", "col_1") === "string"
+        ? (readField(row, "adm1_state", "col_1") as string)
+        : null,
+    adm2County:
+      typeof readField(row, "adm2_county", "col_2") === "string"
+        ? (readField(row, "adm2_county", "col_2") as string)
+        : null,
+    hungerGamPct: toNumberOrNull(readField(row, "hunger_gam_pct", "col_3")),
+    priorityScore: toNumberOrNull(readField(row, "priority_score", "col_6")),
+    healthFacilityCount: toNumberOrNull(readField(row, "health_facility_count", "col_7")),
+    marketCount: toNumberOrNull(readField(row, "wfp_market_count", "col_8")),
+    idpIndividuals: toNumberOrNull(readField(row, "idp_individuals_est", "col_9")),
+    returneesInternal: toNumberOrNull(readField(row, "returnees_internal_ind_est", "col_10")),
+    femaleSharePct: toNumberOrNull(readField(row, "female_share_pct", "col_11")),
+    ethnicSummary:
+      typeof readField(row, "ethnic_groups_summary", "col_12") === "string"
+        ? (readField(row, "ethnic_groups_summary", "col_12") as string)
+        : null
   };
 }
 
 function detectIntent(question: string): AgentIntent {
   const q = question.toLowerCase();
+  const asksSouthSudan = /(south sudan|ssd|juba|equatoria|jonglei|upper nile|unity|warrap)/.test(q);
+  const asksHunger = /(hunger|nutrition|malnutrition|gam|food insecurity|county|state|substate|sub-state)/.test(q);
+  const asksSystem = /(intercorrelat|interconnect|complex|dynamic|system|drivers|multi-factor|why)/.test(q);
+
+  if (asksSouthSudan && asksHunger) {
+    return "ssd_hunger_hotspots";
+  }
+  if (asksSouthSudan && asksSystem) {
+    return "ssd_system_stress";
+  }
+  if (asksSouthSudan) {
+    return "ssd_system_stress";
+  }
   if (/(flood|flooding|inundation|water)/.test(q)) {
     return "flood_hotspots";
   }
@@ -70,7 +128,12 @@ function detectIntent(question: string): AgentIntent {
   return "top_risk_countries";
 }
 
-function buildSql(intent: AgentIntent, table: string, limit: number): string {
+function buildSql(
+  intent: AgentIntent,
+  tables: { risk: string; ssdHunger: string; ssdMass: string },
+  limit: number
+): string {
+  const table = tables.risk;
   const baseSelect = `
 SELECT
   iso3,
@@ -80,6 +143,60 @@ SELECT
   flood_pop_exposed
 FROM ${table}
   `;
+  if (intent === "ssd_hunger_hotspots") {
+    return `
+SELECT
+  h.iso3,
+  h.adm1_state,
+  h.adm2_county,
+  h.hunger_gam_pct,
+  h.hunger_status,
+  h.priority_band,
+  h.priority_score,
+  m.health_facility_count,
+  m.wfp_market_count,
+  m.idp_individuals_est,
+  m.returnees_internal_ind_est,
+  m.female_share_pct,
+  m.ethnic_groups_summary
+FROM ${tables.ssdHunger} h
+LEFT JOIN ${tables.ssdMass} m
+  ON h.adm2_pcode = m.county_pcode
+ AND m.record_level = 'county'
+WHERE h.iso3 = 'SSD'
+ORDER BY h.priority_score DESC
+LIMIT ${limit}
+`;
+  }
+  if (intent === "ssd_system_stress") {
+    return `
+SELECT
+  h.iso3,
+  h.adm1_state,
+  h.adm2_county,
+  h.hunger_gam_pct,
+  h.hunger_status,
+  h.priority_band,
+  h.priority_score,
+  m.health_facility_count,
+  m.wfp_market_count,
+  m.idp_individuals_est,
+  m.returnees_internal_ind_est,
+  (
+    0.50 * COALESCE(h.priority_score, 0.0) +
+    0.25 * LEAST(COALESCE(m.idp_individuals_est, 0.0) / 50000.0, 1.0) +
+    0.15 * CASE WHEN COALESCE(m.health_facility_count, 0) = 0 THEN 1.0 ELSE LEAST(20.0 / m.health_facility_count, 1.0) END +
+    0.10 * CASE WHEN COALESCE(m.wfp_market_count, 0) = 0 THEN 1.0 ELSE LEAST(2.0 / m.wfp_market_count, 1.0) END
+  ) AS stress_score
+FROM ${tables.ssdHunger} h
+LEFT JOIN ${tables.ssdMass} m
+  ON h.adm2_pcode = m.county_pcode
+ AND m.record_level = 'county'
+WHERE h.iso3 = 'SSD'
+ORDER BY stress_score DESC
+LIMIT ${limit}
+`;
+  }
   if (intent === "flood_hotspots") {
     return `${baseSelect}
 WHERE flood_pop_exposed IS NOT NULL
@@ -107,21 +224,37 @@ LIMIT ${limit}
 `;
 }
 
-function buildExplanation(intent: AgentIntent, countries: CountryResult[], question: string): string {
+function buildExplanation(intent: AgentIntent, countries: AgentResult[], question: string): string {
   if (countries.length === 0) {
     return "I queried the live Databricks serving table, but no rows matched that request.";
   }
   const top = countries.slice(0, 5);
-  const lines = top.map(
-    (c) =>
-      `- ${c.country ?? c.iso3} (${c.iso3}): ${c.status.toUpperCase()}, risk ${c.riskScore.toFixed(3)}, flood exposed ${c.floodPopExposed?.toLocaleString() ?? "N/A"}`
-  );
+  const lines =
+    intent === "ssd_hunger_hotspots" || intent === "ssd_system_stress"
+      ? top.map(
+          (c) =>
+            `- ${c.adm2County ?? "Unknown county"}, ${c.adm1State ?? "Unknown state"}: ${c.status.toUpperCase()}, hunger GAM ${
+              c.hungerGamPct?.toFixed(1) ?? "N/A"
+            }%, priority ${c.priorityScore?.toFixed(3) ?? c.riskScore.toFixed(3)}, IDPs ${
+              c.idpIndividuals?.toLocaleString() ?? "N/A"
+            }, facilities ${c.healthFacilityCount ?? "N/A"}`
+        )
+      : top.map(
+          (c) =>
+            `- ${c.country ?? c.iso3} (${c.iso3}): ${c.status.toUpperCase()}, risk ${c.riskScore.toFixed(3)}, flood exposed ${c.floodPopExposed?.toLocaleString() ?? "N/A"}`
+        );
   const redCount = top.filter((c) => c.status === "red").length;
   const yellowCount = top.filter((c) => c.status === "yellow").length;
   const greenCount = top.filter((c) => c.status === "green").length;
   const highest = top[0];
   const recommended =
-    intent === "flood_hotspots"
+    intent === "ssd_hunger_hotspots" || intent === "ssd_system_stress"
+      ? [
+          "Prioritize Tier-1 counties with high hunger GAM and weak service capacity first.",
+          "Deploy county nutrition interventions alongside market and facility support, not in isolation.",
+          "Track displacement and returnee pressure weekly to catch spillover risk between neighboring counties."
+        ]
+      : intent === "flood_hotspots"
       ? [
           "Prioritize rapid flood-response logistics and temporary shelter in the top 2-3 countries.",
           "Pre-position WASH and health supplies in countries with the highest exposed populations.",
@@ -140,7 +273,11 @@ function buildExplanation(intent: AgentIntent, countries: CountryResult[], quest
           ];
 
   const headline =
-    intent === "flood_hotspots"
+    intent === "ssd_hunger_hotspots"
+      ? "South Sudan county hunger hotspot assessment from live Databricks data"
+      : intent === "ssd_system_stress"
+        ? "South Sudan intercorrelated system-stress assessment from live Databricks data"
+        : intent === "flood_hotspots"
       ? "Flood hotspot assessment from live Databricks data"
       : intent === "stable_countries"
         ? "Stability assessment from live Databricks data"
@@ -149,12 +286,14 @@ function buildExplanation(intent: AgentIntent, countries: CountryResult[], quest
           : `Risk assessment for: "${question}"`;
 
   const highestLine = highest
-    ? `Highest priority right now: ${highest.country ?? highest.iso3} (${highest.iso3}) with risk ${highest.riskScore.toFixed(3)}.`
+    ? intent === "ssd_hunger_hotspots" || intent === "ssd_system_stress"
+      ? `Highest priority right now: ${highest.adm2County ?? "Unknown county"}, ${highest.adm1State ?? "Unknown state"} with score ${(highest.priorityScore ?? highest.riskScore).toFixed(3)}.`
+      : `Highest priority right now: ${highest.country ?? highest.iso3} (${highest.iso3}) with risk ${highest.riskScore.toFixed(3)}.`
     : "";
 
   return `${headline}
 
-Top countries:
+Top matches:
 ${lines.join("\n")}
 
 Snapshot of top 5 statuses: red=${redCount}, yellow=${yellowCount}, green=${greenCount}.
@@ -169,7 +308,7 @@ Recommended next actions:
 async function generateGeminiAnswer(input: {
   question: string;
   intent: AgentIntent;
-  countries: CountryResult[];
+  countries: AgentResult[];
   fallbackExplanation: string;
 }): Promise<{ answer: string; source: "gemini" | "fallback" }> {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -185,7 +324,17 @@ async function generateGeminiAnswer(input: {
     country: c.country ?? c.iso3,
     status: c.status,
     riskScore: Number(c.riskScore.toFixed(3)),
-    floodPopExposed: c.floodPopExposed
+    floodPopExposed: c.floodPopExposed,
+    adm1State: c.adm1State ?? null,
+    adm2County: c.adm2County ?? null,
+    hungerGamPct: c.hungerGamPct ?? null,
+    priorityScore: c.priorityScore ?? null,
+    healthFacilityCount: c.healthFacilityCount ?? null,
+    marketCount: c.marketCount ?? null,
+    idpIndividuals: c.idpIndividuals ?? null,
+    returneesInternal: c.returneesInternal ?? null,
+    femaleSharePct: c.femaleSharePct ?? null,
+    ethnicSummary: c.ethnicSummary ?? null
   }));
 
   const prompt = `
@@ -193,7 +342,7 @@ You are Athena, a humanitarian risk analyst.
 User question: ${input.question}
 Detected intent: ${input.intent}
 
-Grounded data (top rows from Databricks gold_country_risk_serving):
+Grounded data (top rows from Databricks serving outputs, including South Sudan county views when relevant):
 ${JSON.stringify(contextCountries, null, 2)}
 
 Return:
@@ -263,17 +412,23 @@ export async function POST(request: NextRequest) {
   }
 
   const intent = detectIntent(question);
-  const table = config.riskTable ?? "workspace.default.gold_country_risk_serving";
-  const sql = buildSql(intent, table, 20);
+  const tables = {
+    risk: config.riskTable ?? "workspace.default.gold_country_risk_serving",
+    ssdHunger: process.env.DATABRICKS_SSD_HUNGER_TABLE ?? "workspace.default.gold_ss_hunger_serving",
+    ssdMass: process.env.DATABRICKS_SSD_MASS_TABLE ?? "workspace.default.sudan_mass_information"
+  };
+  const sql = buildSql(intent, tables, 20);
 
   try {
     const rows = await runDatabricksQuery(sql);
     const countries = rows
-      .map(toCountryResult)
-      .filter((item): item is CountryResult => item !== null);
+      .map(toAgentResult)
+      .filter((item): item is AgentResult => item !== null);
 
     const filters =
-      intent === "flood_hotspots"
+      intent === "ssd_hunger_hotspots" || intent === "ssd_system_stress"
+        ? { mode: "risk", focus: "south_sudan", level: "county" }
+        : intent === "flood_hotspots"
         ? { mode: "flood" }
         : intent === "stable_countries"
           ? { status: ["green"], mode: "risk" }

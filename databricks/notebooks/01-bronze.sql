@@ -67,6 +67,40 @@ WHERE TRIM(iso3) RLIKE '^[A-Z]{3}$'
   AND CAST(year AS INT) IS NOT NULL
   AND CAST(value AS DOUBLE) IS NOT NULL;
 
+CREATE OR REFRESH MATERIALIZED VIEW bronze_ss_nutrition AS
+SELECT
+  'SSD' AS iso3,
+  TRIM(ADM1_STATE) AS adm1_state,
+  TRIM(ADM1_Pcode) AS adm1_pcode,
+  TRIM(ADM2_COUNTY) AS adm2_county,
+  TRIM(ADM2_Pcode) AS adm2_pcode,
+  CAST(REGEXP_REPLACE(TRIM(`Proxy GAM 2022`), '%', '') AS DOUBLE) AS proxy_gam_2022_pct
+FROM workspace.default.south_sudan_nutrition
+WHERE TRIM(ADM1_STATE) <> ''
+  AND TRIM(ADM2_COUNTY) <> ''
+  AND CAST(REGEXP_REPLACE(TRIM(`Proxy GAM 2022`), '%', '') AS DOUBLE) IS NOT NULL;
+
+CREATE OR REFRESH MATERIALIZED VIEW bronze_sudan_mass_information AS
+SELECT
+  TRIM(iso3) AS iso3,
+  TRIM(record_level) AS record_level,
+  TRIM(state_name) AS state_name,
+  TRIM(state_pcode) AS state_pcode,
+  TRIM(county_name) AS county_name,
+  TRIM(county_pcode) AS county_pcode,
+  CAST(population_2025_total AS DOUBLE) AS population_2025_total,
+  CAST(female_share_pct AS DOUBLE) AS female_share_pct,
+  CAST(male_share_pct AS DOUBLE) AS male_share_pct,
+  CAST(health_facility_count AS DOUBLE) AS health_facility_count,
+  CAST(wfp_market_count AS DOUBLE) AS wfp_market_count,
+  CAST(idp_individuals_est AS DOUBLE) AS idp_individuals_est,
+  CAST(returnees_internal_ind_est AS DOUBLE) AS returnees_internal_ind_est,
+  CAST(returnees_from_abroad_ind_est AS DOUBLE) AS returnees_from_abroad_ind_est,
+  CAST(proxy_gam_2022_pct AS DOUBLE) AS proxy_gam_2022_pct,
+  TRIM(ethnic_groups_summary) AS ethnic_groups_summary
+FROM workspace.default.sudan_mass_information
+WHERE TRIM(iso3) IN ('SSD', 'SDN');
+
 -- If your source table name is different, update this FROM target.
 CREATE OR REFRESH MATERIALIZED VIEW bronze_hrp_raw AS
 SELECT

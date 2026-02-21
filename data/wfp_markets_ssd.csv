@@ -1,0 +1,126 @@
+market_id,market,countryiso3,admin1,admin2,latitude,longitude
+1384,Aweil Town,SSD,Northern Bahr el Ghazal,Aweil Centre,8.74,27.41
+1385,Bentiu,SSD,Unity,Rubkona,9.23,29.83
+1386,Bor,SSD,Jonglei,Bor South,6.21,31.57
+1387,Kuajok,SSD,Warrap,Gogrial West,8.47,28.12
+1388,Konyokonyo,SSD,Central Equatoria,Juba,4.85,31.6
+1389,Malakal,SSD,Upper Nile,Malakal,9.53,31.66
+1390,Rumbek,SSD,Lakes,Rumbek Centre,6.8,29.68
+1391,Jau,SSD,Western Bahr el Ghazal,Wau,7.7,27.99
+1786,Torit,SSD,Eastern Equatoria,Torit,4.41,32.57
+2057,Yida,SSD,Unity,Pariang,10.11,29.98
+2239,Yambio,SSD,Western Equatoria,Yambio,4.55,28.42
+2240,Wunrok,SSD,Warrap,Twic,8.99,28.3
+2241,Minkaman,SSD,Lakes,Awerial,6.05,31.52
+3025,Rubkona,SSD,Unity,Rubkona,9.29,29.79
+3026,Aniet,SSD,Unity,Abiemnhom,9.57,28.98
+3027,Bunj,SSD,Upper Nile,Maban,9.96,33.73
+3028,Suk Shabi,SSD,Upper Nile,Renk,11.74,32.81
+3029,Melut,SSD,Upper Nile,Melut,10.45,32.21
+3030,Kapoeta South,SSD,Eastern Equatoria,Kapoeta South,4.77,33.59
+3031,Makpandu,SSD,Western Equatoria,Yambio,4.74,28.68
+5865,Wanjok,SSD,Northern Bahr el Ghazal,Aweil East,9.01,27.57
+5866,Nyamlel,SSD,Northern Bahr el Ghazal,Aweil West,9.12,27
+5867,Gokmachar,SSD,Northern Bahr el Ghazal,Aweil North,9.22,26.87
+6081,Akobo,SSD,Jonglei,Akobo,7.79,33.01
+6092,Gorom,SSD,Central Equatoria,Juba,4.45,31.26
+6347,Aweil Outskirt,SSD,Northern Bahr el Ghazal,Aweil South,8.76,27.97
+6348,Tonj,SSD,Warrap,Tonj South,7.27,28.68
+6349,Juba (IDP Camp),SSD,Central Equatoria,Juba,4.81,31.53
+6350,Bor (IDP Camp),SSD,Jonglei,Bor South,6.2,31.6
+6351,Malakal (IDP Camp),SSD,Upper Nile,Malakal,9.57,31.64
+6379,Lunyaker,SSD,Warrap,Gogrial East,8.22,28.39
+6380,Raja,SSD,Western Bahr el Ghazal,Raja,8.46,25.68
+6381,Bagari,SSD,Western Bahr el Ghazal,Wau,7.57,27.89
+6382,Nyin Akok,SSD,Western Bahr el Ghazal,Jur River,7.93,27.85
+6493,Naandi,SSD,Western Equatoria,Ezo,4.97,27.9
+6494,Andari,SSD,Western Equatoria,Ezo,4.95,27.73
+6495,Ezo Center,SSD,Western Equatoria,Ezo,5.07,27.47
+6496,Yangiri,SSD,Western Equatoria,Ezo,5.18,27.96
+6497,Tambura Center,SSD,Western Equatoria,Tambura,5.6,27.47
+6498,Nzara Center,SSD,Western Equatoria,Nzara,4.64,28.26
+6499,Nagero Center,SSD,Western Equatoria,Nagero,6.39,27.77
+6500,Namutina,SSD,Western Equatoria,Tambura,6.03,27.15
+6548,Yubu,SSD,Western Equatoria,Nzara,4.62,28.26
+6717,Barmayen,SSD,Northern Bahr el Ghazal,Aweil Centre,8.35,27.62
+6718,Alok,SSD,Northern Bahr el Ghazal,Aweil Centre,8.44,27.53
+6719,Awada,SSD,Northern Bahr el Ghazal,Aweil Centre,8.06,26.85
+6720,Aroyo,SSD,Northern Bahr el Ghazal,Aweil Centre,8.67,26.86
+6721,Baau,SSD,Northern Bahr el Ghazal,Aweil South,8.71,27.76
+6930,Abyei,SSD,Warrap,Twic,9.35,28.28
+7219,Pibor,SSD,Jonglei,Pibor,6.8,33.13
+7429,Old Fangak,SSD,Jonglei,Fangak,9.07,30.88
+7430,New Fangak,SSD,Jonglei,Fangak,9.4,31.16
+7431,Kodok,SSD,Upper Nile,Fashoda,9.89,32.11
+7432,Tonga,SSD,Upper Nile,Panyikang,9.47,31.05
+7433,Ajoung Thok,SSD,Unity,Pariang,9.96,30.27
+7508,Pariang,SSD,Unity,Pariang,9.92,29.76
+7652,Terekeka,SSD,Central Equatoria,Terekeka,5.45,31.75
+7769,Batil,SSD,Upper Nile,Maban,9.99,33.59
+7771,Kaya,SSD,Upper Nile,Maban,10.1,33.58
+7772,Gendrassa,SSD,Upper Nile,Maban,9.99,33.61
+7773,Doro Suk Huria,SSD,Upper Nile,Maban,9.99,33.76
+7774,Doro Suk For,SSD,Upper Nile,Maban,9.99,33.74
+7817,Cueibet,SSD,Lakes,Cueibet,7.01,29.25
+7818,Aduel,SSD,Lakes,Rumbek East,6.63,29.9
+7819,Wulu,SSD,Lakes,Wulu,6.51,29.63
+7845,Warawar,SSD,Northern Bahr el Ghazal,Aweil East,9.14,27.61
+7846,Majok Yith Thiou,SSD,Northern Bahr el Ghazal,Aweil East,9.52,27.24
+7847,Ariath,SSD,Northern Bahr el Ghazal,Aweil North,9.19,27.1
+7848,Mayen Ulem,SSD,Northern Bahr el Ghazal,Aweil North,9.04,27.29
+7849,Marial Baai,SSD,Northern Bahr el Ghazal,Aweil West,9.1,26.85
+7850,Udhum,SSD,Northern Bahr el Ghazal,Aweil West,8.9,27.25
+7851,Malek Alel,SSD,Northern Bahr el Ghazal,Aweil South,8.6,27.59
+7852,Tiaraliet,SSD,Northern Bahr el Ghazal,Aweil South,8.77,27.88
+7853,Panthou,SSD,Northern Bahr el Ghazal,Aweil South,8.69,27.68
+7856,Ayod,SSD,Jonglei,Ayod,8.13,31.41
+7857,Yuai,SSD,Jonglei,Uror,7.91,31.89
+7858,Walgak,SSD,Jonglei,Akobo,8.16,32.24
+7949,Padiet,SSD,Jonglei,Duk,7.75,31.4
+7950,Mabior,SSD,Jonglei,Twic East,7.24,31.22
+8346,Ulang,SSD,Upper Nile,Ulang,8.66,32.72
+8531,Lankien,SSD,Jonglei,Nyirol,8.52,32.06
+8532,Yirol,SSD,Lakes,Yirol West,6.55,30.5
+8533,Abiemnhom,SSD,Unity,Abiemnhom,9.4,28.82
+8534,Mayom,SSD,Unity,Mayom,9.23,29.17
+8535,Guit,SSD,Unity,Guit,9.17,29.91
+8536,Leer,SSD,Unity,Leer,8.31,30.14
+8537,Nyal,SSD,Unity,Panyijiar,7.73,30.25
+8538,Maiwut,SSD,Upper Nile,Maiwut,8.62,33.93
+8539,Baliet,SSD,Upper Nile,Baliet,9.3,32.06
+8540,Magwi,SSD,Eastern Equatoria,Magwi,4.13,32.3
+8541,Nimule,SSD,Eastern Equatoria,Magwi,3.6,32.06
+8542,Yei,SSD,Central Equatoria,Yei,4.09,30.68
+8543,Morobo,SSD,Central Equatoria,Morobo,3.68,30.78
+8544,Mangala,SSD,Central Equatoria,Juba,5.19,31.78
+8545,Gemmeiza,SSD,Central Equatoria,Terekeka,5.68,31.8
+8546,Tindilo,SSD,Central Equatoria,Terekeka,5.66,31.06
+8547,Maridi,SSD,Western Equatoria,Maridi,4.92,29.47
+8548,Mundri,SSD,Western Equatoria,Mundri West,5.35,30.32
+8744,Rubkuay,SSD,Unity,Mayendit,8.39,30.08
+8983,Paloc,SSD,Lakes,Rumbek East,6.77,30.1
+8984,Akot,SSD,Lakes,Rumbek East,6.55,30.03
+8985,Pacong,SSD,Lakes,Rumbek East,6.69,29.79
+9132,Riwoto (Kapoeta North),SSD,Eastern Equatoria,Kapoeta East,5.16,34.33
+9133,Narus (Kapoeta East),SSD,Eastern Equatoria,Kapoeta East,4.5,34.16
+9648,Malualbaai,SSD,Northern Bahr el Ghazal,Aweil East,9.06,27.76
+9649,Akuem,SSD,Northern Bahr el Ghazal,Aweil East,8.95,27.51
+9650,Pamat,SSD,Northern Bahr el Ghazal,Aweil North,9.21,27
+9651,Wedwil,SSD,Northern Bahr el Ghazal,Aweil West,9.01,27.19
+9652,Wathmok,SSD,Northern Bahr el Ghazal,Aweil South,8.67,27.6
+9724,Akon,SSD,Warrap,Gogrial West,8.9,27.97
+9733,Lekuangole,SSD,Jonglei,Pibor,7.05,33.01
+9734,Gumuruk,SSD,Jonglei,Pibor,6.63,32.91
+9803,Custom,SSD,Central Equatoria,Juba,4.84,31.58
+9804,Gudele,SSD,Central Equatoria,Juba,4.87,31.54
+9805,Suk Libya,SSD,Central Equatoria,Juba,4.86,31.57
+10483,Pamir,SSD,Unity,Pariang,9.91,30.36
+10540,Chukudum,SSD,Eastern Equatoria,Budi,4.24,33.49
+10543,Warrap,SSD,Warrap,Tonj North,8.09,28.64
+10606,Nyang,SSD,Lakes,Yirol East,6.71,30.6
+10607,Maper,SSD,Lakes,Rumbek North,7.7,29.72
+10944,Udier,SSD,Jonglei,Uror,7.92,31.92
+10945,Mathiang,SSD,Jonglei,Duk,7.52,31.48
+10964,Koch,SSD,Unity,Koch,8.59,29.99
+10965,Ganyliel,SSD,Unity,Panyijiar,7.39,30.47
+11044,Paguir,SSD,Jonglei,Fangak,9.13,30.69

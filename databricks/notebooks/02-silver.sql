@@ -85,6 +85,57 @@ FROM ranked
 WHERE rn = 1
 GROUP BY iso3;
 
+CREATE OR REFRESH MATERIALIZED VIEW silver_ss_nutrition_county AS
+SELECT
+  iso3,
+  adm1_state,
+  adm1_pcode,
+  adm2_county,
+  adm2_pcode,
+  proxy_gam_2022_pct,
+  CASE
+    WHEN proxy_gam_2022_pct >= 20 THEN 'red'
+    WHEN proxy_gam_2022_pct >= 10 THEN 'yellow'
+    ELSE 'green'
+  END AS hunger_status
+FROM bronze_ss_nutrition;
+
+CREATE OR REFRESH MATERIALIZED VIEW silver_ss_nutrition_state AS
+SELECT
+  iso3,
+  adm1_state,
+  adm1_pcode,
+  AVG(proxy_gam_2022_pct) AS state_proxy_gam_2022_pct_avg,
+  MAX(proxy_gam_2022_pct) AS state_proxy_gam_2022_pct_max,
+  COUNT(*) AS county_count,
+  SUM(CASE WHEN proxy_gam_2022_pct >= 20 THEN 1 ELSE 0 END) AS red_counties,
+  SUM(CASE WHEN proxy_gam_2022_pct >= 10 AND proxy_gam_2022_pct < 20 THEN 1 ELSE 0 END) AS yellow_counties
+FROM bronze_ss_nutrition
+GROUP BY iso3, adm1_state, adm1_pcode;
+
+CREATE OR REFRESH MATERIALIZED VIEW silver_ss_mass_county AS
+SELECT
+  iso3,
+  state_name AS adm1_state,
+  state_pcode AS adm1_pcode,
+  county_name AS adm2_county,
+  county_pcode AS adm2_pcode,
+  population_2025_total,
+  female_share_pct,
+  male_share_pct,
+  health_facility_count,
+  wfp_market_count,
+  idp_individuals_est,
+  returnees_internal_ind_est,
+  returnees_from_abroad_ind_est,
+  proxy_gam_2022_pct,
+  ethnic_groups_summary
+FROM bronze_sudan_mass_information
+WHERE iso3 = 'SSD'
+  AND record_level = 'county'
+  AND county_pcode IS NOT NULL
+  AND county_pcode <> '';
+
 CREATE OR REFRESH MATERIALIZED VIEW silver_country_daily AS
 SELECT
   s.iso3,

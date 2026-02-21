@@ -31,6 +31,23 @@ type QueryResponse = {
   }>;
 };
 
+type SsdHungerRow = {
+  adm1State: string;
+  adm2County: string;
+  hungerGamPct: number | null;
+  priorityScore: number | null;
+  priorityBand: "green" | "yellow" | "red";
+  healthFacilityCount: number | null;
+  idpIndividuals: number | null;
+};
+
+type SudanMapLayers = {
+  hunger: boolean;
+  displacement: boolean;
+  facilities: boolean;
+  markets: boolean;
+};
+
 function toAssistantMessage(response: QueryResponse): string {
   if (response.answer && response.answer.trim()) {
     const tag = response.responseSource === "gemini" ? "Gemini" : "Fallback";
@@ -68,7 +85,15 @@ type SpeechRecognitionCtor = new () => {
 export default function AthenaWorkspace() {
   const [isPanelOpen, setPanelOpen] = useState(false);
   const [isDataPanelOpen, setDataPanelOpen] = useState(true);
-  const [mode, setMode] = useState<"risk" | "flood">("risk");
+  const [mode, setMode] = useState<"risk" | "flood" | "sudan_map">("risk");
+  const [sudanLayers, setSudanLayers] = useState<SudanMapLayers>({
+    hunger: true,
+    displacement: true,
+    facilities: false,
+    markets: false
+  });
+  const [ssdRows, setSsdRows] = useState<SsdHungerRow[]>([]);
+  const [ssdError, setSsdError] = useState<string | null>(null);
   const [isSending, setSending] = useState(false);
   const [isListening, setListening] = useState(false);
   const [isVoiceEnabled, setVoiceEnabled] = useState(true);
@@ -92,6 +117,51 @@ export default function AthenaWorkspace() {
       recognitionRef.current?.stop();
       activeAudioRef.current?.pause();
     };
+  }, []);
+
+  useEffect(() => {
+    async function fetchSouthSudanHunger() {
+      try {
+        const response = await fetch("/api/south-sudan/hunger");
+        if (!response.ok) {
+          throw new Error(`South Sudan hunger API failed (${response.status})`);
+        }
+        const payload = (await response.json()) as {
+          data?: Array<{
+            adm1State?: string;
+            adm2County?: string;
+            hungerGamPct?: number | null;
+            priorityScore?: number | null;
+            priorityBand?: "green" | "yellow" | "red";
+            healthFacilityCount?: number | null;
+            idpIndividuals?: number | null;
+          }>;
+        };
+        const rows = (payload.data ?? [])
+          .filter(
+            (row) =>
+              typeof row.adm1State === "string" &&
+              typeof row.adm2County === "string" &&
+              (row.priorityBand === "green" || row.priorityBand === "yellow" || row.priorityBand === "red")
+          )
+          .map((row) => ({
+            adm1State: row.adm1State as string,
+            adm2County: row.adm2County as string,
+            hungerGamPct: typeof row.hungerGamPct === "number" ? row.hungerGamPct : null,
+            priorityScore: typeof row.priorityScore === "number" ? row.priorityScore : null,
+            priorityBand: row.priorityBand as "green" | "yellow" | "red",
+            healthFacilityCount: typeof row.healthFacilityCount === "number" ? row.healthFacilityCount : null,
+            idpIndividuals: typeof row.idpIndividuals === "number" ? row.idpIndividuals : null
+          }));
+        setSsdRows(rows);
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : "Failed to fetch South Sudan hunger data";
+        setSsdError(message);
+      }
+    }
+
+    void fetchSouthSudanHunger();
   }, []);
 
   async function speakText(text: string) {
@@ -273,7 +343,7 @@ export default function AthenaWorkspace() {
       </header>
 
       <section className="map-wrap">
-        <AthenaGlobe mode={mode} highlights={highlights} />
+        <AthenaGlobe mode={mode} highlights={highlights} sudanLayers={sudanLayers} />
       </section>
 
       {isDataPanelOpen ? (
@@ -293,7 +363,7 @@ export default function AthenaWorkspace() {
           </div>
           <div className="data-panel-body">
             <p className="data-panel-copy">
-              Toggle map modes to compare overall risk with flood intensity.
+              Toggle map modes to compare global risk, flood pressure, and South Sudan county hunger priority.
             </p>
             <button
               type="button"
@@ -309,6 +379,77 @@ export default function AthenaWorkspace() {
             >
               Flood Depth Mode
             </button>
+            <button
+              type="button"
+              className={`mode-btn ${mode === "sudan_map" ? "mode-btn-active" : ""}`}
+              onClick={() => setMode("sudan_map")}
+            >
+              Sudan Map Mode
+            </button>
+            {mode === "sudan_map" ? (
+              <div className="ssd-priority-panel">
+                <div className="ssd-priority-title">Layers</div>
+                <label className="layer-check">
+                  <input
+                    type="checkbox"
+                    checked={sudanLayers.hunger}
+                    onChange={(event) =>
+                      setSudanLayers((prev) => ({ ...prev, hunger: event.target.checked }))
+                    }
+                  />
+                  Hunger priority
+                </label>
+                <label className="layer-check">
+                  <input
+                    type="checkbox"
+                    checked={sudanLayers.displacement}
+                    onChange={(event) =>
+                      setSudanLayers((prev) => ({
+                        ...prev,
+                        displacement: event.target.checked
+                      }))
+                    }
+                  />
+                  Displacement pressure
+                </label>
+                <label className="layer-check">
+                  <input
+                    type="checkbox"
+                    checked={sudanLayers.facilities}
+                    onChange={(event) =>
+                      setSudanLayers((prev) => ({ ...prev, facilities: event.target.checked }))
+                    }
+                  />
+                  Health facilities
+                </label>
+                <label className="layer-check">
+                  <input
+                    type="checkbox"
+                    checked={sudanLayers.markets}
+                    onChange={(event) =>
+                      setSudanLayers((prev) => ({ ...prev, markets: event.target.checked }))
+                    }
+                  />
+                  Markets
+                </label>
+              </div>
+            ) : null}
+            {mode === "sudan_map" ? (
+              <div className="ssd-priority-panel">
+                <div className="ssd-priority-title">Top South Sudan county priorities</div>
+                {ssdRows.slice(0, 8).map((row) => (
+                  <div key={`${row.adm1State}-${row.adm2County}`} className="ssd-priority-row">
+                    <span>
+                      {row.adm2County}, {row.adm1State}
+                    </span>
+                    <span>
+                      {row.priorityBand.toUpperCase()} | {row.priorityScore?.toFixed(3) ?? "N/A"}
+                    </span>
+                  </div>
+                ))}
+                {ssdError ? <div className="ssd-priority-error">{ssdError}</div> : null}
+              </div>
+            ) : null}
           </div>
         </aside>
       ) : null}
