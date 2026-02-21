@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
-import { Bot, Mic, MicOff, Send, Sparkles, Volume2, VolumeX, X } from "lucide-react";
+import { Bot, Droplets, Mic, MicOff, Send, Sparkles, Volume2, VolumeX, X } from "lucide-react";
 import AthenaGlobe from "@/components/AthenaGlobe";
 
 type ChatMessage = {
@@ -12,14 +12,39 @@ type ChatMessage = {
 
 type QueryResponse = {
   intent?: string;
+  responseSource?: "gemini" | "fallback";
+  answer?: string;
   explanation?: string;
   filters?: Record<string, unknown>;
+  countries?: Array<{
+    iso3?: string;
+    country?: string | null;
+    status?: string;
+    riskScore?: number;
+  }>;
 };
 
 function toAssistantMessage(response: QueryResponse): string {
+  if (response.answer && response.answer.trim()) {
+    const tag = response.responseSource === "gemini" ? "Gemini" : "Fallback";
+    return `[${tag}]\n${response.answer.trim()}`;
+  }
   const intent = response.intent ?? "unknown_intent";
   const explanation = response.explanation ?? "No explanation was returned.";
-  return `Intent: ${intent}\n${explanation}`;
+  const topCountries = (response.countries ?? [])
+    .slice(0, 3)
+    .map((country) => {
+      const name = country.country ?? country.iso3 ?? "Unknown";
+      const iso3 = country.iso3 ? ` (${country.iso3})` : "";
+      const status = country.status ? ` - ${country.status}` : "";
+      const risk =
+        typeof country.riskScore === "number" ? `, risk ${country.riskScore.toFixed(3)}` : "";
+      return `${name}${iso3}${status}${risk}`;
+    })
+    .join("\n");
+  return topCountries
+    ? `Intent: ${intent}\n${explanation}\n\nTop matches:\n${topCountries}`
+    : `Intent: ${intent}\n${explanation}`;
 }
 
 type SpeechRecognitionCtor = new () => {
@@ -35,6 +60,8 @@ type SpeechRecognitionCtor = new () => {
 
 export default function AthenaWorkspace() {
   const [isPanelOpen, setPanelOpen] = useState(false);
+  const [isDataPanelOpen, setDataPanelOpen] = useState(true);
+  const [mode, setMode] = useState<"risk" | "flood">("risk");
   const [isSending, setSending] = useState(false);
   const [isListening, setListening] = useState(false);
   const [isVoiceEnabled, setVoiceEnabled] = useState(true);
@@ -197,21 +224,70 @@ export default function AthenaWorkspace() {
           <h1>Project Athena</h1>
           <p>Global humanitarian intelligence (green/yellow/red)</p>
         </div>
-        <button
-          className="ai-toggle"
-          type="button"
-          onClick={() => setPanelOpen((prev) => !prev)}
-          aria-expanded={isPanelOpen}
-          aria-controls="athena-ai-panel"
-        >
-          <Sparkles size={16} />
-          {isPanelOpen ? "Close Athena AI" : "Open Athena AI"}
-        </button>
+        <div className="topbar-actions">
+          <button
+            className="ai-toggle"
+            type="button"
+            onClick={() => setDataPanelOpen((prev) => !prev)}
+            aria-expanded={isDataPanelOpen}
+            aria-controls="athena-data-panel"
+          >
+            <Droplets size={16} />
+            {isDataPanelOpen ? "Hide Data Modes" : "Show Data Modes"}
+          </button>
+          <button
+            className="ai-toggle"
+            type="button"
+            onClick={() => setPanelOpen((prev) => !prev)}
+            aria-expanded={isPanelOpen}
+            aria-controls="athena-ai-panel"
+          >
+            <Sparkles size={16} />
+            {isPanelOpen ? "Close Athena AI" : "Open Athena AI"}
+          </button>
+        </div>
       </header>
 
       <section className="map-wrap">
-        <AthenaGlobe />
+        <AthenaGlobe mode={mode} />
       </section>
+
+      {isDataPanelOpen ? (
+        <aside id="athena-data-panel" className="data-panel">
+          <div className="ai-panel-header">
+            <span className="ai-panel-title">
+              <Droplets size={16} />
+              Data Dashboard
+            </span>
+            <button
+              className="icon-btn"
+              onClick={() => setDataPanelOpen(false)}
+              aria-label="Close data dashboard"
+            >
+              <X size={16} />
+            </button>
+          </div>
+          <div className="data-panel-body">
+            <p className="data-panel-copy">
+              Toggle map modes to compare overall risk with flood intensity.
+            </p>
+            <button
+              type="button"
+              className={`mode-btn ${mode === "risk" ? "mode-btn-active" : ""}`}
+              onClick={() => setMode("risk")}
+            >
+              Crisis Risk Mode
+            </button>
+            <button
+              type="button"
+              className={`mode-btn ${mode === "flood" ? "mode-btn-active" : ""}`}
+              onClick={() => setMode("flood")}
+            >
+              Flood Depth Mode
+            </button>
+          </div>
+        </aside>
+      ) : null}
 
       {isPanelOpen ? (
         <aside id="athena-ai-panel" className="ai-panel">
