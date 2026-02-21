@@ -3,7 +3,8 @@
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { MapLayerMouseEvent } from "react-map-gl";
-import MapGL, { Layer, Source, type LayerProps, type MapRef } from "react-map-gl";
+import MapGL, { Layer, Marker, Source, type LayerProps, type MapRef } from "react-map-gl";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
@@ -15,6 +16,12 @@ type CountryRisk = {
   status: "green" | "yellow" | "red";
   riskScore: number;
   floodPopExposed: number | null;
+};
+
+export type GlobeHighlight = {
+  iso3: string;
+  summary: string;
+  center: [number, number]; // [lng, lat]
 };
 
 const countryBorderLayer: LayerProps = {
@@ -30,6 +37,7 @@ const countryBorderLayer: LayerProps = {
 
 type AthenaGlobeProps = {
   mode: GlobeMode;
+  highlights?: GlobeHighlight[];
 };
 
 type HoverInfo = {
@@ -38,12 +46,13 @@ type HoverInfo = {
   iso3: string;
 };
 
-export default function AthenaGlobe({ mode }: AthenaGlobeProps) {
+export default function AthenaGlobe({ mode, highlights = [] }: AthenaGlobeProps) {
   const [mapError, setMapError] = useState<string | null>(null);
   const [riskData, setRiskData] = useState<CountryRisk[]>([]);
   const [riskError, setRiskError] = useState<string | null>(null);
   const [selectedIso3, setSelectedIso3] = useState<string | null>(null);
   const [hoverInfo, setHoverInfo] = useState<HoverInfo | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
   const mapRef = useRef<MapRef | null>(null);
 
   const riskByIso = useMemo(() => {
@@ -52,6 +61,12 @@ export default function AthenaGlobe({ mode }: AthenaGlobeProps) {
     return out;
   }, [riskData]);
 
+  // Reset index when highlights change
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [highlights]);
+
+  // Fetch risk data
   useEffect(() => {
     async function fetchRiskData() {
       try {
@@ -213,6 +228,45 @@ export default function AthenaGlobe({ mode }: AthenaGlobeProps) {
   const selectedCountry = selectedIso3 ? riskByIso.get(selectedIso3) ?? null : null;
   const hoveredCountry = hoverInfo ? riskByIso.get(hoverInfo.iso3) ?? null : null;
 
+  // Fly to active highlight
+  useEffect(() => {
+    const map = mapRef.current?.getMap();
+    if (!map || highlights.length === 0) {
+      return;
+    }
+    const active = highlights[activeIndex];
+    if (!active) return;
+    map.flyTo({
+      center: active.center,
+      zoom: 4,
+      duration: 2000,
+    });
+  }, [highlights, activeIndex]);
+
+  const active = highlights.length > 0 ? highlights[activeIndex] : null;
+
+  // Leader line offset: 8 right, 5 up from centroid
+  const labelOffset: [number, number] | null = active
+    ? [active.center[0] + 8, active.center[1] + 5]
+    : null;
+
+  const leaderLineGeoJSON: GeoJSON.FeatureCollection | null =
+    active && labelOffset
+      ? {
+          type: "FeatureCollection",
+          features: [
+            {
+              type: "Feature",
+              properties: {},
+              geometry: {
+                type: "LineString",
+                coordinates: [active.center, labelOffset],
+              },
+            },
+          ],
+        }
+      : null;
+
   if (!mapboxToken) {
     return (
       <div className="map-fallback">
@@ -222,7 +276,7 @@ export default function AthenaGlobe({ mode }: AthenaGlobeProps) {
   }
 
   return (
-    <div style={{ width: "100%", height: "100%" }}>
+    <div style={{ width: "100%", height: "100%", position: "relative" }}>
       <MapGL
         ref={mapRef}
         mapboxAccessToken={mapboxToken}
@@ -250,6 +304,38 @@ export default function AthenaGlobe({ mode }: AthenaGlobeProps) {
           {mode === "flood" ? <Layer {...floodLayer} /> : null}
           <Layer {...countryBorderLayer} />
         </Source>
+
+        {/* Annotation dot at active country */}
+        {active && (
+          <Marker longitude={active.center[0]} latitude={active.center[1]} anchor="center">
+            <div className="annotation-dot" />
+          </Marker>
+        )}
+
+        {/* Leader line */}
+        {leaderLineGeoJSON && (
+          <Source id="leader-line" type="geojson" data={leaderLineGeoJSON}>
+            <Layer
+              id="leader-line-layer"
+              type="line"
+              paint={{
+                "line-color": "#ef4444",
+                "line-width": 1.5,
+                "line-dasharray": [4, 2],
+              }}
+            />
+          </Source>
+        )}
+
+        {/* Summary textbox at offset */}
+        {active && labelOffset && (
+          <Marker longitude={labelOffset[0]} latitude={labelOffset[1]} anchor="bottom-left">
+            <div className="annotation-box">
+              <strong>{active.iso3}</strong>
+              <p style={{ margin: "4px 0 0" }}>{active.summary}</p>
+            </div>
+          </Marker>
+        )}
       </MapGL>
       {mode === "risk" ? (
         <div className="map-legend">
@@ -307,6 +393,34 @@ export default function AthenaGlobe({ mode }: AthenaGlobeProps) {
           </div>
         </div>
       ) : null}
+
+      {/* Navigation arrows */}
+      {highlights.length > 1 && (
+        <div className="annotation-nav">
+          <button
+            type="button"
+            className="icon-btn"
+            disabled={activeIndex === 0}
+            onClick={() => setActiveIndex((i) => i - 1)}
+            aria-label="Previous country"
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <span className="annotation-nav-counter">
+            {activeIndex + 1} / {highlights.length}
+          </span>
+          <button
+            type="button"
+            className="icon-btn"
+            disabled={activeIndex === highlights.length - 1}
+            onClick={() => setActiveIndex((i) => i + 1)}
+            aria-label="Next country"
+          >
+            <ChevronRight size={16} />
+          </button>
+        </div>
+      )}
+
       {mapError ? <div className="map-fallback">{mapError}</div> : null}
       {riskError ? <div className="map-fallback">{riskError}</div> : null}
     </div>

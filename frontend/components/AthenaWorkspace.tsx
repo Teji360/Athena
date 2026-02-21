@@ -2,12 +2,18 @@
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { Bot, Droplets, Mic, MicOff, Send, Sparkles, Volume2, VolumeX, X } from "lucide-react";
-import AthenaGlobe from "@/components/AthenaGlobe";
+import AthenaGlobe, { type GlobeHighlight } from "@/components/AthenaGlobe";
+import countryCentroids from "@/lib/countryCentroids";
 
 type ChatMessage = {
   id: string;
   role: "user" | "assistant";
   text: string;
+};
+
+type CountryResult = {
+  iso3?: string;
+  summary?: string;
 };
 
 type QueryResponse = {
@@ -21,6 +27,7 @@ type QueryResponse = {
     country?: string | null;
     status?: string;
     riskScore?: number;
+    summary?: string;
   }>;
 };
 
@@ -69,6 +76,7 @@ export default function AthenaWorkspace() {
   const [input, setInput] = useState("");
   const recognitionRef = useRef<InstanceType<SpeechRecognitionCtor> | null>(null);
   const activeAudioRef = useRef<HTMLAudioElement | null>(null);
+  const [highlights, setHighlights] = useState<GlobeHighlight[]>([]);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "welcome",
@@ -138,6 +146,22 @@ export default function AthenaWorkspace() {
 
       const payload = (await response.json()) as QueryResponse;
       const assistantText = toAssistantMessage(payload);
+
+      // Parse countries into globe highlights
+      if (payload.countries && Array.isArray(payload.countries)) {
+        const parsed: GlobeHighlight[] = payload.countries
+          .filter((c): c is { iso3: string; summary?: string } =>
+            typeof c.iso3 === "string" && c.iso3 in countryCentroids
+          )
+          .slice(0, 5)
+          .map((c) => ({
+            iso3: c.iso3,
+            summary: c.summary ?? "",
+            center: countryCentroids[c.iso3],
+          }));
+        setHighlights(parsed);
+      }
+
       setMessages((prev) => [
         ...prev,
         {
@@ -249,7 +273,7 @@ export default function AthenaWorkspace() {
       </header>
 
       <section className="map-wrap">
-        <AthenaGlobe mode={mode} />
+        <AthenaGlobe mode={mode} highlights={highlights} />
       </section>
 
       {isDataPanelOpen ? (
