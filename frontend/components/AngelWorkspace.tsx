@@ -105,6 +105,7 @@ export default function AngelWorkspace() {
   const activeAudioRef = useRef<HTMLAudioElement | null>(null);
   const chatInputRef = useRef<HTMLInputElement | null>(null);
   const [highlights, setHighlights] = useState<GlobeHighlight[]>([]);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   const canSend = useMemo(() => input.trim().length > 0 && !isSending, [input, isSending]);
 
@@ -118,6 +119,13 @@ export default function AngelWorkspace() {
   useEffect(() => {
     chatInputRef.current?.focus();
   }, []);
+
+  // Auto-clear status toast after 6 seconds
+  useEffect(() => {
+    if (!statusMessage) return;
+    const timer = setTimeout(() => setStatusMessage(null), 6000);
+    return () => clearTimeout(timer);
+  }, [statusMessage]);
 
 
 
@@ -260,6 +268,9 @@ export default function AngelWorkspace() {
         setSudanLayers((prev) => ({ ...prev, ...payload.filters!.sudanLayers }));
       }
 
+      const silentActions = new Set(["ui_toggle_panel", "ui_toggle_layers", "ui_mode_switch"]);
+      const isSilent = silentActions.has(payload.intent ?? "");
+
       // Parse countries into globe highlights
       if (payload.countries && Array.isArray(payload.countries)) {
         const parsed: GlobeHighlight[] = payload.countries
@@ -294,20 +305,22 @@ export default function AngelWorkspace() {
           ]);
         } else {
           setHighlights([]);
+          if (!isSilent && assistantText) {
+            setStatusMessage(assistantText);
+          }
         }
       } else {
         setHighlights([]);
+        if (!isSilent && assistantText) {
+          setStatusMessage(assistantText);
+        }
       }
-      void speakText(assistantText);
+      if (!isSilent) {
+        void speakText(assistantText);
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
-      setHighlights([
-        {
-          iso3: "ATH",
-          summary: `Error: ${message}`,
-          center: [0, 20]
-        }
-      ]);
+      setStatusMessage(`Error: ${message}`);
     } finally {
       setSending(false);
     }
@@ -483,6 +496,12 @@ export default function AngelWorkspace() {
             ) : null}
           </div>
         </aside>
+
+      {statusMessage && (
+        <div className="status-toast" onClick={() => setStatusMessage(null)}>
+          {statusMessage}
+        </div>
+      )}
 
       <div className="bottom-prompt-wrap">
         <div className="bottom-prompt-controls">
