@@ -8,7 +8,7 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
 const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
-type GlobeMode = "risk" | "flood" | "sudan_map";
+type GlobeMode = "risk" | "flood" | "sudan_map" | "forecast_30d";
 
 type SudanMapLayers = {
   hunger: boolean;
@@ -23,6 +23,15 @@ type CountryRisk = {
   status: "green" | "yellow" | "red";
   riskScore: number;
   floodPopExposed: number | null;
+};
+
+type CountryForecast = {
+  iso3: string;
+  country: string | null;
+  asOfDate: string | null;
+  currentRiskScore: number;
+  forecastRiskScore: number;
+  forecastStatus: "green" | "yellow" | "red";
 };
 
 export type GlobeHighlight = {
@@ -87,6 +96,8 @@ export default function AngelGlobe({ mode, highlights = [], sudanLayers }: Angel
   const [mapError, setMapError] = useState<string | null>(null);
   const [riskData, setRiskData] = useState<CountryRisk[]>([]);
   const [riskError, setRiskError] = useState<string | null>(null);
+  const [forecastData, setForecastData] = useState<CountryForecast[]>([]);
+  const [forecastError, setForecastError] = useState<string | null>(null);
   const [ssdSummary, setSsdSummary] = useState<SsdHungerSummary | null>(null);
   const [ssdCountyRows, setSsdCountyRows] = useState<SsdCountyHungerRow[]>([]);
   const [ssdError, setSsdError] = useState<string | null>(null);
@@ -108,6 +119,12 @@ export default function AngelGlobe({ mode, highlights = [], sudanLayers }: Angel
     riskData.forEach((item) => out.set(item.iso3, item));
     return out;
   }, [riskData]);
+
+  const forecastByIso = useMemo(() => {
+    const out = new Map<string, CountryForecast>();
+    forecastData.forEach((item) => out.set(item.iso3, item));
+    return out;
+  }, [forecastData]);
 
   const active = !dismissed && highlights.length > 0 ? highlights[activeIndex] : null;
   activeRef.current = active;
@@ -198,6 +215,51 @@ export default function AngelGlobe({ mode, highlights = [], sudanLayers }: Angel
     }
 
     void fetchRiskData();
+  }, []);
+
+  useEffect(() => {
+    async function fetchForecastData() {
+      try {
+        const response = await fetch("/api/countries/forecast");
+        if (!response.ok) {
+          throw new Error(`Forecast API request failed (${response.status})`);
+        }
+        const payload = (await response.json()) as {
+          data?: Array<{
+            iso3?: string;
+            country?: string | null;
+            asOfDate?: string | null;
+            currentRiskScore?: number;
+            forecastRiskScore?: number;
+            forecastStatus?: "green" | "yellow" | "red";
+          }>;
+        };
+        const rows = (payload.data ?? [])
+          .filter(
+            (row) =>
+              typeof row.iso3 === "string" &&
+              (row.forecastStatus === "green" ||
+                row.forecastStatus === "yellow" ||
+                row.forecastStatus === "red") &&
+              typeof row.currentRiskScore === "number" &&
+              typeof row.forecastRiskScore === "number"
+          )
+          .map((row) => ({
+            iso3: row.iso3 as string,
+            country: typeof row.country === "string" ? row.country : null,
+            asOfDate: typeof row.asOfDate === "string" ? row.asOfDate : null,
+            currentRiskScore: row.currentRiskScore as number,
+            forecastRiskScore: row.forecastRiskScore as number,
+            forecastStatus: row.forecastStatus as "green" | "yellow" | "red"
+          }));
+        setForecastData(rows);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Failed to load forecast data";
+        setForecastError(message);
+      }
+    }
+
+    void fetchForecastData();
   }, []);
 
   useEffect(() => {
@@ -336,6 +398,21 @@ export default function AngelGlobe({ mode, highlights = [], sudanLayers }: Angel
     return expression as LayerProps["paint"];
   }, [floodBandByIso]);
 
+  const forecastFillExpression = useMemo(() => {
+    const expression: unknown[] = ["match", ["get", "iso_3166_1_alpha_3"]];
+    forecastByIso.forEach((row, iso3) => {
+      const color =
+        row.forecastStatus === "red"
+          ? "#dc2626"
+          : row.forecastStatus === "yellow"
+          ? "#f59e0b"
+          : "#22c55e";
+      expression.push(iso3, color);
+    });
+    expression.push("rgba(120,130,150,0.15)");
+    return expression as LayerProps["paint"];
+  }, [forecastByIso]);
+
   const ssdCountryFillExpression = useMemo(() => {
     const expression: unknown[] = ["match", ["get", "iso_3166_1_alpha_3"]];
     const score = ssdSummary?.avgPriority ?? null;
@@ -365,6 +442,17 @@ export default function AngelGlobe({ mode, highlights = [], sudanLayers }: Angel
     paint: {
       "fill-color": floodFillExpression as unknown as string,
       "fill-opacity": 0.55
+    }
+  };
+
+  const forecastLayer: LayerProps = {
+    id: "angel-country-forecast-fill",
+    type: "fill",
+    source: "country-boundaries",
+    "source-layer": "country_boundaries",
+    paint: {
+      "fill-color": forecastFillExpression as unknown as string,
+      "fill-opacity": 0.5
     }
   };
 
@@ -583,7 +671,9 @@ export default function AngelGlobe({ mode, highlights = [], sudanLayers }: Angel
         : typeof iso3Candidate === "number"
           ? String(iso3Candidate)
           : null;
-    if (!iso3 || !riskByIso.has(iso3)) {
+    const hasCountryData =
+      mode === "forecast_30d" ? forecastByIso.has(iso3 ?? "") : riskByIso.has(iso3 ?? "");
+    if (!iso3 || !hasCountryData) {
       setHoverInfo(null);
       return;
     }
@@ -596,6 +686,8 @@ export default function AngelGlobe({ mode, highlights = [], sudanLayers }: Angel
 
   const selectedCountry = selectedIso3 ? riskByIso.get(selectedIso3) ?? null : null;
   const hoveredCountry = hoverInfo ? riskByIso.get(hoverInfo.iso3) ?? null : null;
+  const selectedForecast = selectedIso3 ? forecastByIso.get(selectedIso3) ?? null : null;
+  const hoveredForecast = hoverInfo ? forecastByIso.get(hoverInfo.iso3) ?? null : null;
   function toNumber(value: unknown): number | null {
     if (value == null) return null;
     const n = Number(value);
@@ -664,6 +756,7 @@ export default function AngelGlobe({ mode, highlights = [], sudanLayers }: Angel
         interactiveLayerIds={[
           "angel-country-risk-fill",
           "angel-country-flood-fill",
+          "angel-country-forecast-fill",
           "angel-country-ssd-hunger-fill",
           "angel-ssd-county-circles",
           "angel-ssd-county-displacement-circles",
@@ -685,6 +778,7 @@ export default function AngelGlobe({ mode, highlights = [], sudanLayers }: Angel
         >
           {mode === "risk" ? <Layer {...riskLayer} /> : null}
           {mode === "flood" ? <Layer {...floodLayer} /> : null}
+          {mode === "forecast_30d" ? <Layer {...forecastLayer} /> : null}
           {mode === "sudan_map" ? null : <Layer {...countryBorderLayer} />}
         </Source>
         {/* Annotation dot */}
@@ -765,6 +859,12 @@ export default function AngelGlobe({ mode, highlights = [], sudanLayers }: Angel
           <span className="dot flood-q4" /> Q4
           <span className="dot flood-q5" /> Q5
         </div>
+      ) : mode === "forecast_30d" ? (
+        <div className="map-legend">
+          <span className="dot green" /> Forecast 30d safe
+          <span className="dot yellow" /> Forecast 30d worrisome
+          <span className="dot red" /> Forecast 30d crisis
+        </div>
       ) : (
         <div className="map-legend">
           {sudanLayers.hunger ? (
@@ -791,8 +891,25 @@ export default function AngelGlobe({ mode, highlights = [], sudanLayers }: Angel
           ) : null}
         </div>
       )}
-      <div className="map-debug-badge">Mode: {mode} | Rows: {riskData.length}</div>
-      {mode !== "sudan_map" && hoverInfo && hoveredCountry ? (
+      <div className="map-debug-badge">
+        Mode: {mode} | Rows: {mode === "forecast_30d" ? forecastData.length : riskData.length}
+      </div>
+      {mode === "forecast_30d" && hoverInfo && hoveredForecast ? (
+        <div
+          className="hover-tooltip"
+          style={{
+            left: hoverInfo.x + 14,
+            top: hoverInfo.y + 14
+          }}
+        >
+          <div className="hover-title">
+            {hoveredForecast.country ?? hoveredForecast.iso3} ({hoveredForecast.iso3})
+          </div>
+          <div className="hover-row">Forecast status: {hoveredForecast.forecastStatus}</div>
+          <div className="hover-row">Current risk: {hoveredForecast.currentRiskScore.toFixed(3)}</div>
+          <div className="hover-row">30d forecast: {hoveredForecast.forecastRiskScore.toFixed(3)}</div>
+        </div>
+      ) : mode !== "sudan_map" && hoverInfo && hoveredCountry ? (
         <div
           className="hover-tooltip"
           style={{
@@ -842,7 +959,30 @@ export default function AngelGlobe({ mode, highlights = [], sudanLayers }: Angel
           </div>
         </div>
       ) : null}
-      {mode !== "sudan_map" && selectedCountry ? (
+      {mode === "forecast_30d" && selectedForecast ? (
+        <div className="country-card">
+          <div className="country-card-title">
+            {selectedForecast.country ?? selectedForecast.iso3} ({selectedForecast.iso3})
+          </div>
+          <div className="country-card-row">Current risk score: {selectedForecast.currentRiskScore.toFixed(3)}</div>
+          <div className="country-card-row">Forecast (30d): {selectedForecast.forecastRiskScore.toFixed(3)}</div>
+          <div className="country-card-row">
+            Forecast status: {selectedForecast.forecastStatus.toUpperCase()} | As-of date:{" "}
+            {selectedForecast.asOfDate ?? "N/A"}
+          </div>
+          <div className="case-swatches">
+            <span className={`case-chip ${selectedForecast.forecastStatus === "green" ? "case-active" : ""}`}>
+              <span className="dot green" /> green
+            </span>
+            <span className={`case-chip ${selectedForecast.forecastStatus === "yellow" ? "case-active" : ""}`}>
+              <span className="dot yellow" /> yellow
+            </span>
+            <span className={`case-chip ${selectedForecast.forecastStatus === "red" ? "case-active" : ""}`}>
+              <span className="dot red" /> red
+            </span>
+          </div>
+        </div>
+      ) : mode !== "sudan_map" && selectedCountry ? (
         <div className="country-card">
           <div className="country-card-title">
             {selectedCountry.country ?? selectedCountry.iso3} ({selectedCountry.iso3})
@@ -905,6 +1045,7 @@ export default function AngelGlobe({ mode, highlights = [], sudanLayers }: Angel
 
       {mapError ? <div className="map-fallback">{mapError}</div> : null}
       {riskError ? <div className="map-fallback">{riskError}</div> : null}
+      {forecastError ? <div className="map-fallback">{forecastError}</div> : null}
       {ssdError ? <div className="map-fallback">{ssdError}</div> : null}
     </div>
   );

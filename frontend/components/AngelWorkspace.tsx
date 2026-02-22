@@ -16,7 +16,7 @@ type QueryResponse = {
   answer?: string;
   explanation?: string;
   filters?: {
-    mode?: "risk" | "flood" | "sudan_map";
+    mode?: "risk" | "flood" | "sudan_map" | "forecast_30d";
     action?: "zoom_country";
     iso3?: string | null;
     focus?: string;
@@ -33,7 +33,7 @@ type QueryResponse = {
   }>;
 };
 
-type QueryMapMode = "risk" | "flood" | "sudan_map";
+type QueryMapMode = "risk" | "flood" | "sudan_map" | "forecast_30d";
 
 type SsdHungerRow = {
   adm1State: string;
@@ -402,6 +402,13 @@ export default function AngelWorkspace() {
               onClick={() => setMode("flood")}
             >
               Flood Depth Mode
+            </button>
+            <button
+              type="button"
+              className={`mode-btn ${mode === "forecast_30d" ? "mode-btn-active" : ""}`}
+              onClick={() => setMode("forecast_30d")}
+            >
+              Forecast 30d Mode
             </button>
             <button
               type="button"

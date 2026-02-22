@@ -5,12 +5,14 @@ import path from "node:path";
 
 type QueryRequest = {
   question?: string;
-  mode?: "risk" | "flood" | "sudan_map";
+  mode?: "risk" | "flood" | "sudan_map" | "forecast_30d";
 };
 
 type AgentIntent =
   | "smalltalk"
   | "sudan_map_open"
+  | "forecast_outlook"
+  | "global_funding_allocation"
   | "flood_hotspots"
   | "crisis_hotspots"
   | "stable_countries"
@@ -53,7 +55,26 @@ type ContextSummary = {
   topIso3: string[];
 };
 
-type QueryMapMode = "risk" | "flood" | "sudan_map";
+type QueryMapMode = "risk" | "flood" | "sudan_map" | "forecast_30d";
+type IntentDetectionResult = {
+  intent: AgentIntent;
+  confidence: number;
+};
+
+const ALLOWED_INTENTS: AgentIntent[] = [
+  "smalltalk",
+  "sudan_map_open",
+  "forecast_outlook",
+  "global_funding_allocation",
+  "flood_hotspots",
+  "crisis_hotspots",
+  "stable_countries",
+  "top_risk_countries",
+  "country_focus",
+  "ssd_hunger_hotspots",
+  "ssd_system_stress",
+  "ssd_hospital_allocation"
+];
 
 function toNumberOrNull(value: unknown): number | null {
   if (value == null) {
@@ -76,6 +97,16 @@ function normalizeStatus(value: unknown): "green" | "yellow" | "red" | null {
     return status;
   }
   return null;
+}
+
+function statusFromRiskScore(riskScore: number): "green" | "yellow" | "red" {
+  if (riskScore > 0.15) {
+    return "red";
+  }
+  if (riskScore > 0.1) {
+    return "yellow";
+  }
+  return "green";
 }
 
 function sanitizeSqlLikeLiteral(value: string): string {
@@ -136,10 +167,22 @@ function responseStyleFor(intent: AgentIntent, question: string): {
   lengthRule: string;
   actionsRule: string;
 } {
+  if (intent === "forecast_outlook") {
+    return {
+      lengthRule: "Keep response concise: 2-3 sentences with forecast focus.",
+      actionsRule: 'Include a short "Planning next steps" section with 2 bullets.'
+    };
+  }
   if (intent === "sudan_map_open") {
     return {
       lengthRule: "Keep it short: 1 sentence.",
       actionsRule: "Do not include recommendation bullets."
+    };
+  }
+  if (intent === "global_funding_allocation") {
+    return {
+      lengthRule: "Give a practical allocation answer in 3-4 sentences.",
+      actionsRule: 'Include a short "Suggested allocation" section with 3 bullets and percentages.'
     };
   }
   if (intent === "smalltalk") {
@@ -191,6 +234,121 @@ function smalltalkReply(question: string): string {
   return "I’m here. Tell me what you want to explore and I’ll keep it sharp.";
 }
 
+function normalizeIntentText(question: string): string {
+  return question
+    .toLowerCase()
+    .replace(/[^\w\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function extractJsonObject(text: string): string | null {
+  const start = text.indexOf("{");
+  const end = text.lastIndexOf("}");
+  if (start < 0 || end <= start) {
+    return null;
+  }
+  return text.slice(start, end + 1);
+}
+
+async function detectIntentWithGemini(input: {
+  question: string;
+  mode?: QueryMapMode;
+}): Promise<IntentDetectionResult | null> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    return null;
+  }
+  const model = process.env.GEMINI_MODEL ?? "gemini-1.5-flash";
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  const prompt = `
+Classify the user message into one intent.
+Return strict JSON only with keys: intent, confidence.
+
+Allowed intents:
+- smalltalk
+- sudan_map_open
+- forecast_outlook
+- global_funding_allocation
+- flood_hotspots
+- crisis_hotspots
+- stable_countries
+- top_risk_countries
+- country_focus
+- ssd_hunger_hotspots
+- ssd_system_stress
+- ssd_hospital_allocation
+
+Rules:
+- If user greets only, choose smalltalk.
+- If user asks to open/switch Sudan map, choose sudan_map_open.
+- If user asks about 30-day forecast/outlook/projection, choose forecast_outlook.
+- If user asks where to invest, allocate funds, or distribute budget globally, choose global_funding_allocation.
+- If user asks to zoom/focus on a country, choose country_focus.
+- If user asks about wars/conflict/crisis, choose crisis_hotspots.
+- If map mode is sudan_map and user is generic, prefer ssd_system_stress.
+- Confidence is 0 to 1.
+
+Current mode: ${input.mode ?? "risk"}
+User message: ${input.question}
+`.trim();
+
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }]
+      })
+    });
+    if (!response.ok) {
+      return null;
+    }
+    const data = (await response.json()) as {
+      candidates?: Array<{
+        content?: { parts?: Array<{ text?: string }> };
+      }>;
+    };
+    const text =
+      data.candidates?.[0]?.content?.parts
+        ?.map((part) => part.text ?? "")
+        .join("\n")
+        .trim() ?? "";
+    const jsonText = extractJsonObject(text);
+    if (!jsonText) {
+      return null;
+    }
+    const parsed = JSON.parse(jsonText) as { intent?: string; confidence?: number };
+    const intent = parsed.intent;
+    const confidence = Number(parsed.confidence);
+    if (!intent || !ALLOWED_INTENTS.includes(intent as AgentIntent) || !Number.isFinite(confidence)) {
+      return null;
+    }
+    return {
+      intent: intent as AgentIntent,
+      confidence: Math.max(0, Math.min(1, confidence))
+    };
+  } catch {
+    return null;
+  }
+}
+
+function isGreetingOnly(question: string): boolean {
+  const q = normalizeIntentText(question);
+  if (!q) {
+    return false;
+  }
+  const hasGreeting =
+    /(^|\s)(hello|hi|hey|yo|sup|greetings|good morning|good afternoon|good evening|how are you|hows it going|how s it going|nice to meet you|thanks|thank you|thx)(\s|$)/.test(
+      q
+    ) || /(^|\s)(athena|athina|atena|atina|athinah|athna)(\s|$)/.test(q);
+  const hasActionableIntent =
+    /(show|zoom|focus|open|switch|map|risk|war|conflict|flood|hunger|country|countries|where|which|analy[sz]e|explain|plan|allocate|budget|hotspot|status)/.test(
+      q
+    );
+  return hasGreeting && !hasActionableIntent;
+}
+
 function toAgentResult(row: Record<string, unknown>): AgentResult | null {
   const iso3Value = readField(row, "iso3", "col_0");
   const statusValue =
@@ -203,9 +361,10 @@ function toAgentResult(row: Record<string, unknown>): AgentResult | null {
     readField(row, "stress_score", "col_11") ??
     readField(row, "allocation_score", "col_13");
   const iso3 = typeof iso3Value === "string" ? iso3Value : "";
-  const status = normalizeStatus(statusValue);
   const riskScore = toNumberOrNull(riskScoreValue);
-  if (!iso3 || status == null || riskScore == null) {
+  const status = statusValue ? normalizeStatus(statusValue) : null;
+  const resolvedStatus = riskScore == null ? status : status ?? statusFromRiskScore(riskScore);
+  if (!iso3 || resolvedStatus == null || riskScore == null) {
     return null;
   }
   return {
@@ -214,7 +373,7 @@ function toAgentResult(row: Record<string, unknown>): AgentResult | null {
       typeof readField(row, "country_name", "col_1") === "string"
         ? (readField(row, "country_name", "col_1") as string)
         : null,
-    status,
+    status: resolvedStatus,
     riskScore,
     floodPopExposed: toNumberOrNull(readField(row, "flood_pop_exposed", "col_4")),
     adm1State:
@@ -246,7 +405,7 @@ function toAgentResult(row: Record<string, unknown>): AgentResult | null {
 }
 
 function detectIntent(question: string): AgentIntent {
-  const q = question.toLowerCase();
+  const q = normalizeIntentText(question);
 
   // UI panel toggle
   if (/(show|open|display|reveal).*(data|panel|dashboard|modes)/.test(q)) {
@@ -265,7 +424,6 @@ function detectIntent(question: string): AgentIntent {
   if (/(switch|change|go|set).*(flood|risk|crisis).*mode/.test(q)) {
     return "ui_mode_switch";
   }
-
   const asksSudanMap = /(open|show|switch|go to|goto|use|enable|turn on).*(sudan|south sudan).*(map)|(sudan|south sudan).*(map)/.test(
     q
   );
@@ -273,20 +431,25 @@ function detectIntent(question: string): AgentIntent {
     return "sudan_map_open";
   }
 
-  const asksGreeting = /^(hello|hi|hey|yo|sup|how are you|how's it going|hows it going|thanks|thank you|thx)[!. ]*$/.test(
-    q.trim()
-  );
-  if (asksGreeting) {
+  if (isGreetingOnly(question)) {
     return "smalltalk";
   }
 
   const asksNavigation = /(zoom|focus|go to|show me|center on|move to|soom)/.test(q);
+  const asksForecast = /(forecast|outlook|projection|predict|next 30 days|30 day|30-day|in 30 days)/.test(
+    q
+  );
   const explicitCountry = extractCountryPhrase(question);
   const asksSouthSudan = /(south sudan|ssd|juba|equatoria|jonglei|upper nile|unity|warrap)/.test(q);
   const asksHunger = /(hunger|nutrition|malnutrition|gam|food insecurity|county|state|substate|sub-state)/.test(q);
   const asksSystem = /(intercorrelat|interconnect|complex|dynamic|system|drivers|multi-factor|why)/.test(q);
   const asksHospitals = /(hospital|hospitals|hostpital|hostpitals|clinic|facility|facilities|health center)/.test(q);
   const asksAllocation = /(allocat|spend|budget|fund|financ|invest|prioriti[sz]e)/.test(q);
+  const asksGlobalFunding =
+    /(invest(ed)?|allocate|allocation|budget|funding|distribute|spend|deploy).*(million|billion|usd|dollar|money)/.test(
+      q
+    ) ||
+    /(where would i put it|where should i put it|how should i spend it)/.test(q);
 
   if (asksNavigation && explicitCountry) {
     return "country_focus";
@@ -294,6 +457,12 @@ function detectIntent(question: string): AgentIntent {
 
   if (asksSouthSudan && asksHospitals && asksAllocation) {
     return "ssd_hospital_allocation";
+  }
+  if (asksForecast) {
+    return "forecast_outlook";
+  }
+  if (asksGlobalFunding || (asksAllocation && !asksSouthSudan && !asksHospitals)) {
+    return "global_funding_allocation";
   }
 
   if (asksSouthSudan && asksHunger) {
@@ -311,7 +480,7 @@ function detectIntent(question: string): AgentIntent {
   if (/(safe|stable|green)/.test(q)) {
     return "stable_countries";
   }
-  if (/(war|conflict|crisis|red|hotspot|high risk|danger)/.test(q)) {
+  if (/(war|wars|conflict|fighting|violence|civil war|armed|battle|frontline|crisis|red|hotspot|high risk|danger)/.test(q)) {
     return "crisis_hotspots";
   }
   return "top_risk_countries";
@@ -466,6 +635,37 @@ ORDER BY allocation_score DESC
 LIMIT ${limit}
 `;
   }
+  if (intent === "global_funding_allocation") {
+    return `
+SELECT
+  iso3,
+  country_name,
+  status,
+  risk_score,
+  flood_pop_exposed,
+  COALESCE(risk_score, 0.0) AS allocation_score,
+  CASE
+    WHEN COALESCE(risk_score, 0.0) >= 0.70 THEN 'urgent'
+    WHEN COALESCE(risk_score, 0.0) >= 0.45 THEN 'priority'
+    ELSE 'sustain'
+  END AS spend_tier,
+  ROUND(
+    100.0 * COALESCE(risk_score, 0.0) / NULLIF(SUM(COALESCE(risk_score, 0.0)) OVER (), 0.0),
+    2
+  ) AS recommended_spend_share_pct
+FROM ${table}
+WHERE COALESCE(risk_score, 0.0) > 0
+ORDER BY allocation_score DESC
+LIMIT ${limit}
+`;
+  }
+  if (intent === "forecast_outlook") {
+    return `${baseSelect}
+WHERE COALESCE(risk_score, 0.0) > 0
+ORDER BY risk_score DESC
+LIMIT ${limit}
+`;
+  }
   if (intent === "flood_hotspots") {
     return `${baseSelect}
 WHERE flood_pop_exposed IS NOT NULL
@@ -475,14 +675,15 @@ LIMIT ${limit}
   }
   if (intent === "stable_countries") {
     return `${baseSelect}
-WHERE status = 'green'
+WHERE lower(COALESCE(status, '')) = 'green'
 ORDER BY risk_score ASC
 LIMIT ${limit}
 `;
   }
   if (intent === "crisis_hotspots") {
     return `${baseSelect}
-WHERE status IN ('red', 'yellow')
+WHERE lower(COALESCE(status, '')) IN ('red', 'yellow')
+   OR COALESCE(risk_score, 0.0) >= 0.1
 ORDER BY risk_score DESC
 LIMIT ${limit}
 `;
@@ -497,11 +698,16 @@ function buildExplanation(intent: AgentIntent, countries: AgentResult[], questio
   if (intent === "sudan_map_open") {
     return "Sudan Map mode enabled. You can now toggle hunger, displacement, facilities, and markets layers.";
   }
+  if (intent === "global_funding_allocation" && countries.length === 0) {
+    return "I could not compute allocation rows from the current serving data, so I cannot recommend a reliable funding split yet.";
+  }
   if (intent === "smalltalk") {
     return smalltalkReply(question);
   }
   if (countries.length === 0) {
-    return "I queried the live Databricks serving table, but no rows matched that request.";
+    return intent === "crisis_hotspots"
+      ? "Live crisis rows were sparse in the current filter, so I recommend using top risk-scoring countries as conflict proxies for immediate action."
+      : "I queried the live Databricks serving table, but no rows matched that request.";
   }
   const top = countries.slice(0, 5);
   const compact = intent === "country_focus" || isSimplePrompt(question);
@@ -512,18 +718,23 @@ function buildExplanation(intent: AgentIntent, countries: AgentResult[], questio
       : "Focus command received.";
   }
   const lines =
-    intent === "ssd_hunger_hotspots" || intent === "ssd_system_stress" || intent === "ssd_hospital_allocation"
+    intent === "ssd_hunger_hotspots" ||
+    intent === "ssd_system_stress" ||
+    intent === "ssd_hospital_allocation" ||
+    intent === "global_funding_allocation"
       ? top.map(
           (c) =>
-            `- ${c.adm2County ?? "Unknown county"}, ${c.adm1State ?? "Unknown state"}: ${c.status.toUpperCase()}, hunger GAM ${
-              c.hungerGamPct?.toFixed(1) ?? "N/A"
-            }%, priority ${c.priorityScore?.toFixed(3) ?? c.riskScore.toFixed(3)}, IDPs ${c.idpIndividuals?.toLocaleString() ?? "N/A"}, facilities ${
-              c.healthFacilityCount ?? "N/A"
-            }${
-              intent === "ssd_hospital_allocation"
-                ? `, allocation ${c.allocationScore?.toFixed(3) ?? "N/A"}, suggested share ${c.recommendedSpendSharePct?.toFixed(2) ?? "N/A"}%`
-                : ""
-            }`
+            intent === "global_funding_allocation"
+              ? `- ${c.country ?? c.iso3} (${c.iso3}): ${c.status.toUpperCase()}, allocation ${c.allocationScore?.toFixed(3) ?? c.riskScore.toFixed(3)}, suggested share ${c.recommendedSpendSharePct?.toFixed(2) ?? "N/A"}%`
+              : `- ${c.adm2County ?? "Unknown county"}, ${c.adm1State ?? "Unknown state"}: ${c.status.toUpperCase()}, hunger GAM ${
+                  c.hungerGamPct?.toFixed(1) ?? "N/A"
+                }%, priority ${c.priorityScore?.toFixed(3) ?? c.riskScore.toFixed(3)}, IDPs ${c.idpIndividuals?.toLocaleString() ?? "N/A"}, facilities ${
+                  c.healthFacilityCount ?? "N/A"
+                }${
+                  intent === "ssd_hospital_allocation"
+                    ? `, allocation ${c.allocationScore?.toFixed(3) ?? "N/A"}, suggested share ${c.recommendedSpendSharePct?.toFixed(2) ?? "N/A"}%`
+                    : ""
+                }`
         )
       : top.map(
           (c) =>
@@ -545,6 +756,18 @@ function buildExplanation(intent: AgentIntent, countries: AgentResult[], questio
           intent === "ssd_hospital_allocation"
             ? "Recompute shares weekly as displacement and hunger indicators update."
             : "Track displacement and returnee pressure weekly to catch spillover risk between neighboring counties."
+        ]
+      : intent === "global_funding_allocation"
+      ? [
+          "Allocate most funding to the top-ranked crisis countries by suggested spend share.",
+          "Reserve a smaller contingency slice for fast-moving deterioration in adjacent high-risk countries.",
+          "Recompute this split frequently as new risk rows arrive."
+        ]
+      : intent === "forecast_outlook"
+      ? [
+          "Use forecast mode to review expected 30-day risk concentration across countries.",
+          "Pre-position teams and funds in countries with highest projected risk first.",
+          "Re-run forecast after each fresh Databricks model output to adjust plans."
         ]
       : intent === "flood_hotspots"
       ? [
@@ -571,6 +794,10 @@ function buildExplanation(intent: AgentIntent, countries: AgentResult[], questio
         ? "South Sudan intercorrelated system-stress assessment from live Databricks data"
       : intent === "ssd_hospital_allocation"
         ? "South Sudan hospital spending-allocation assessment from live Databricks data"
+      : intent === "global_funding_allocation"
+        ? "Global funding allocation assessment from live Databricks risk data"
+      : intent === "forecast_outlook"
+        ? "30-day forecast outlook from available risk forecasting outputs"
         : intent === "flood_hotspots"
       ? "Flood hotspot assessment from live Databricks data"
       : intent === "stable_countries"
@@ -584,6 +811,8 @@ function buildExplanation(intent: AgentIntent, countries: AgentResult[], questio
       ? `Highest priority right now: ${highest.adm2County ?? "Unknown county"}, ${highest.adm1State ?? "Unknown state"} with score ${
           (highest.allocationScore ?? highest.priorityScore ?? highest.riskScore).toFixed(3)
         }${intent === "ssd_hospital_allocation" ? ` and suggested spend share ${highest.recommendedSpendSharePct?.toFixed(2) ?? "N/A"}%.` : "."}`
+      : intent === "global_funding_allocation"
+      ? `Top funding destination: ${highest.country ?? highest.iso3} (${highest.iso3}) with suggested share ${highest.recommendedSpendSharePct?.toFixed(2) ?? "N/A"}%.`
       : `Highest priority right now: ${highest.country ?? highest.iso3} (${highest.iso3}) with risk ${highest.riskScore.toFixed(3)}.`
     : "";
 
@@ -663,6 +892,8 @@ Rules:
 - Be concise and operational.
 - For hospital allocation questions, rank counties by allocation score and mention suggested spend-share percentages.
 - For country focus commands, acknowledge the requested country and provide a short situational readout from returned rows.
+- For global funding allocation questions, provide a practical allocation split using suggested spend-share percentages from the data.
+- For forecast outlook questions, focus on expected 30-day changes and planning implications.
 `.trim();
 
   try {
@@ -694,6 +925,77 @@ Rules:
   }
 }
 
+async function generateSudanModeGeminiAnswer(input: {
+  question: string;
+  sudanContextText?: string | null;
+}): Promise<{ answer: string; source: "gemini" | "fallback" }> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    return {
+      source: "fallback",
+      answer:
+        "Sudan mode is active, but Gemini is not configured right now. Add GEMINI_API_KEY to enable direct generative answers."
+    };
+  }
+
+  const model = process.env.GEMINI_MODEL ?? "gemini-1.5-flash";
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  const prompt = `
+You are Athena, an AI humanitarian analyst focused on Sudan and South Sudan.
+Map mode: sudan_map
+User question: ${input.question}
+
+${input.sudanContextText ? `Operational Sudan context:
+${input.sudanContextText}` : "No supplemental Sudan text was provided."}
+
+Instructions:
+- Answer to the best of your ability, directly and confidently.
+- Prioritize actionable planning insight.
+- Be explicit when uncertainty remains.
+- Keep response concise (2-5 sentences).
+`.trim();
+
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }]
+      })
+    });
+    if (!response.ok) {
+      return {
+        source: "fallback",
+        answer:
+          "Sudan mode is active, but Gemini could not be reached right now. Please retry in a moment."
+      };
+    }
+    const data = (await response.json()) as {
+      candidates?: Array<{
+        content?: { parts?: Array<{ text?: string }> };
+      }>;
+    };
+    const text =
+      data.candidates?.[0]?.content?.parts
+        ?.map((part) => part.text ?? "")
+        .join("\n")
+        .trim() ?? "";
+    return text
+      ? { answer: text, source: "gemini" }
+      : {
+          answer:
+            "Sudan mode is active, but Gemini returned an empty response. Please ask again with a bit more detail.",
+          source: "fallback"
+        };
+  } catch {
+    return {
+      source: "fallback",
+      answer:
+        "Sudan mode is active, but Gemini request failed right now. Please retry shortly."
+    };
+  }
+}
+
 export async function POST(request: NextRequest) {
   const body = (await request.json().catch(() => ({}))) as QueryRequest;
   const question = (body.question ?? "").trim();
@@ -704,6 +1006,23 @@ export async function POST(request: NextRequest) {
       { error: "Please provide a question in { question: string }." },
       { status: 400 }
     );
+  }
+
+  if (mode === "sudan_map") {
+    const sudanContextText = await loadSudanContextText();
+    const generated = await generateSudanModeGeminiAnswer({
+      question,
+      sudanContextText
+    });
+    return NextResponse.json({
+      intent: "ssd_system_stress",
+      question,
+      filters: { mode: "sudan_map", focus: "south_sudan", level: "county" },
+      countries: [],
+      responseSource: generated.source,
+      answer: generated.answer,
+      explanation: generated.answer
+    });
   }
 
   const config = getDatabricksConfig();
@@ -723,15 +1042,13 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const intent = detectIntent(question);
-  const effectiveIntent: AgentIntent =
-    mode === "sudan_map" &&
-    (intent === "top_risk_countries" ||
-      intent === "crisis_hotspots" ||
-      intent === "stable_countries" ||
-      intent === "flood_hotspots")
-      ? "ssd_system_stress"
-      : intent;
+  const aiDetection = await detectIntentWithGemini({ question, mode });
+  let intent =
+    aiDetection && aiDetection.confidence >= 0.55 ? aiDetection.intent : detectIntent(question);
+  if (intent === "country_focus" && !extractCountryPhrase(question)) {
+    intent = detectIntent(question);
+  }
+  const effectiveIntent: AgentIntent = intent;
 
   if (effectiveIntent === "sudan_map_open") {
     const answer = buildExplanation(effectiveIntent, [], question);
@@ -827,7 +1144,11 @@ export async function POST(request: NextRequest) {
     const topCountryIso3 = countries[0]?.iso3 ?? null;
     const filters =
       effectiveIntent === "ssd_hunger_hotspots" || effectiveIntent === "ssd_system_stress" || effectiveIntent === "ssd_hospital_allocation"
-        ? { mode: mode === "sudan_map" ? "sudan_map" : "risk", focus: "south_sudan", level: "county" }
+        ? { mode: "risk", focus: "south_sudan", level: "county" }
+        : effectiveIntent === "forecast_outlook"
+        ? { mode: "forecast_30d" }
+        : effectiveIntent === "global_funding_allocation"
+        ? { mode: "risk", strategy: "global_allocation" }
         : effectiveIntent === "country_focus"
         ? { mode: "risk", action: "zoom_country", iso3: topCountryIso3 }
         : effectiveIntent === "flood_hotspots"
@@ -836,7 +1157,7 @@ export async function POST(request: NextRequest) {
           ? { status: ["green"], mode: "risk" }
           : { status: ["red", "yellow"], mode: "risk" };
 
-    const sudanContextText = mode === "sudan_map" ? await loadSudanContextText() : null;
+    const sudanContextText = null;
     const contextSummary = summarizeContext(countries);
     const fallbackExplanation = buildExplanation(effectiveIntent, countries, question);
     const generated = await generateGeminiAnswer({
