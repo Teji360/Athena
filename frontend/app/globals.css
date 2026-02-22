@@ -206,6 +206,161 @@ body {
   font-size: 13px;
 }
 
+/* ── County Action Card ───────────────────────────────────────── */
+.county-action-card {
+  position: absolute;
+  left: 16px;
+  bottom: 90px;
+  width: min(320px, calc(100vw - 32px));
+  border: 1px solid #2d4066;
+  border-radius: 12px;
+  background: rgba(8, 14, 26, 0.96);
+  font-size: 12px;
+  overflow: hidden;
+  z-index: 20;
+}
+
+.county-action-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 10px 12px 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+
+.county-action-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #f2f5f9;
+  display: block;
+}
+
+.county-action-state {
+  font-size: 10px;
+  color: #7a9cd4;
+  display: block;
+  margin-top: 1px;
+}
+
+.county-action-close {
+  background: transparent;
+  border: none;
+  color: #5a7aaa;
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.county-action-close:hover {
+  color: #f2f5f9;
+}
+
+.county-action-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(255,255,255,0.03);
+  border-left: 3px solid;
+  flex-wrap: wrap;
+}
+
+.county-action-band {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  border: 1px solid;
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+.county-action-stat {
+  font-size: 10px;
+  color: #9ab2d6;
+}
+
+.county-action-stat strong {
+  color: #f2f5f9;
+  font-weight: 600;
+}
+
+.county-action-section {
+  padding: 8px 12px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.county-action-section-title {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.county-action-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.county-action-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+}
+
+.county-action-rank {
+  font-size: 9px;
+  font-weight: 700;
+  color: #0a0f1a;
+  background: #4f79bd;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.county-action-item-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.county-action-item-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: #f2f5f9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.county-action-item-meta {
+  font-size: 9px;
+  color: #7a9cd4;
+}
+
+.county-action-empty {
+  font-size: 10px;
+  color: #4a6284;
+  font-style: italic;
+}
+
+.county-action-footer {
+  font-size: 9px;
+  color: #3a5275;
+  text-align: center;
+  padding: 5px 12px 7px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
 .country-card-title {
   font-weight: 700;
   margin-bottom: 6px;

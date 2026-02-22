@@ -7,6 +7,7 @@ import MapGL, { Layer, Marker, Source, type LayerProps, type MapRef } from "reac
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
 import conflictRaw from "@/lib/countryConflictData.json";
+import countyResourcesRaw from "@/lib/ssdCountyResources.json";
 
 const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
@@ -23,6 +24,45 @@ type ConflictEntry = {
 };
 
 const conflictData = conflictRaw as Record<string, ConflictEntry>;
+
+type CountyFacility = {
+  name: string;
+  type: string;
+  county: string;
+  state: string;
+  lat: number;
+  lon: number;
+  distKm: number;
+};
+
+type CountyMarket = {
+  name: string;
+  county: string;
+  state: string;
+  lat: number;
+  lon: number;
+  distKm: number;
+};
+
+type CountyResources = {
+  pcode: string;
+  county: string;
+  state: string;
+  centroidLat: number;
+  centroidLon: number;
+  topFacilities: CountyFacility[];
+  topMarkets: CountyMarket[];
+};
+
+const countyResourcesData = countyResourcesRaw as Record<string, CountyResources>;
+
+// Build lookup by normalized county name → resources (handles name mismatches gracefully)
+const countyResourcesByName = new Map<string, CountyResources>();
+for (const entry of Object.values(countyResourcesData)) {
+  countyResourcesByName.set(entry.county.toLowerCase(), entry);
+  // Also index common name variants (hyphen vs space, etc.)
+  countyResourcesByName.set(entry.county.toLowerCase().replace(/-/g, " "), entry);
+}
 
 type GlobeMode = "risk" | "flood" | "sudan_map" | "forecast_30d";
 
@@ -994,20 +1034,106 @@ export default function AngelGlobe({ mode, highlights = [], sudanLayers }: Angel
           ) : null}
         </div>
       ) : null}
-      {mode === "sudan_map" && hoverCounty ? (
-        <div className="hover-tooltip" style={{ left: 24, top: 70 }}>
-          <div className="hover-title">
-            {hoverCounty.adm2County}, {hoverCounty.adm1State}
+      {mode === "sudan_map" && hoverCounty ? (() => {
+        const resources =
+          countyResourcesByName.get(hoverCounty.adm2County.toLowerCase()) ??
+          countyResourcesByName.get(hoverCounty.adm2County.toLowerCase().replace(/-/g, " ")) ??
+          null;
+        const bandColor =
+          hoverCounty.priorityBand === "red" ? "#ef4444" :
+          hoverCounty.priorityBand === "yellow" ? "#f59e0b" : "#22c55e";
+        return (
+          <div className="county-action-card">
+            {/* Header */}
+            <div className="county-action-header">
+              <div>
+                <span className="county-action-name">{hoverCounty.adm2County}</span>
+                <span className="county-action-state">{hoverCounty.adm1State}</span>
+              </div>
+              <button
+                type="button"
+                className="county-action-close"
+                onClick={() => setHoverCounty(null)}
+                aria-label="Close"
+              >
+                <X size={12} />
+              </button>
+            </div>
+
+            {/* Priority strip */}
+            <div className="county-action-strip" style={{ borderColor: bandColor }}>
+              <span className="county-action-band" style={{ color: bandColor, borderColor: bandColor }}>
+                {hoverCounty.priorityBand.toUpperCase()}
+              </span>
+              <span className="county-action-stat">
+                Score <strong>{hoverCounty.priorityScore?.toFixed(3) ?? "—"}</strong>
+              </span>
+              <span className="county-action-stat">
+                Hunger GAM <strong>{hoverCounty.hungerGamPct != null ? `${hoverCounty.hungerGamPct.toFixed(1)}%` : "—"}</strong>
+              </span>
+              <span className="county-action-stat">
+                IDPs <strong>{hoverCounty.idpIndividuals != null ? hoverCounty.idpIndividuals.toLocaleString() : "—"}</strong>
+              </span>
+            </div>
+
+            {/* Health facilities */}
+            <div className="county-action-section">
+              <div className="county-action-section-title" style={{ color: "#ef4444" }}>
+                + Top Hospitals &amp; Health Facilities
+              </div>
+              {resources?.topFacilities.length ? (
+                <div className="county-action-list">
+                  {resources.topFacilities.map((f, i) => (
+                    <div key={i} className="county-action-item">
+                      <span className="county-action-rank">{i + 1}</span>
+                      <div className="county-action-item-body">
+                        <span className="county-action-item-name">{f.name}</span>
+                        <span className="county-action-item-meta">
+                          {f.type} · {f.distKm} km away
+                          {f.county !== hoverCounty.adm2County ? ` · ${f.county}` : ""}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="county-action-empty">
+                  No facility data · {hoverCounty.healthFacilityCount ?? 0} facilities in county
+                </div>
+              )}
+            </div>
+
+            {/* Food markets */}
+            <div className="county-action-section">
+              <div className="county-action-section-title" style={{ color: "#f97316" }}>
+                Food &amp; Shelter Distribution Points
+              </div>
+              {resources?.topMarkets.length ? (
+                <div className="county-action-list">
+                  {resources.topMarkets.map((m, i) => (
+                    <div key={i} className="county-action-item">
+                      <span className="county-action-rank">{i + 1}</span>
+                      <div className="county-action-item-body">
+                        <span className="county-action-item-name">{m.name} Market</span>
+                        <span className="county-action-item-meta">
+                          WFP food point · {m.distKm} km away
+                          {m.county !== hoverCounty.adm2County ? ` · ${m.county}` : ""}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="county-action-empty">No WFP market data for this county</div>
+              )}
+            </div>
+
+            <div className="county-action-footer">
+              WHO MFL Apr 2025 · WFP Markets · DTM R16
+            </div>
           </div>
-          <div className="hover-row">Priority: {hoverCounty.priorityBand.toUpperCase()}</div>
-          <div className="hover-row">Score: {hoverCounty.priorityScore?.toFixed(3) ?? "N/A"}</div>
-          <div className="hover-row">Hunger GAM: {hoverCounty.hungerGamPct?.toFixed(1) ?? "N/A"}%</div>
-          <div className="hover-row">
-            IDPs: {hoverCounty.idpIndividuals?.toLocaleString() ?? "N/A"} | Facilities:{" "}
-            {hoverCounty.healthFacilityCount ?? "N/A"}
-          </div>
-        </div>
-      ) : null}
+        );
+      })() : null}
       {mode === "sudan_map" && ssdSummary ? (
         <div className="country-card">
           <div className="country-card-title">South Sudan county hunger priority</div>
