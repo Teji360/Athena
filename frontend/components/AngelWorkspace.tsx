@@ -1,8 +1,8 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
-import { Droplets, Mic, MicOff, Send, Volume2, VolumeX, X } from "lucide-react";
-import AthenaGlobe, { type GlobeHighlight } from "@/components/AthenaGlobe";
+import { Droplets, Mic, MicOff, Send, Volume2, VolumeX } from "lucide-react";
+import AngelGlobe, { type GlobeHighlight } from "@/components/AngelGlobe";
 import countryCentroids from "@/lib/countryCentroids";
 import {
   getVoiceAssistantEnabledStorageKey,
@@ -22,6 +22,7 @@ type QueryResponse = {
     focus?: string;
     level?: string;
     status?: string[];
+    sudanLayers?: Partial<SudanMapLayers>;
   };
   countries?: Array<{
     iso3?: string;
@@ -84,8 +85,7 @@ type SpeechRecognitionCtor = new () => {
   onend: (() => void) | null;
 };
 
-export default function AthenaWorkspace() {
-  const [isDataPanelOpen, setDataPanelOpen] = useState(true);
+export default function AngelWorkspace() {
   const [mode, setMode] = useState<QueryMapMode>("risk");
   const [sudanLayers, setSudanLayers] = useState<SudanMapLayers>({
     hunger: true,
@@ -100,11 +100,37 @@ export default function AthenaWorkspace() {
   const [isVoiceEnabled, setVoiceEnabled] = useState(true);
   const [voiceStatus, setVoiceStatus] = useState("Voice ready");
   const [input, setInput] = useState("");
+  const [autoSubmit, setAutoSubmit] = useState(true);
   const recognitionRef = useRef<InstanceType<SpeechRecognitionCtor> | null>(null);
   const activeAudioRef = useRef<HTMLAudioElement | null>(null);
+  const chatInputRef = useRef<HTMLInputElement | null>(null);
   const [highlights, setHighlights] = useState<GlobeHighlight[]>([]);
 
   const canSend = useMemo(() => input.trim().length > 0 && !isSending, [input, isSending]);
+
+  // Load autoSubmit preference from localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem("angel-auto-submit");
+    if (stored !== null) setAutoSubmit(stored === "true");
+  }, []);
+
+  // Auto-focus chat input on mount
+  useEffect(() => {
+    chatInputRef.current?.focus();
+  }, []);
+
+
+
+  // Debounced auto-submit for external voice-to-text (e.g. Wispr Flow)
+  useEffect(() => {
+    if (!autoSubmit || !input.trim() || isSending) return;
+    const timer = setTimeout(() => {
+      const question = input.trim();
+      if (question) void sendQuestion(question);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, [input, autoSubmit, isSending]);
+
 
   useEffect(() => {
     return () => {
@@ -194,7 +220,7 @@ export default function AthenaWorkspace() {
       const audio = new Audio(url);
       activeAudioRef.current?.pause();
       activeAudioRef.current = audio;
-      setVoiceStatus("Athena speaking...");
+      setVoiceStatus("Angel speaking...");
       audio.onended = () => {
         URL.revokeObjectURL(url);
         setVoiceStatus("Voice ready");
@@ -229,6 +255,9 @@ export default function AthenaWorkspace() {
 
       if (payload.filters?.mode) {
         setMode(payload.filters.mode);
+      }
+      if (payload.filters?.sudanLayers) {
+        setSudanLayers((prev) => ({ ...prev, ...payload.filters!.sudanLayers }));
       }
 
       // Parse countries into globe highlights
@@ -345,43 +374,16 @@ export default function AthenaWorkspace() {
 
   return (
     <main className="page">
-      <header className="topbar">
-        <div>
-          <h1>Project Athena</h1>
-          <p>Global humanitarian intelligence (green/yellow/red)</p>
-        </div>
-        <div className="topbar-actions">
-          <button
-            className="ai-toggle"
-            type="button"
-            onClick={() => setDataPanelOpen((prev) => !prev)}
-            aria-expanded={isDataPanelOpen}
-            aria-controls="athena-data-panel"
-          >
-            <Droplets size={16} />
-            {isDataPanelOpen ? "Hide Data Modes" : "Show Data Modes"}
-          </button>
-        </div>
-      </header>
-
       <section className="map-wrap">
-        <AthenaGlobe mode={mode} highlights={highlights} sudanLayers={sudanLayers} />
+        <AngelGlobe mode={mode} highlights={highlights} sudanLayers={sudanLayers} />
       </section>
 
-      {isDataPanelOpen ? (
-        <aside id="athena-data-panel" className="data-panel">
+      <aside id="angel-data-panel" className="data-panel">
           <div className="ai-panel-header">
             <span className="ai-panel-title">
               <Droplets size={16} />
               Data Dashboard
             </span>
-            <button
-              className="icon-btn"
-              onClick={() => setDataPanelOpen(false)}
-              aria-label="Close data dashboard"
-            >
-              <X size={16} />
-            </button>
           </div>
           <div className="data-panel-body">
             <p className="data-panel-copy">
@@ -474,7 +476,6 @@ export default function AthenaWorkspace() {
             ) : null}
           </div>
         </aside>
-      ) : null}
 
       <div className="bottom-prompt-wrap">
         <div className="bottom-prompt-controls">
@@ -500,19 +501,33 @@ export default function AthenaWorkspace() {
           >
             {isListening ? <MicOff size={16} /> : <Mic size={16} />}
           </button>
+          <label className="auto-submit-toggle" title="Auto-submit when external voice typing stops">
+            <input
+              type="checkbox"
+              checked={autoSubmit}
+              onChange={(event) => {
+                const next = event.target.checked;
+                setAutoSubmit(next);
+                localStorage.setItem("angel-auto-submit", String(next));
+              }}
+            />
+            Auto
+          </label>
           <span className="voice-status">{voiceStatus}</span>
         </div>
         <form className="bottom-prompt-input-row" onSubmit={onSubmit}>
           <input
+            ref={chatInputRef}
             value={input}
             onChange={(event) => setInput(event.target.value)}
-            placeholder="Ask Athena..."
-            aria-label="Ask Athena"
+            placeholder="Ask Angel..."
+            aria-label="Ask Angel"
           />
           <button type="submit" disabled={!canSend}>
             {isSending ? "..." : <Send size={15} />}
           </button>
         </form>
+        {isSending && <div className="prompt-loading-bar" />}
       </div>
     </main>
   );

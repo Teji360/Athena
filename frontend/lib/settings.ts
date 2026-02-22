@@ -1,4 +1,4 @@
-const VOICE_ASSISTANT_ENABLED_KEY = "athena.voiceAssistantEnabled";
+const VOICE_ASSISTANT_ENABLED_KEY = "angel.voiceAssistantEnabled";
 
 function canUseBrowserStorage(): boolean {
   return typeof window !== "undefined" && typeof window.localStorage !== "undefined";

@@ -23,7 +23,7 @@ export default function SettingsPage() {
     <main className="content-page">
       <section className="content-header">
         <h1>Settings</h1>
-        <p>Control global Athena assistant behavior.</p>
+        <p>Control global Angel assistant behavior.</p>
       </section>
 
       <section className="content-card settings-card">
@@ -31,7 +31,7 @@ export default function SettingsPage() {
           <div>
             <div className="settings-title">Voice Assistant (ElevenLabs)</div>
             <div className="settings-copy">
-              When enabled, Athena can read responses out loud using ElevenLabs text-to-speech.
+              When enabled, Angel can read responses out loud using ElevenLabs text-to-speech.
             </div>
           </div>
           <label className="switch">

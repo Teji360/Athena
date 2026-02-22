@@ -1,5 +1,5 @@
-import AthenaWorkspace from "@/components/AthenaWorkspace";
+import AngelWorkspace from "@/components/AngelWorkspace";
 
 export default function HomePage() {
-  return <AthenaWorkspace />;
+  return <AngelWorkspace />;
 }

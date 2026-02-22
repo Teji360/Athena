@@ -58,7 +58,7 @@ type SsdCountyHungerRow = {
 };
 
 const countryBorderLayer: LayerProps = {
-  id: "athena-country-risk-line",
+  id: "angel-country-risk-line",
   type: "line",
   source: "country-boundaries",
   "source-layer": "country_boundaries",
@@ -68,10 +68,10 @@ const countryBorderLayer: LayerProps = {
   }
 };
 
-const LABEL_OFFSET_LNG = -8;
+const LABEL_OFFSET_LNG = 8;
 const LABEL_OFFSET_LAT = 5;
 
-type AthenaGlobeProps = {
+type AngelGlobeProps = {
   mode: GlobeMode;
   highlights?: GlobeHighlight[];
   sudanLayers: SudanMapLayers;
@@ -83,7 +83,7 @@ type HoverInfo = {
   iso3: string;
 };
 
-export default function AthenaGlobe({ mode, highlights = [], sudanLayers }: AthenaGlobeProps) {
+export default function AngelGlobe({ mode, highlights = [], sudanLayers }: AngelGlobeProps) {
   const [mapError, setMapError] = useState<string | null>(null);
   const [riskData, setRiskData] = useState<CountryRisk[]>([]);
   const [riskError, setRiskError] = useState<string | null>(null);
@@ -133,9 +133,12 @@ export default function AthenaGlobe({ mode, highlights = [], sudanLayers }: Athe
       hl.center[0] + LABEL_OFFSET_LNG,
       hl.center[1] + LABEL_OFFSET_LAT,
     ]);
+    const container = map.getContainer();
+    const maxX = container.clientWidth - 440;
+    const maxY = container.clientHeight - 160;
     setPixelPositions({
       dot: { x: dotPx.x, y: dotPx.y },
-      box: { x: boxPx.x, y: boxPx.y },
+      box: { x: Math.min(boxPx.x, maxX), y: Math.max(60, Math.min(boxPx.y, maxY)) },
     });
   }
 
@@ -344,7 +347,7 @@ export default function AthenaGlobe({ mode, highlights = [], sudanLayers }: Athe
   }, [ssdSummary]);
 
   const riskLayer: LayerProps = {
-    id: "athena-country-risk-fill",
+    id: "angel-country-risk-fill",
     type: "fill",
     source: "country-boundaries",
     "source-layer": "country_boundaries",
@@ -355,7 +358,7 @@ export default function AthenaGlobe({ mode, highlights = [], sudanLayers }: Athe
   };
 
   const floodLayer: LayerProps = {
-    id: "athena-country-flood-fill",
+    id: "angel-country-flood-fill",
     type: "fill",
     source: "country-boundaries",
     "source-layer": "country_boundaries",
@@ -366,7 +369,7 @@ export default function AthenaGlobe({ mode, highlights = [], sudanLayers }: Athe
   };
 
   const ssdHungerLayer: LayerProps = {
-    id: "athena-country-ssd-hunger-fill",
+    id: "angel-country-ssd-hunger-fill",
     type: "fill",
     source: "country-boundaries",
     "source-layer": "country_boundaries",
@@ -377,7 +380,7 @@ export default function AthenaGlobe({ mode, highlights = [], sudanLayers }: Athe
   };
 
   const ssdHungerBorderLayer: LayerProps = {
-    id: "athena-country-ssd-hunger-line",
+    id: "angel-country-ssd-hunger-line",
     type: "line",
     source: "country-boundaries",
     "source-layer": "country_boundaries",
@@ -413,7 +416,7 @@ export default function AthenaGlobe({ mode, highlights = [], sudanLayers }: Athe
   }, [ssdCountyRows]);
 
   const ssdCountyCircleLayer: LayerProps = {
-    id: "athena-ssd-county-circles",
+    id: "angel-ssd-county-circles",
     type: "circle",
     source: "ssd-county-points",
     paint: {
@@ -442,7 +445,7 @@ export default function AthenaGlobe({ mode, highlights = [], sudanLayers }: Athe
   };
 
   const ssdDisplacementCircleLayer: LayerProps = {
-    id: "athena-ssd-county-displacement-circles",
+    id: "angel-ssd-county-displacement-circles",
     type: "circle",
     source: "ssd-county-points",
     paint: {
@@ -482,7 +485,7 @@ export default function AthenaGlobe({ mode, highlights = [], sudanLayers }: Athe
   }, [ssdCountyRows]);
 
   const ssdFacilityLayer: LayerProps = {
-    id: "athena-ssd-facility-circles",
+    id: "angel-ssd-facility-circles",
     type: "circle",
     source: "ssd-facility-points",
     paint: {
@@ -513,7 +516,7 @@ export default function AthenaGlobe({ mode, highlights = [], sudanLayers }: Athe
   }, [ssdCountyRows]);
 
   const ssdMarketLayer: LayerProps = {
-    id: "athena-ssd-market-circles",
+    id: "angel-ssd-market-circles",
     type: "circle",
     source: "ssd-market-points",
     paint: {
@@ -527,8 +530,8 @@ export default function AthenaGlobe({ mode, highlights = [], sudanLayers }: Athe
     const feature = event.features?.[0];
     if (
       mode === "sudan_map" &&
-      (feature?.layer?.id === "athena-ssd-county-circles" ||
-        feature?.layer?.id === "athena-ssd-county-displacement-circles")
+      (feature?.layer?.id === "angel-ssd-county-circles" ||
+        feature?.layer?.id === "angel-ssd-county-displacement-circles")
     ) {
       const props = feature.properties ?? {};
       const row: SsdCountyHungerRow = {
@@ -566,8 +569,8 @@ export default function AthenaGlobe({ mode, highlights = [], sudanLayers }: Athe
     const feature = event.features?.[0];
     if (
       mode === "sudan_map" &&
-      (feature?.layer?.id === "athena-ssd-county-circles" ||
-        feature?.layer?.id === "athena-ssd-county-displacement-circles")
+      (feature?.layer?.id === "angel-ssd-county-circles" ||
+        feature?.layer?.id === "angel-ssd-county-displacement-circles")
     ) {
       setHoverInfo(null);
       return;
@@ -659,13 +662,13 @@ export default function AthenaGlobe({ mode, highlights = [], sudanLayers }: Athe
         mapStyle="mapbox://styles/mapbox/dark-v11"
         onError={(event) => setMapError(event.error?.message ?? "Map render error")}
         interactiveLayerIds={[
-          "athena-country-risk-fill",
-          "athena-country-flood-fill",
-          "athena-country-ssd-hunger-fill",
-          "athena-ssd-county-circles",
-          "athena-ssd-county-displacement-circles",
-          "athena-ssd-facility-circles",
-          "athena-ssd-market-circles"
+          "angel-country-risk-fill",
+          "angel-country-flood-fill",
+          "angel-country-ssd-hunger-fill",
+          "angel-ssd-county-circles",
+          "angel-ssd-county-displacement-circles",
+          "angel-ssd-facility-circles",
+          "angel-ssd-market-circles"
         ]}
         onClick={onMapClick}
         onMouseMove={onMapHover}
@@ -739,7 +742,7 @@ export default function AthenaGlobe({ mode, highlights = [], sudanLayers }: Athe
             style={{
               left: pixelPositions.box.x,
               top: pixelPositions.box.y,
-              transform: "translate(-100%, -50%)",
+              transform: "translateY(-50%)",
             }}
           >
             <span className="annotation-iso">{active.iso3}</span>

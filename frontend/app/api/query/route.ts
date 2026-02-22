@@ -18,7 +18,10 @@ type AgentIntent =
   | "country_focus"
   | "ssd_hunger_hotspots"
   | "ssd_system_stress"
-  | "ssd_hospital_allocation";
+  | "ssd_hospital_allocation"
+  | "ui_toggle_layers"
+  | "ui_toggle_panel"
+  | "ui_mode_switch";
 
 type AgentResult = {
   iso3: string;
@@ -177,7 +180,7 @@ async function loadSudanContextText(): Promise<string | null> {
 function smalltalkReply(question: string): string {
   const q = question.toLowerCase();
   if (/(hello|hi|hey|yo|sup)\b/.test(q)) {
-    return "Hey — Athena is online. Want a quick country snapshot or a South Sudan county drill-down?";
+    return "Hey — Angel is online. Want a quick country snapshot or a South Sudan county drill-down?";
   }
   if (/(how are you|how's it going|hows it going)/.test(q)) {
     return "Running smoothly and ready. Tell me a country, region, or decision you want help with.";
@@ -244,6 +247,25 @@ function toAgentResult(row: Record<string, unknown>): AgentResult | null {
 
 function detectIntent(question: string): AgentIntent {
   const q = question.toLowerCase();
+
+  // UI panel toggle
+  if (/(show|open|display|reveal).*(data|panel|dashboard|modes)/.test(q)) {
+    return "ui_toggle_panel";
+  }
+  if (/(hide|close|dismiss|collapse).*(data|panel|dashboard|modes)/.test(q)) {
+    return "ui_toggle_panel";
+  }
+
+  // UI layer toggle
+  if (/(show|hide|turn on|turn off|enable|disable|toggle).*(hunger|displacement|facilities|markets)/.test(q)) {
+    return "ui_toggle_layers";
+  }
+
+  // Explicit mode switch (non-Sudan)
+  if (/(switch|change|go|set).*(flood|risk|crisis).*mode/.test(q)) {
+    return "ui_mode_switch";
+  }
+
   const asksSudanMap = /(open|show|switch|go to|goto|use|enable|turn on).*(sudan|south sudan).*(map)|(sudan|south sudan).*(map)/.test(
     q
   );
@@ -619,7 +641,7 @@ async function generateGeminiAnswer(input: {
   const style = responseStyleFor(input.intent, input.question);
 
   const prompt = `
-You are Athena, a humanitarian risk analyst.
+You are Angel, a humanitarian risk analyst.
 User question: ${input.question}
 Detected intent: ${input.intent}
 Current map mode: ${input.mode ?? "risk"}
@@ -730,6 +752,58 @@ export async function POST(request: NextRequest) {
       intent: effectiveIntent,
       question,
       filters: {},
+      countries: [],
+      responseSource: "fallback",
+      answer,
+      explanation: answer
+    });
+  }
+
+  if (effectiveIntent === "ui_toggle_panel") {
+    const wantsOpen = /(show|open|display|reveal)/.test(question.toLowerCase());
+    const answer = wantsOpen ? "Opening the data panel." : "Closing the data panel.";
+    return NextResponse.json({
+      intent: effectiveIntent,
+      question,
+      filters: { dataPanelOpen: wantsOpen },
+      countries: [],
+      responseSource: "fallback",
+      answer,
+      explanation: answer
+    });
+  }
+
+  if (effectiveIntent === "ui_toggle_layers") {
+    const q = question.toLowerCase();
+    const wantsOn = /(show|turn on|enable)/.test(q);
+    const layers: Record<string, boolean> = {};
+    if (/hunger/.test(q)) layers.hunger = wantsOn;
+    if (/displacement/.test(q)) layers.displacement = wantsOn;
+    if (/facilities/.test(q)) layers.facilities = wantsOn;
+    if (/markets/.test(q)) layers.markets = wantsOn;
+    const layerNames = Object.keys(layers).join(", ");
+    const answer = wantsOn
+      ? `Enabled layers: ${layerNames}.`
+      : `Disabled layers: ${layerNames}.`;
+    return NextResponse.json({
+      intent: effectiveIntent,
+      question,
+      filters: { mode: "sudan_map", sudanLayers: layers },
+      countries: [],
+      responseSource: "fallback",
+      answer,
+      explanation: answer
+    });
+  }
+
+  if (effectiveIntent === "ui_mode_switch") {
+    const q = question.toLowerCase();
+    const newMode = /flood/.test(q) ? "flood" : "risk";
+    const answer = `Switched to ${newMode} mode.`;
+    return NextResponse.json({
+      intent: effectiveIntent,
+      question,
+      filters: { mode: newMode },
       countries: [],
       responseSource: "fallback",
       answer,
