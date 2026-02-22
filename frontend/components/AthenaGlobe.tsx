@@ -29,6 +29,8 @@ export type GlobeHighlight = {
   iso3: string;
   summary: string;
   center: [number, number]; // [lng, lat]
+};
+
 type SsdHungerSummary = {
   avgPriority: number | null;
   redCount: number;

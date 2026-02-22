@@ -11,7 +11,8 @@ type AgentIntent =
   | "stable_countries"
   | "top_risk_countries"
   | "ssd_hunger_hotspots"
-  | "ssd_system_stress";
+  | "ssd_system_stress"
+  | "ssd_hospital_allocation";
 
 type AgentResult = {
   iso3: string;
@@ -29,6 +30,9 @@ type AgentResult = {
   returneesInternal?: number | null;
   femaleSharePct?: number | null;
   ethnicSummary?: string | null;
+  allocationScore?: number | null;
+  spendTier?: string | null;
+  recommendedSpendSharePct?: number | null;
 };
 
 function toNumberOrNull(value: unknown): number | null {
@@ -63,7 +67,8 @@ function toAgentResult(row: Record<string, unknown>): AgentResult | null {
   const riskScoreValue =
     readField(row, "risk_score", "col_3") ??
     readField(row, "priority_score", "col_6") ??
-    readField(row, "stress_score", "col_11");
+    readField(row, "stress_score", "col_11") ??
+    readField(row, "allocation_score", "col_13");
   const iso3 = typeof iso3Value === "string" ? iso3Value : "";
   const status = normalizeStatus(statusValue);
   const riskScore = toNumberOrNull(riskScoreValue);
@@ -97,7 +102,13 @@ function toAgentResult(row: Record<string, unknown>): AgentResult | null {
     ethnicSummary:
       typeof readField(row, "ethnic_groups_summary", "col_12") === "string"
         ? (readField(row, "ethnic_groups_summary", "col_12") as string)
-        : null
+        : null,
+    allocationScore: toNumberOrNull(readField(row, "allocation_score", "col_13")),
+    spendTier:
+      typeof readField(row, "spend_tier", "col_14") === "string"
+        ? (readField(row, "spend_tier", "col_14") as string)
+        : null,
+    recommendedSpendSharePct: toNumberOrNull(readField(row, "recommended_spend_share_pct", "col_15"))
   };
 }
 
@@ -106,6 +117,12 @@ function detectIntent(question: string): AgentIntent {
   const asksSouthSudan = /(south sudan|ssd|juba|equatoria|jonglei|upper nile|unity|warrap)/.test(q);
   const asksHunger = /(hunger|nutrition|malnutrition|gam|food insecurity|county|state|substate|sub-state)/.test(q);
   const asksSystem = /(intercorrelat|interconnect|complex|dynamic|system|drivers|multi-factor|why)/.test(q);
+  const asksHospitals = /(hospital|hospitals|hostpital|hostpitals|clinic|facility|facilities|health center)/.test(q);
+  const asksAllocation = /(allocat|spend|budget|fund|financ|invest|prioriti[sz]e)/.test(q);
+
+  if (asksSouthSudan && asksHospitals && asksAllocation) {
+    return "ssd_hospital_allocation";
+  }
 
   if (asksSouthSudan && asksHunger) {
     return "ssd_hunger_hotspots";
@@ -197,6 +214,68 @@ ORDER BY stress_score DESC
 LIMIT ${limit}
 `;
   }
+  if (intent === "ssd_hospital_allocation") {
+    return `
+SELECT
+  h.iso3,
+  h.adm1_state,
+  h.adm2_county,
+  h.hunger_gam_pct,
+  h.hunger_status,
+  h.priority_band,
+  h.priority_score,
+  COALESCE(m.health_facility_count, 0) AS health_facility_count,
+  COALESCE(m.wfp_market_count, 0) AS wfp_market_count,
+  COALESCE(m.idp_individuals_est, 0) AS idp_individuals_est,
+  COALESCE(m.returnees_internal_ind_est, 0) AS returnees_internal_ind_est,
+  m.female_share_pct,
+  m.ethnic_groups_summary,
+  (
+    0.55 * COALESCE(h.priority_score, 0.0) +
+    0.20 * LEAST(COALESCE(m.idp_individuals_est, 0.0) / 50000.0, 1.0) +
+    0.15 * CASE WHEN COALESCE(m.health_facility_count, 0) = 0 THEN 1.0 ELSE LEAST(15.0 / m.health_facility_count, 1.0) END +
+    0.10 * LEAST(GREATEST(COALESCE(h.hunger_gam_pct, 0.0), 0.0) / 30.0, 1.0)
+  ) AS allocation_score,
+  CASE
+    WHEN (
+      0.55 * COALESCE(h.priority_score, 0.0) +
+      0.20 * LEAST(COALESCE(m.idp_individuals_est, 0.0) / 50000.0, 1.0) +
+      0.15 * CASE WHEN COALESCE(m.health_facility_count, 0) = 0 THEN 1.0 ELSE LEAST(15.0 / m.health_facility_count, 1.0) END +
+      0.10 * LEAST(GREATEST(COALESCE(h.hunger_gam_pct, 0.0), 0.0) / 30.0, 1.0)
+    ) >= 0.70 THEN 'urgent'
+    WHEN (
+      0.55 * COALESCE(h.priority_score, 0.0) +
+      0.20 * LEAST(COALESCE(m.idp_individuals_est, 0.0) / 50000.0, 1.0) +
+      0.15 * CASE WHEN COALESCE(m.health_facility_count, 0) = 0 THEN 1.0 ELSE LEAST(15.0 / m.health_facility_count, 1.0) END +
+      0.10 * LEAST(GREATEST(COALESCE(h.hunger_gam_pct, 0.0), 0.0) / 30.0, 1.0)
+    ) >= 0.45 THEN 'priority'
+    ELSE 'sustain'
+  END AS spend_tier,
+  ROUND(
+    100.0 * (
+      (
+        0.55 * COALESCE(h.priority_score, 0.0) +
+        0.20 * LEAST(COALESCE(m.idp_individuals_est, 0.0) / 50000.0, 1.0) +
+        0.15 * CASE WHEN COALESCE(m.health_facility_count, 0) = 0 THEN 1.0 ELSE LEAST(15.0 / m.health_facility_count, 1.0) END +
+        0.10 * LEAST(GREATEST(COALESCE(h.hunger_gam_pct, 0.0), 0.0) / 30.0, 1.0)
+      ) / NULLIF(SUM(
+        0.55 * COALESCE(h.priority_score, 0.0) +
+        0.20 * LEAST(COALESCE(m.idp_individuals_est, 0.0) / 50000.0, 1.0) +
+        0.15 * CASE WHEN COALESCE(m.health_facility_count, 0) = 0 THEN 1.0 ELSE LEAST(15.0 / m.health_facility_count, 1.0) END +
+        0.10 * LEAST(GREATEST(COALESCE(h.hunger_gam_pct, 0.0), 0.0) / 30.0, 1.0)
+      ) OVER (), 0.0)
+    ),
+    2
+  ) AS recommended_spend_share_pct
+FROM ${tables.ssdHunger} h
+LEFT JOIN ${tables.ssdMass} m
+  ON h.adm2_pcode = m.county_pcode
+ AND m.record_level = 'county'
+WHERE h.iso3 = 'SSD'
+ORDER BY allocation_score DESC
+LIMIT ${limit}
+`;
+  }
   if (intent === "flood_hotspots") {
     return `${baseSelect}
 WHERE flood_pop_exposed IS NOT NULL
@@ -230,14 +309,18 @@ function buildExplanation(intent: AgentIntent, countries: AgentResult[], questio
   }
   const top = countries.slice(0, 5);
   const lines =
-    intent === "ssd_hunger_hotspots" || intent === "ssd_system_stress"
+    intent === "ssd_hunger_hotspots" || intent === "ssd_system_stress" || intent === "ssd_hospital_allocation"
       ? top.map(
           (c) =>
             `- ${c.adm2County ?? "Unknown county"}, ${c.adm1State ?? "Unknown state"}: ${c.status.toUpperCase()}, hunger GAM ${
               c.hungerGamPct?.toFixed(1) ?? "N/A"
-            }%, priority ${c.priorityScore?.toFixed(3) ?? c.riskScore.toFixed(3)}, IDPs ${
-              c.idpIndividuals?.toLocaleString() ?? "N/A"
-            }, facilities ${c.healthFacilityCount ?? "N/A"}`
+            }%, priority ${c.priorityScore?.toFixed(3) ?? c.riskScore.toFixed(3)}, IDPs ${c.idpIndividuals?.toLocaleString() ?? "N/A"}, facilities ${
+              c.healthFacilityCount ?? "N/A"
+            }${
+              intent === "ssd_hospital_allocation"
+                ? `, allocation ${c.allocationScore?.toFixed(3) ?? "N/A"}, suggested share ${c.recommendedSpendSharePct?.toFixed(2) ?? "N/A"}%`
+                : ""
+            }`
         )
       : top.map(
           (c) =>
@@ -248,11 +331,17 @@ function buildExplanation(intent: AgentIntent, countries: AgentResult[], questio
   const greenCount = top.filter((c) => c.status === "green").length;
   const highest = top[0];
   const recommended =
-    intent === "ssd_hunger_hotspots" || intent === "ssd_system_stress"
+    intent === "ssd_hunger_hotspots" || intent === "ssd_system_stress" || intent === "ssd_hospital_allocation"
       ? [
-          "Prioritize Tier-1 counties with high hunger GAM and weak service capacity first.",
-          "Deploy county nutrition interventions alongside market and facility support, not in isolation.",
-          "Track displacement and returnee pressure weekly to catch spillover risk between neighboring counties."
+          intent === "ssd_hospital_allocation"
+            ? "Allocate incremental hospital funding to counties with the highest allocation score first."
+            : "Prioritize Tier-1 counties with high hunger GAM and weak service capacity first.",
+          intent === "ssd_hospital_allocation"
+            ? "Use spend tier labels (urgent/priority/sustain) to separate immediate surge support from maintenance funding."
+            : "Deploy county nutrition interventions alongside market and facility support, not in isolation.",
+          intent === "ssd_hospital_allocation"
+            ? "Recompute shares weekly as displacement and hunger indicators update."
+            : "Track displacement and returnee pressure weekly to catch spillover risk between neighboring counties."
         ]
       : intent === "flood_hotspots"
       ? [
@@ -277,6 +366,8 @@ function buildExplanation(intent: AgentIntent, countries: AgentResult[], questio
       ? "South Sudan county hunger hotspot assessment from live Databricks data"
       : intent === "ssd_system_stress"
         ? "South Sudan intercorrelated system-stress assessment from live Databricks data"
+      : intent === "ssd_hospital_allocation"
+        ? "South Sudan hospital spending-allocation assessment from live Databricks data"
         : intent === "flood_hotspots"
       ? "Flood hotspot assessment from live Databricks data"
       : intent === "stable_countries"
@@ -286,8 +377,10 @@ function buildExplanation(intent: AgentIntent, countries: AgentResult[], questio
           : `Risk assessment for: "${question}"`;
 
   const highestLine = highest
-    ? intent === "ssd_hunger_hotspots" || intent === "ssd_system_stress"
-      ? `Highest priority right now: ${highest.adm2County ?? "Unknown county"}, ${highest.adm1State ?? "Unknown state"} with score ${(highest.priorityScore ?? highest.riskScore).toFixed(3)}.`
+    ? intent === "ssd_hunger_hotspots" || intent === "ssd_system_stress" || intent === "ssd_hospital_allocation"
+      ? `Highest priority right now: ${highest.adm2County ?? "Unknown county"}, ${highest.adm1State ?? "Unknown state"} with score ${
+          (highest.allocationScore ?? highest.priorityScore ?? highest.riskScore).toFixed(3)
+        }${intent === "ssd_hospital_allocation" ? ` and suggested spend share ${highest.recommendedSpendSharePct?.toFixed(2) ?? "N/A"}%.` : "."}`
       : `Highest priority right now: ${highest.country ?? highest.iso3} (${highest.iso3}) with risk ${highest.riskScore.toFixed(3)}.`
     : "";
 
@@ -334,7 +427,10 @@ async function generateGeminiAnswer(input: {
     idpIndividuals: c.idpIndividuals ?? null,
     returneesInternal: c.returneesInternal ?? null,
     femaleSharePct: c.femaleSharePct ?? null,
-    ethnicSummary: c.ethnicSummary ?? null
+    ethnicSummary: c.ethnicSummary ?? null,
+    allocationScore: c.allocationScore ?? null,
+    spendTier: c.spendTier ?? null,
+    recommendedSpendSharePct: c.recommendedSpendSharePct ?? null
   }));
 
   const prompt = `
@@ -352,6 +448,7 @@ Rules:
 - Only use the grounded data provided.
 - If data is incomplete, explicitly say that.
 - Be concise and operational.
+- For hospital allocation questions, rank counties by allocation score and mention suggested spend-share percentages.
 `.trim();
 
   try {
@@ -426,7 +523,7 @@ export async function POST(request: NextRequest) {
       .filter((item): item is AgentResult => item !== null);
 
     const filters =
-      intent === "ssd_hunger_hotspots" || intent === "ssd_system_stress"
+      intent === "ssd_hunger_hotspots" || intent === "ssd_system_stress" || intent === "ssd_hospital_allocation"
         ? { mode: "risk", focus: "south_sudan", level: "county" }
         : intent === "flood_hotspots"
         ? { mode: "flood" }

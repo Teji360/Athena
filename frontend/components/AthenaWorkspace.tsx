@@ -50,8 +50,7 @@ type SudanMapLayers = {
 
 function toAssistantMessage(response: QueryResponse): string {
   if (response.answer && response.answer.trim()) {
-    const tag = response.responseSource === "gemini" ? "Gemini" : "Fallback";
-    return `[${tag}]\n${response.answer.trim()}`;
+    return response.answer.trim();
   }
   const intent = response.intent ?? "unknown_intent";
   const explanation = response.explanation ?? "No explanation was returned.";
