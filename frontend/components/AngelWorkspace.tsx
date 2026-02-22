@@ -278,23 +278,30 @@ export default function AngelWorkspace() {
       // Parse countries into globe highlights
       if (payload.countries && Array.isArray(payload.countries)) {
         const parsed: GlobeHighlight[] = payload.countries
-          .filter((c): c is { iso3: string; summary?: string } =>
+          .filter((c): c is { iso3: string; country?: string | null; summary?: string; paeScore?: number; riskScore?: number } =>
             typeof c.iso3 === "string" && c.iso3 in countryCentroids
           )
           .slice(0, 5)
-          .map((c) => ({
-            iso3: c.iso3,
-            summary: c.summary ?? "",
-            center: countryCentroids[c.iso3]
-          }));
+          .map((c) => {
+            const name = c.country ?? c.iso3;
+            const pae = (c as Record<string, unknown>).paeScore;
+            const countryLabel = typeof pae === "number"
+              ? `${name} (${c.iso3}) — ${pae.toFixed(1)}% population exposed to unsafe PM2.5`
+              : `${name} (${c.iso3})`;
+            return {
+              iso3: c.iso3,
+              summary: countryLabel,
+              center: countryCentroids[c.iso3]
+            };
+          });
         const firstParsed = parsed[0];
         if (firstParsed) {
-          setHighlights([
-            {
-              ...firstParsed,
-              summary: assistantText
-            }
-          ]);
+          // For multi-country results, show each country as a navigable highlight
+          if (parsed.length > 1) {
+            setHighlights(parsed.map((h, i) => i === 0 ? { ...h, summary: assistantText } : h));
+          } else {
+            setHighlights([{ ...firstParsed, summary: assistantText }]);
+          }
         } else if (
           payload.filters?.action === "zoom_country" &&
           typeof payload.filters.iso3 === "string" &&

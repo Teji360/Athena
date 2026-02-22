@@ -22,6 +22,7 @@ type AgentIntent =
   | "ssd_hunger_hotspots"
   | "ssd_system_stress"
   | "ssd_hospital_allocation"
+  | "air_quality_hotspots"
   | "ui_toggle_layers"
   | "ui_toggle_panel"
   | "ui_mode_switch"
@@ -46,6 +47,7 @@ type AgentResult = {
   allocationScore?: number | null;
   spendTier?: string | null;
   recommendedSpendSharePct?: number | null;
+  paeScore?: number | null;
 };
 
 type ContextSummary = {
@@ -76,6 +78,7 @@ const ALLOWED_INTENTS: AgentIntent[] = [
   "ssd_hunger_hotspots",
   "ssd_system_stress",
   "ssd_hospital_allocation",
+  "air_quality_hotspots",
   "agentic_fallback"
 ];
 
@@ -194,6 +197,12 @@ function responseStyleFor(intent: AgentIntent, question: string): {
       actionsRule: "Do not include recommendation bullets."
     };
   }
+  if (intent === "air_quality_hotspots") {
+    return {
+      lengthRule: "Keep response concise: 2-3 sentences focusing on worst air quality countries.",
+      actionsRule: 'Include a short "Key findings" section with 2-3 bullets about the worst-affected countries.'
+    };
+  }
   if (intent === "country_focus" || isSimplePrompt(question)) {
     return {
       lengthRule: "Keep response very short: 1-2 sentences max.",
@@ -221,6 +230,40 @@ async function loadSudanContextText(): Promise<string | null> {
   } catch {
     return null;
   }
+}
+
+type AirQualityRecord = {
+  iso3: string;
+  country: string;
+  paeScore: number;
+  status: "green" | "yellow" | "red";
+};
+
+async function loadAirQualityData(limit: number): Promise<AirQualityRecord[]> {
+  const csvPath = path.resolve(process.cwd(), "..", "data", "air_quality_pae.csv");
+  const raw = await readFile(csvPath, "utf8");
+  const lines = raw.trim().split("\n");
+  if (lines.length < 2) return [];
+
+  const header = lines[0].replace(/"/g, "").split(",");
+  const latestColIndex = header.length - 1;
+  const records: AirQualityRecord[] = [];
+
+  for (let i = 1; i < lines.length; i++) {
+    const cols = lines[i].split(",").map((c) => c.replace(/"/g, "").trim());
+    const iso3 = cols[1];
+    const country = cols[2];
+    const valueStr = cols[latestColIndex];
+    if (!iso3 || iso3.length !== 3 || !country) continue;
+    if (valueStr === "NA" || valueStr === "" || valueStr === undefined) continue;
+    const paeScore = parseFloat(valueStr);
+    if (!Number.isFinite(paeScore)) continue;
+    const status: "green" | "yellow" | "red" = paeScore >= 60 ? "red" : paeScore >= 30 ? "yellow" : "green";
+    records.push({ iso3: iso3.toUpperCase(), country, paeScore, status });
+  }
+
+  records.sort((a, b) => b.paeScore - a.paeScore);
+  return records.slice(0, limit);
 }
 
 function smalltalkReply(question: string): string {
@@ -280,6 +323,7 @@ Allowed intents:
 - ssd_hunger_hotspots
 - ssd_system_stress
 - ssd_hospital_allocation
+- air_quality_hotspots
 
 Rules:
 - If user greets only, choose smalltalk.
@@ -288,6 +332,7 @@ Rules:
 - If user asks where to invest, allocate funds, or distribute budget globally, choose global_funding_allocation.
 - If user asks to zoom/focus on a country, choose country_focus.
 - If user asks about wars/conflict/crisis, choose crisis_hotspots.
+- If user asks about air quality, pollution, PM2.5, particulate matter, smog, or bad air, choose air_quality_hotspots.
 - If map mode is sudan_map and user is generic, prefer ssd_system_stress.
 - Confidence is 0 to 1.
 
@@ -460,6 +505,9 @@ function detectIntent(question: string): AgentIntent {
   }
   if (asksSouthSudan) {
     return "ssd_system_stress";
+  }
+  if (/(air quality|air pollution|pm2\.?5|particulate|smog|bad air|pollut|emission|ozone|air exposure)/.test(q)) {
+    return "air_quality_hotspots";
   }
   if (/(flood|flooding|inundation|water)/.test(q)) {
     return "flood_hotspots";
@@ -705,7 +753,12 @@ function buildExplanation(intent: AgentIntent, countries: AgentResult[], questio
       : "Focus command received.";
   }
   const lines =
-    intent === "ssd_hunger_hotspots" ||
+    intent === "air_quality_hotspots"
+      ? top.map(
+          (c) =>
+            `- ${c.country ?? c.iso3} (${c.iso3}): ${c.status.toUpperCase()}, air exposure ${c.paeScore?.toFixed(1) ?? "N/A"}%`
+        )
+    : intent === "ssd_hunger_hotspots" ||
     intent === "ssd_system_stress" ||
     intent === "ssd_hospital_allocation" ||
     intent === "global_funding_allocation"
@@ -750,6 +803,12 @@ function buildExplanation(intent: AgentIntent, countries: AgentResult[], questio
           "Reserve a smaller contingency slice for fast-moving deterioration in adjacent high-risk countries.",
           "Recompute this split frequently as new risk rows arrive."
         ]
+      : intent === "air_quality_hotspots"
+      ? [
+          "Countries with highest particulate air exposure need urgent pollution mitigation and public health response.",
+          "Deploy air quality monitoring and health advisory systems in the worst-affected regions.",
+          "Coordinate with environmental agencies to address industrial and urban emission sources."
+        ]
       : intent === "forecast_outlook"
       ? [
           "Use forecast mode to review expected 30-day risk concentration across countries.",
@@ -775,7 +834,9 @@ function buildExplanation(intent: AgentIntent, countries: AgentResult[], questio
           ];
 
   const headline =
-    intent === "ssd_hunger_hotspots"
+    intent === "air_quality_hotspots"
+      ? "Air quality exposure assessment from environmental dataset (PM2.5 population exposure)"
+      : intent === "ssd_hunger_hotspots"
       ? "South Sudan county hunger hotspot assessment from live Databricks data"
       : intent === "ssd_system_stress"
         ? "South Sudan intercorrelated system-stress assessment from live Databricks data"
@@ -851,7 +912,8 @@ async function generateGeminiAnswer(input: {
     ethnicSummary: c.ethnicSummary ?? null,
     allocationScore: c.allocationScore ?? null,
     spendTier: c.spendTier ?? null,
-    recommendedSpendSharePct: c.recommendedSpendSharePct ?? null
+    recommendedSpendSharePct: c.recommendedSpendSharePct ?? null,
+    paeScore: c.paeScore ?? null
   }));
   const style = responseStyleFor(input.intent, input.question);
 
@@ -863,7 +925,7 @@ Current map mode: ${input.mode ?? "risk"}
 Context summary:
 ${JSON.stringify(input.contextSummary, null, 2)}
 
-Grounded data (top rows from Databricks serving outputs, including South Sudan county views when relevant):
+Grounded data (${input.intent === "air_quality_hotspots" ? "air quality dataset — paeScore is the % of population exposed to PM2.5 levels exceeding WHO guidelines, higher = worse air quality" : "top rows from Databricks serving outputs, including South Sudan county views when relevant"}):
 ${JSON.stringify(contextCountries, null, 2)}
 
 ${input.mode === "sudan_map" && input.sudanContextText ? `Supplemental South Sudan brief (operator-provided context):
@@ -879,6 +941,7 @@ Rules:
 - For hospital allocation questions, rank counties by allocation score and mention suggested spend-share percentages.
 - For country focus commands, acknowledge the requested country and provide a short situational readout from returned rows.
 - For global funding allocation questions, provide a practical allocation split using suggested spend-share percentages from the data.
+- For air quality questions, use the paeScore field (% population exposed to unsafe PM2.5). Rank countries by paeScore and name the top ones with their scores.
 - For forecast outlook questions, focus on expected 30-day changes and planning implications.
 `.trim();
 
@@ -1060,6 +1123,9 @@ function deriveMapFilters(input: {
   ) {
     return { mode: "risk", focus: "south_sudan", level: "county" };
   }
+  if (intent === "air_quality_hotspots") {
+    return { mode: "risk" };
+  }
   if (intent === "forecast_outlook") {
     return { mode: "forecast_30d" };
   }
@@ -1184,6 +1250,51 @@ export async function POST(request: NextRequest) {
       answer: shortcut.answer,
       explanation: shortcut.answer
     });
+  }
+
+  if (effectiveIntent === "air_quality_hotspots") {
+    try {
+      const airData = await loadAirQualityData(20);
+      const countries: AgentResult[] = airData.map((row) => ({
+        iso3: row.iso3,
+        country: row.country,
+        status: row.status,
+        riskScore: row.paeScore / 100, // normalize to 0-1 scale
+        floodPopExposed: null,
+        paeScore: row.paeScore
+      }));
+      const filters = deriveMapFilters({ intent: effectiveIntent, mode, topCountryIso3: countries[0]?.iso3 ?? null });
+      const fallbackExplanation = buildExplanation(effectiveIntent, countries, question);
+      const contextSummary = summarizeContext(countries);
+      const generated = await generateGeminiAnswer({
+        question,
+        intent: effectiveIntent,
+        countries,
+        fallbackExplanation,
+        contextSummary,
+        mode
+      });
+      return NextResponse.json({
+        intent: effectiveIntent,
+        question,
+        filters,
+        countries: countries.slice(0, 10),
+        responseSource: generated.source,
+        answer: generated.answer,
+        explanation: fallbackExplanation
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to load air quality data";
+      return NextResponse.json({
+        intent: effectiveIntent,
+        question,
+        filters: { mode: "risk" },
+        countries: [],
+        responseSource: "fallback",
+        answer: `Air quality data unavailable: ${message}`,
+        explanation: `Air quality data unavailable: ${message}`
+      });
+    }
   }
 
   if (effectiveIntent === "agentic_fallback") {
