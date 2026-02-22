@@ -6,7 +6,23 @@ import type { MapLayerMouseEvent } from "react-map-gl";
 import MapGL, { Layer, Marker, Source, type LayerProps, type MapRef } from "react-map-gl";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
+import conflictRaw from "@/lib/countryConflictData.json";
+
 const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+
+type ConflictEntry = {
+  country?: string;
+  conflictLevel?: string;
+  conflictRank?: number;
+  deadlinessValue?: number;
+  dangerValue?: number;
+  diffusionValue?: number;
+  events2025?: number;
+  events2024?: number;
+  eventsYoY?: number;
+};
+
+const conflictData = conflictRaw as Record<string, ConflictEntry>;
 
 type GlobeMode = "risk" | "flood" | "sudan_map" | "forecast_30d";
 
@@ -125,6 +141,14 @@ export default function AngelGlobe({ mode, highlights = [], sudanLayers }: Angel
     forecastData.forEach((item) => out.set(item.iso3, item));
     return out;
   }, [forecastData]);
+
+  const conflictByIso = useMemo(() => {
+    const out = new Map<string, ConflictEntry>();
+    for (const [iso3, entry] of Object.entries(conflictData)) {
+      out.set(iso3, entry);
+    }
+    return out;
+  }, []);
 
   const active = !dismissed && highlights.length > 0 ? highlights[activeIndex] : null;
   activeRef.current = active;
@@ -672,7 +696,9 @@ export default function AngelGlobe({ mode, highlights = [], sudanLayers }: Angel
           ? String(iso3Candidate)
           : null;
     const hasCountryData =
-      mode === "forecast_30d" ? forecastByIso.has(iso3 ?? "") : riskByIso.has(iso3 ?? "");
+      mode === "forecast_30d"
+        ? forecastByIso.has(iso3 ?? "") || conflictByIso.has(iso3 ?? "")
+        : riskByIso.has(iso3 ?? "") || conflictByIso.has(iso3 ?? "");
     if (!iso3 || !hasCountryData) {
       setHoverInfo(null);
       return;
@@ -688,6 +714,8 @@ export default function AngelGlobe({ mode, highlights = [], sudanLayers }: Angel
   const hoveredCountry = hoverInfo ? riskByIso.get(hoverInfo.iso3) ?? null : null;
   const selectedForecast = selectedIso3 ? forecastByIso.get(selectedIso3) ?? null : null;
   const hoveredForecast = hoverInfo ? forecastByIso.get(hoverInfo.iso3) ?? null : null;
+  const selectedConflict = selectedIso3 ? conflictByIso.get(selectedIso3) ?? null : null;
+  const hoveredConflict = hoverInfo ? conflictByIso.get(hoverInfo.iso3) ?? null : null;
   function toNumber(value: unknown): number | null {
     if (value == null) return null;
     const n = Number(value);
@@ -894,37 +922,76 @@ export default function AngelGlobe({ mode, highlights = [], sudanLayers }: Angel
       <div className="map-debug-badge">
         Mode: {mode} | Rows: {mode === "forecast_30d" ? forecastData.length : riskData.length}
       </div>
-      {mode === "forecast_30d" && hoverInfo && hoveredForecast ? (
+      {mode !== "sudan_map" && hoverInfo && (hoveredCountry ?? hoveredForecast ?? hoveredConflict) ? (
         <div
           className="hover-tooltip"
-          style={{
-            left: hoverInfo.x + 14,
-            top: hoverInfo.y + 14
-          }}
+          style={{ left: hoverInfo.x + 14, top: hoverInfo.y + 14 }}
         >
           <div className="hover-title">
-            {hoveredForecast.country ?? hoveredForecast.iso3} ({hoveredForecast.iso3})
+            {(hoveredCountry?.country ?? hoveredForecast?.country ?? hoveredConflict?.country ?? hoverInfo.iso3)}{" "}
+            <span style={{ opacity: 0.55, fontWeight: 400 }}>({hoverInfo.iso3})</span>
           </div>
-          <div className="hover-row">Forecast status: {hoveredForecast.forecastStatus}</div>
-          <div className="hover-row">Current risk: {hoveredForecast.currentRiskScore.toFixed(3)}</div>
-          <div className="hover-row">30d forecast: {hoveredForecast.forecastRiskScore.toFixed(3)}</div>
-        </div>
-      ) : mode !== "sudan_map" && hoverInfo && hoveredCountry ? (
-        <div
-          className="hover-tooltip"
-          style={{
-            left: hoverInfo.x + 14,
-            top: hoverInfo.y + 14
-          }}
-        >
-          <div className="hover-title">
-            {hoveredCountry.country ?? hoveredCountry.iso3} ({hoveredCountry.iso3})
-          </div>
-          <div className="hover-row">Status: {hoveredCountry.status}</div>
-          <div className="hover-row">Risk: {hoveredCountry.riskScore.toFixed(3)}</div>
-          <div className="hover-row">
-            Flood exposed: {hoveredCountry.floodPopExposed?.toLocaleString() ?? "N/A"}
-          </div>
+
+          {/* Conflict level badge */}
+          {hoveredConflict?.conflictLevel ? (
+            <div className="hover-row hover-conflict-row">
+              <span
+                className="hover-conflict-badge"
+                style={{
+                  background:
+                    hoveredConflict.conflictLevel === "Extreme" ? "rgba(239,68,68,0.2)" :
+                    hoveredConflict.conflictLevel === "High" ? "rgba(249,115,22,0.2)" :
+                    hoveredConflict.conflictLevel === "Turbulent" ? "rgba(234,179,8,0.2)" :
+                    "rgba(34,197,94,0.15)",
+                  color:
+                    hoveredConflict.conflictLevel === "Extreme" ? "#ef4444" :
+                    hoveredConflict.conflictLevel === "High" ? "#f97316" :
+                    hoveredConflict.conflictLevel === "Turbulent" ? "#eab308" :
+                    "#22c55e",
+                }}
+              >
+                {hoveredConflict.conflictLevel}
+              </span>
+              <span style={{ color: "#7a9cd4", marginLeft: 6 }}>
+                ACLED rank #{hoveredConflict.conflictRank}
+              </span>
+            </div>
+          ) : null}
+
+          {/* Political violence events */}
+          {hoveredConflict?.events2025 != null ? (
+            <div className="hover-row">
+              Violence events 2025:{" "}
+              <strong>{hoveredConflict.events2025.toLocaleString()}</strong>
+              {hoveredConflict.eventsYoY != null ? (
+                <span
+                  style={{
+                    marginLeft: 6,
+                    color: hoveredConflict.eventsYoY > 0 ? "#ef4444" : "#22c55e",
+                    fontSize: 10
+                  }}
+                >
+                  {hoveredConflict.eventsYoY > 0 ? "▲" : "▼"}{Math.abs(hoveredConflict.eventsYoY)}% YoY
+                </span>
+              ) : null}
+            </div>
+          ) : null}
+
+          {/* Risk/forecast rows */}
+          {mode === "forecast_30d" && hoveredForecast ? (
+            <>
+              <div className="hover-row">Forecast status: {hoveredForecast.forecastStatus}</div>
+              <div className="hover-row">Current risk: {hoveredForecast.currentRiskScore.toFixed(3)}</div>
+              <div className="hover-row">30d forecast: {hoveredForecast.forecastRiskScore.toFixed(3)}</div>
+            </>
+          ) : hoveredCountry ? (
+            <>
+              <div className="hover-row">Risk: {hoveredCountry.riskScore.toFixed(3)} · {hoveredCountry.status}</div>
+              <div className="hover-row">
+                Flood exposed: {hoveredCountry.floodPopExposed?.toLocaleString() ?? "N/A"}
+              </div>
+            </>
+          ) : null}
         </div>
       ) : null}
       {mode === "sudan_map" && hoverCounty ? (
@@ -959,49 +1026,105 @@ export default function AngelGlobe({ mode, highlights = [], sudanLayers }: Angel
           </div>
         </div>
       ) : null}
-      {mode === "forecast_30d" && selectedForecast ? (
+      {mode !== "sudan_map" && (selectedCountry ?? selectedForecast ?? selectedConflict) ? (
         <div className="country-card">
           <div className="country-card-title">
-            {selectedForecast.country ?? selectedForecast.iso3} ({selectedForecast.iso3})
+            {selectedCountry?.country ?? selectedForecast?.country ?? selectedConflict?.country ?? selectedIso3}
+            {selectedIso3 ? <span style={{ opacity: 0.5, fontWeight: 400 }}> ({selectedIso3})</span> : null}
           </div>
-          <div className="country-card-row">Current risk score: {selectedForecast.currentRiskScore.toFixed(3)}</div>
-          <div className="country-card-row">Forecast (30d): {selectedForecast.forecastRiskScore.toFixed(3)}</div>
-          <div className="country-card-row">
-            Forecast status: {selectedForecast.forecastStatus.toUpperCase()} | As-of date:{" "}
-            {selectedForecast.asOfDate ?? "N/A"}
-          </div>
-          <div className="case-swatches">
-            <span className={`case-chip ${selectedForecast.forecastStatus === "green" ? "case-active" : ""}`}>
-              <span className="dot green" /> green
-            </span>
-            <span className={`case-chip ${selectedForecast.forecastStatus === "yellow" ? "case-active" : ""}`}>
-              <span className="dot yellow" /> yellow
-            </span>
-            <span className={`case-chip ${selectedForecast.forecastStatus === "red" ? "case-active" : ""}`}>
-              <span className="dot red" /> red
-            </span>
-          </div>
-        </div>
-      ) : mode !== "sudan_map" && selectedCountry ? (
-        <div className="country-card">
-          <div className="country-card-title">
-            {selectedCountry.country ?? selectedCountry.iso3} ({selectedCountry.iso3})
-          </div>
-          <div className="country-card-row">Risk score: {selectedCountry.riskScore.toFixed(3)}</div>
-          <div className="country-card-row">
-            Flood exposed population: {selectedCountry.floodPopExposed?.toLocaleString() ?? "N/A"}
-          </div>
-          <div className="case-swatches">
-            <span className={`case-chip ${selectedCountry.status === "green" ? "case-active" : ""}`}>
-              <span className="dot green" /> green
-            </span>
-            <span className={`case-chip ${selectedCountry.status === "yellow" ? "case-active" : ""}`}>
-              <span className="dot yellow" /> yellow
-            </span>
-            <span className={`case-chip ${selectedCountry.status === "red" ? "case-active" : ""}`}>
-              <span className="dot red" /> red
-            </span>
-          </div>
+
+          {/* Conflict section */}
+          {selectedConflict?.conflictLevel ? (
+            <>
+              <div className="country-card-row country-card-conflict-row">
+                <span
+                  className="hover-conflict-badge"
+                  style={{
+                    background:
+                      selectedConflict.conflictLevel === "Extreme" ? "rgba(239,68,68,0.2)" :
+                      selectedConflict.conflictLevel === "High" ? "rgba(249,115,22,0.2)" :
+                      selectedConflict.conflictLevel === "Turbulent" ? "rgba(234,179,8,0.2)" :
+                      "rgba(34,197,94,0.15)",
+                    color:
+                      selectedConflict.conflictLevel === "Extreme" ? "#ef4444" :
+                      selectedConflict.conflictLevel === "High" ? "#f97316" :
+                      selectedConflict.conflictLevel === "Turbulent" ? "#eab308" :
+                      "#22c55e",
+                  }}
+                >
+                  {selectedConflict.conflictLevel}
+                </span>
+                <span style={{ color: "#7a9cd4", marginLeft: 8, fontSize: 11 }}>
+                  ACLED Global Rank #{selectedConflict.conflictRank} / 244
+                </span>
+              </div>
+              {selectedConflict.events2025 != null ? (
+                <div className="country-card-row">
+                  Violence events 2025:{" "}
+                  <strong>{selectedConflict.events2025.toLocaleString()}</strong>
+                  {selectedConflict.eventsYoY != null ? (
+                    <span
+                      style={{
+                        marginLeft: 8,
+                        color: selectedConflict.eventsYoY > 0 ? "#ef4444" : "#22c55e",
+                        fontSize: 11,
+                      }}
+                    >
+                      {selectedConflict.eventsYoY > 0 ? "▲" : "▼"}{Math.abs(selectedConflict.eventsYoY)}% vs 2024
+                    </span>
+                  ) : null}
+                </div>
+              ) : null}
+              {selectedConflict.events2024 != null ? (
+                <div className="country-card-row" style={{ color: "#7a9cd4" }}>
+                  Violence events 2024: {selectedConflict.events2024.toLocaleString()}
+                </div>
+              ) : null}
+              {selectedConflict.deadlinessValue != null ? (
+                <div className="country-card-row" style={{ color: "#7a9cd4" }}>
+                  Deadliness: {selectedConflict.deadlinessValue.toLocaleString()} · Danger: {selectedConflict.dangerValue?.toLocaleString() ?? "N/A"}
+                </div>
+              ) : null}
+            </>
+          ) : null}
+
+          {/* Forecast rows */}
+          {mode === "forecast_30d" && selectedForecast ? (
+            <>
+              <div className="country-card-row">Current risk: {selectedForecast.currentRiskScore.toFixed(3)}</div>
+              <div className="country-card-row">Forecast (30d): {selectedForecast.forecastRiskScore.toFixed(3)}</div>
+              <div className="country-card-row">As-of: {selectedForecast.asOfDate ?? "N/A"}</div>
+              <div className="case-swatches">
+                <span className={`case-chip ${selectedForecast.forecastStatus === "green" ? "case-active" : ""}`}>
+                  <span className="dot green" /> green
+                </span>
+                <span className={`case-chip ${selectedForecast.forecastStatus === "yellow" ? "case-active" : ""}`}>
+                  <span className="dot yellow" /> yellow
+                </span>
+                <span className={`case-chip ${selectedForecast.forecastStatus === "red" ? "case-active" : ""}`}>
+                  <span className="dot red" /> red
+                </span>
+              </div>
+            </>
+          ) : selectedCountry ? (
+            <>
+              <div className="country-card-row">Risk score: {selectedCountry.riskScore.toFixed(3)}</div>
+              <div className="country-card-row">
+                Flood exposed: {selectedCountry.floodPopExposed?.toLocaleString() ?? "N/A"}
+              </div>
+              <div className="case-swatches">
+                <span className={`case-chip ${selectedCountry.status === "green" ? "case-active" : ""}`}>
+                  <span className="dot green" /> green
+                </span>
+                <span className={`case-chip ${selectedCountry.status === "yellow" ? "case-active" : ""}`}>
+                  <span className="dot yellow" /> yellow
+                </span>
+                <span className={`case-chip ${selectedCountry.status === "red" ? "case-active" : ""}`}>
+                  <span className="dot red" /> red
+                </span>
+              </div>
+            </>
+          ) : null}
         </div>
       ) : null}
 

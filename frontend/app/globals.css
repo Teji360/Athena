@@ -104,7 +104,7 @@ body {
   position: absolute;
   z-index: 30;
   min-width: 220px;
-  max-width: 260px;
+  max-width: 280px;
   border: 1px solid #2d4066;
   border-radius: 10px;
   background: rgba(10, 18, 32, 0.95);
@@ -121,6 +121,26 @@ body {
 .hover-row {
   color: #c7d5ef;
   margin-bottom: 3px;
+}
+
+.hover-conflict-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.hover-conflict-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.country-card-conflict-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
 }
 
 .dot {
@@ -525,6 +545,323 @@ body {
   border-radius: 10px;
   padding: 10px;
   margin: 0 0 12px;
+}
+
+/* ── Planning Workspace Layout ─────────────────────────────── */
+.plan-layout {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+.plan-left,
+.plan-right {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.plan-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7a9cd4;
+  margin-bottom: 10px;
+}
+
+.plan-meta-card .field-label {
+  margin-top: 6px;
+}
+
+/* Context stat grid */
+.plan-context-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.plan-context-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 7px;
+  padding: 8px 10px;
+}
+
+.plan-context-val {
+  font-size: 15px;
+  font-weight: 700;
+  color: #f2f5f9;
+  letter-spacing: -0.01em;
+}
+
+.plan-context-lbl {
+  font-size: 9px;
+  color: #7a9cd4;
+}
+
+/* Scenario preset buttons */
+.plan-scenario-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.plan-scenario-btn {
+  padding: 7px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 7px;
+  border: 1px solid #2a3e63;
+  background: transparent;
+  color: #7a9cd4;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  line-height: 1.3;
+}
+
+.plan-scenario-btn.active {
+  background: rgba(255,255,255,0.05);
+}
+
+.plan-scenario-btn:hover {
+  background: rgba(255,255,255,0.04);
+}
+
+/* Cluster row */
+.plan-cluster-row {
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding: 10px 0 4px;
+}
+
+.plan-cluster-row:first-of-type {
+  border-top: none;
+  padding-top: 4px;
+}
+
+.plan-cluster-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.plan-cluster-badge {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #fff;
+  border-radius: 4px;
+  padding: 2px 5px;
+  flex-shrink: 0;
+}
+
+.plan-cluster-name {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 600;
+  color: #f2f5f9;
+}
+
+.plan-cluster-budget {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.plan-cluster-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #7a9cd4;
+  margin-bottom: 6px;
+}
+
+/* Sliders */
+.plan-slider-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.plan-slider-label {
+  font-size: 9px;
+  color: #5a7aaa;
+  width: 52px;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.plan-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.12);
+  outline: none;
+  cursor: pointer;
+}
+
+.plan-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--thumb-color, #4f79bd);
+  cursor: pointer;
+  border: 2px solid #0a0f1a;
+  transition: transform 0.1s;
+}
+
+.plan-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.plan-slider-val {
+  font-size: 10px;
+  font-weight: 600;
+  color: #c4d6f0;
+  width: 36px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.plan-bar-track {
+  height: 3px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 2px;
+  margin-top: 2px;
+}
+
+.plan-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.25s ease;
+}
+
+/* Summary card */
+.plan-summary-card {
+  position: sticky;
+  top: 20px;
+}
+
+.plan-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 2px;
+}
+
+.plan-total-label {
+  font-size: 12px;
+  color: #9ab2d6;
+}
+
+.plan-total-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: #f2f5f9;
+  letter-spacing: -0.02em;
+}
+
+.plan-total-sub {
+  font-size: 10px;
+  color: #5a7aaa;
+  margin-bottom: 14px;
+}
+
+/* Budget breakdown bars */
+.plan-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 4px;
+}
+
+.plan-breakdown-row {
+  display: grid;
+  grid-template-columns: 32px 1fr 52px 30px;
+  align-items: center;
+  gap: 6px;
+}
+
+.plan-breakdown-name {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.plan-breakdown-bar-wrap {
+  height: 5px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.plan-breakdown-bar {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.plan-breakdown-val {
+  font-size: 10px;
+  font-weight: 600;
+  color: #c4d6f0;
+  text-align: right;
+}
+
+.plan-breakdown-pct {
+  font-size: 9px;
+  color: #5a7aaa;
+  text-align: right;
+}
+
+/* Cluster leads */
+.plan-leads {
+  border-top: 1px solid rgba(255,255,255,0.06);
+  margin-top: 4px;
+  padding-top: 4px;
+}
+
+.plan-lead-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: #9ab2d6;
+  margin-bottom: 5px;
+}
+
+/* Plan preview export */
+.plan-preview-budget {
+  font-size: 9.5px;
+  line-height: 1.6;
+  max-height: 340px;
+  overflow-y: auto;
+  color: #9ab2d6;
+  font-family: "Courier New", Courier, monospace;
+}
+
+.plan-copy-btn {
+  width: 100%;
+  padding: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 9px;
+  border: 1px solid #4f79bd;
+  background: rgba(79,121,189,0.15);
+  color: #b8d0f5;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.plan-copy-btn:hover {
+  background: rgba(79,121,189,0.28);
 }
 
 .table-wrap {
