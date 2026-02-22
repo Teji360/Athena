@@ -1,15 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDatabricksConfig, runDatabricksQuery } from "@/lib/databricks";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 
 type QueryRequest = {
   question?: string;
+  mode?: "risk" | "flood" | "sudan_map";
 };
 
 type AgentIntent =
+  | "smalltalk"
+  | "sudan_map_open"
   | "flood_hotspots"
   | "crisis_hotspots"
   | "stable_countries"
   | "top_risk_countries"
+  | "country_focus"
   | "ssd_hunger_hotspots"
   | "ssd_system_stress"
   | "ssd_hospital_allocation";
@@ -35,6 +41,17 @@ type AgentResult = {
   recommendedSpendSharePct?: number | null;
 };
 
+type ContextSummary = {
+  rowCount: number;
+  redCount: number;
+  yellowCount: number;
+  greenCount: number;
+  avgRiskScore: number | null;
+  topIso3: string[];
+};
+
+type QueryMapMode = "risk" | "flood" | "sudan_map";
+
 function toNumberOrNull(value: unknown): number | null {
   if (value == null) {
     return null;
@@ -56,6 +73,119 @@ function normalizeStatus(value: unknown): "green" | "yellow" | "red" | null {
     return status;
   }
   return null;
+}
+
+function sanitizeSqlLikeLiteral(value: string): string {
+  return value.replace(/[^a-zA-Z\s-]/g, "").replace(/\s+/g, " ").trim();
+}
+
+function extractCountryPhrase(question: string): string | null {
+  const q = question.trim();
+  if (!q) {
+    return null;
+  }
+  const patterns = [
+    /(?:zoom(?:\s+in)?\s+(?:to|on)|focus(?:\s+on)?|go\s+to|show\s+me|center\s+on|move\s+to|soom(?:\s+in)?\s+(?:to|on))\s+([a-zA-Z][a-zA-Z\s'-]{1,60})/i,
+    /(?:in|on)\s+([a-zA-Z][a-zA-Z\s'-]{1,60})\s*$/i
+  ];
+  for (const pattern of patterns) {
+    const match = q.match(pattern);
+    const phrase = match?.[1] ? sanitizeSqlLikeLiteral(match[1]) : "";
+    if (phrase.length >= 3) {
+      return phrase;
+    }
+  }
+  return null;
+}
+
+function summarizeContext(countries: AgentResult[]): ContextSummary {
+  const redCount = countries.filter((c) => c.status === "red").length;
+  const yellowCount = countries.filter((c) => c.status === "yellow").length;
+  const greenCount = countries.filter((c) => c.status === "green").length;
+  const riskValues = countries.map((c) => c.riskScore).filter((n) => Number.isFinite(n));
+  const avgRiskScore = riskValues.length
+    ? riskValues.reduce((sum, value) => sum + value, 0) / riskValues.length
+    : null;
+  return {
+    rowCount: countries.length,
+    redCount,
+    yellowCount,
+    greenCount,
+    avgRiskScore,
+    topIso3: countries.slice(0, 5).map((c) => c.iso3)
+  };
+}
+
+function isSimplePrompt(question: string): boolean {
+  const q = question.trim().toLowerCase();
+  if (!q) {
+    return true;
+  }
+  const tokenCount = q.split(/\s+/).filter(Boolean).length;
+  const deepAnalysisKeywords =
+    /(why|how|explain|intercorrelat|interconnect|tradeoff|drivers|strategy|recommend|allocate|forecast|plan|detailed)/.test(
+      q
+    );
+  return tokenCount <= 7 && !deepAnalysisKeywords;
+}
+
+function responseStyleFor(intent: AgentIntent, question: string): {
+  lengthRule: string;
+  actionsRule: string;
+} {
+  if (intent === "sudan_map_open") {
+    return {
+      lengthRule: "Keep it short: 1 sentence.",
+      actionsRule: "Do not include recommendation bullets."
+    };
+  }
+  if (intent === "smalltalk") {
+    return {
+      lengthRule: "Keep it conversational and short: 1-2 sentences.",
+      actionsRule: "Do not include recommendation bullets."
+    };
+  }
+  if (intent === "country_focus" || isSimplePrompt(question)) {
+    return {
+      lengthRule: "Keep response very short: 1-2 sentences max.",
+      actionsRule: "Do not include a full action plan unless user explicitly asks for recommendations."
+    };
+  }
+  if (intent === "ssd_hospital_allocation" || intent === "ssd_system_stress") {
+    return {
+      lengthRule: "Give a fuller response: 3-5 sentences grounded in data.",
+      actionsRule: 'Include a short "Recommended next actions" section with 3 bullets.'
+    };
+  }
+  return {
+    lengthRule: "Keep response concise: 2-3 sentences.",
+    actionsRule: 'Include 2 brief next-action bullets only if they add value.'
+  };
+}
+
+async function loadSudanContextText(): Promise<string | null> {
+  try {
+    const sudanPath = path.resolve(process.cwd(), "..", "databricks", "jobs", "Sudan.text");
+    const content = await readFile(sudanPath, "utf8");
+    const trimmed = content.trim();
+    return trimmed.length > 0 ? trimmed : null;
+  } catch {
+    return null;
+  }
+}
+
+function smalltalkReply(question: string): string {
+  const q = question.toLowerCase();
+  if (/(hello|hi|hey|yo|sup)\b/.test(q)) {
+    return "Hey — Athena is online. Want a quick country snapshot or a South Sudan county drill-down?";
+  }
+  if (/(how are you|how's it going|hows it going)/.test(q)) {
+    return "Running smoothly and ready. Tell me a country, region, or decision you want help with.";
+  }
+  if (/(thanks|thank you|thx)/.test(q)) {
+    return "Anytime. Ready when you are.";
+  }
+  return "I’m here. Tell me what you want to explore and I’ll keep it sharp.";
 }
 
 function toAgentResult(row: Record<string, unknown>): AgentResult | null {
@@ -114,11 +244,31 @@ function toAgentResult(row: Record<string, unknown>): AgentResult | null {
 
 function detectIntent(question: string): AgentIntent {
   const q = question.toLowerCase();
+  const asksSudanMap = /(open|show|switch|go to|goto|use|enable|turn on).*(sudan|south sudan).*(map)|(sudan|south sudan).*(map)/.test(
+    q
+  );
+  if (asksSudanMap) {
+    return "sudan_map_open";
+  }
+
+  const asksGreeting = /^(hello|hi|hey|yo|sup|how are you|how's it going|hows it going|thanks|thank you|thx)[!. ]*$/.test(
+    q.trim()
+  );
+  if (asksGreeting) {
+    return "smalltalk";
+  }
+
+  const asksNavigation = /(zoom|focus|go to|show me|center on|move to|soom)/.test(q);
+  const explicitCountry = extractCountryPhrase(question);
   const asksSouthSudan = /(south sudan|ssd|juba|equatoria|jonglei|upper nile|unity|warrap)/.test(q);
   const asksHunger = /(hunger|nutrition|malnutrition|gam|food insecurity|county|state|substate|sub-state)/.test(q);
   const asksSystem = /(intercorrelat|interconnect|complex|dynamic|system|drivers|multi-factor|why)/.test(q);
   const asksHospitals = /(hospital|hospitals|hostpital|hostpitals|clinic|facility|facilities|health center)/.test(q);
   const asksAllocation = /(allocat|spend|budget|fund|financ|invest|prioriti[sz]e)/.test(q);
+
+  if (asksNavigation && explicitCountry) {
+    return "country_focus";
+  }
 
   if (asksSouthSudan && asksHospitals && asksAllocation) {
     return "ssd_hospital_allocation";
@@ -148,7 +298,8 @@ function detectIntent(question: string): AgentIntent {
 function buildSql(
   intent: AgentIntent,
   tables: { risk: string; ssdHunger: string; ssdMass: string },
-  limit: number
+  limit: number,
+  question: string
 ): string {
   const table = tables.risk;
   const baseSelect = `
@@ -160,6 +311,23 @@ SELECT
   flood_pop_exposed
 FROM ${table}
   `;
+  if (intent === "country_focus") {
+    const countryPhrase = extractCountryPhrase(question) ?? "";
+    const countryToken = sanitizeSqlLikeLiteral(countryPhrase).toUpperCase();
+    return `
+SELECT
+  iso3,
+  country_name,
+  status,
+  risk_score,
+  flood_pop_exposed
+FROM ${table}
+WHERE upper(country_name) LIKE '%${countryToken}%'
+   OR upper(iso3) = '${countryToken}'
+ORDER BY risk_score DESC
+LIMIT ${limit}
+`;
+  }
   if (intent === "ssd_hunger_hotspots") {
     return `
 SELECT
@@ -304,10 +472,23 @@ LIMIT ${limit}
 }
 
 function buildExplanation(intent: AgentIntent, countries: AgentResult[], question: string): string {
+  if (intent === "sudan_map_open") {
+    return "Sudan Map mode enabled. You can now toggle hunger, displacement, facilities, and markets layers.";
+  }
+  if (intent === "smalltalk") {
+    return smalltalkReply(question);
+  }
   if (countries.length === 0) {
     return "I queried the live Databricks serving table, but no rows matched that request.";
   }
   const top = countries.slice(0, 5);
+  const compact = intent === "country_focus" || isSimplePrompt(question);
+  if (compact) {
+    const first = top[0];
+    return first
+      ? `Focused on ${first.country ?? first.iso3} (${first.iso3}): ${first.status.toUpperCase()}, risk ${first.riskScore.toFixed(3)}.`
+      : "Focus command received.";
+  }
   const lines =
     intent === "ssd_hunger_hotspots" || intent === "ssd_system_stress" || intent === "ssd_hospital_allocation"
       ? top.map(
@@ -403,6 +584,9 @@ async function generateGeminiAnswer(input: {
   intent: AgentIntent;
   countries: AgentResult[];
   fallbackExplanation: string;
+  contextSummary: ContextSummary;
+  mode?: QueryMapMode;
+  sudanContextText?: string | null;
 }): Promise<{ answer: string; source: "gemini" | "fallback" }> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -432,23 +616,31 @@ async function generateGeminiAnswer(input: {
     spendTier: c.spendTier ?? null,
     recommendedSpendSharePct: c.recommendedSpendSharePct ?? null
   }));
+  const style = responseStyleFor(input.intent, input.question);
 
   const prompt = `
 You are Athena, a humanitarian risk analyst.
 User question: ${input.question}
 Detected intent: ${input.intent}
+Current map mode: ${input.mode ?? "risk"}
+Context summary:
+${JSON.stringify(input.contextSummary, null, 2)}
 
 Grounded data (top rows from Databricks serving outputs, including South Sudan county views when relevant):
 ${JSON.stringify(contextCountries, null, 2)}
 
+${input.mode === "sudan_map" && input.sudanContextText ? `Supplemental South Sudan brief (operator-provided context):
+${input.sudanContextText}` : ""}
+
 Return:
-1) 2-4 sentence direct answer.
-2) A short "Recommended next actions" section with 3 bullets.
+- ${style.lengthRule}
+- ${style.actionsRule}
 Rules:
 - Only use the grounded data provided.
 - If data is incomplete, explicitly say that.
 - Be concise and operational.
 - For hospital allocation questions, rank counties by allocation score and mention suggested spend-share percentages.
+- For country focus commands, acknowledge the requested country and provide a short situational readout from returned rows.
 `.trim();
 
   try {
@@ -483,6 +675,7 @@ Rules:
 export async function POST(request: NextRequest) {
   const body = (await request.json().catch(() => ({}))) as QueryRequest;
   const question = (body.question ?? "").trim();
+  const mode = body.mode;
 
   if (!question) {
     return NextResponse.json(
@@ -509,12 +702,47 @@ export async function POST(request: NextRequest) {
   }
 
   const intent = detectIntent(question);
+  const effectiveIntent: AgentIntent =
+    mode === "sudan_map" &&
+    (intent === "top_risk_countries" ||
+      intent === "crisis_hotspots" ||
+      intent === "stable_countries" ||
+      intent === "flood_hotspots")
+      ? "ssd_system_stress"
+      : intent;
+
+  if (effectiveIntent === "sudan_map_open") {
+    const answer = buildExplanation(effectiveIntent, [], question);
+    return NextResponse.json({
+      intent: effectiveIntent,
+      question,
+      filters: { mode: "sudan_map", focus: "south_sudan", level: "county" },
+      countries: [],
+      responseSource: "fallback",
+      answer,
+      explanation: answer
+    });
+  }
+
+  if (effectiveIntent === "smalltalk") {
+    const answer = smalltalkReply(question);
+    return NextResponse.json({
+      intent: effectiveIntent,
+      question,
+      filters: {},
+      countries: [],
+      responseSource: "fallback",
+      answer,
+      explanation: answer
+    });
+  }
+
   const tables = {
     risk: config.riskTable ?? "workspace.default.gold_country_risk_serving",
     ssdHunger: process.env.DATABRICKS_SSD_HUNGER_TABLE ?? "workspace.default.gold_ss_hunger_serving",
     ssdMass: process.env.DATABRICKS_SSD_MASS_TABLE ?? "workspace.default.sudan_mass_information"
   };
-  const sql = buildSql(intent, tables, 20);
+  const sql = buildSql(effectiveIntent, tables, 20, question);
 
   try {
     const rows = await runDatabricksQuery(sql);
@@ -522,25 +750,33 @@ export async function POST(request: NextRequest) {
       .map(toAgentResult)
       .filter((item): item is AgentResult => item !== null);
 
+    const topCountryIso3 = countries[0]?.iso3 ?? null;
     const filters =
-      intent === "ssd_hunger_hotspots" || intent === "ssd_system_stress" || intent === "ssd_hospital_allocation"
-        ? { mode: "risk", focus: "south_sudan", level: "county" }
-        : intent === "flood_hotspots"
+      effectiveIntent === "ssd_hunger_hotspots" || effectiveIntent === "ssd_system_stress" || effectiveIntent === "ssd_hospital_allocation"
+        ? { mode: mode === "sudan_map" ? "sudan_map" : "risk", focus: "south_sudan", level: "county" }
+        : effectiveIntent === "country_focus"
+        ? { mode: "risk", action: "zoom_country", iso3: topCountryIso3 }
+        : effectiveIntent === "flood_hotspots"
         ? { mode: "flood" }
-        : intent === "stable_countries"
+        : effectiveIntent === "stable_countries"
           ? { status: ["green"], mode: "risk" }
           : { status: ["red", "yellow"], mode: "risk" };
 
-    const fallbackExplanation = buildExplanation(intent, countries, question);
+    const sudanContextText = mode === "sudan_map" ? await loadSudanContextText() : null;
+    const contextSummary = summarizeContext(countries);
+    const fallbackExplanation = buildExplanation(effectiveIntent, countries, question);
     const generated = await generateGeminiAnswer({
       question,
-      intent,
+      intent: effectiveIntent,
       countries,
-      fallbackExplanation
+      fallbackExplanation,
+      contextSummary,
+      mode,
+      sudanContextText
     });
 
     return NextResponse.json({
-      intent,
+      intent: effectiveIntent,
       question,
       filters,
       countries: countries.slice(0, 10),
@@ -552,7 +788,7 @@ export async function POST(request: NextRequest) {
     const message = error instanceof Error ? error.message : "Databricks query failed.";
     return NextResponse.json(
       {
-        intent,
+        intent: effectiveIntent,
         question,
         filters: {},
         responseSource: "fallback",

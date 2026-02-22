@@ -44,8 +44,17 @@ export async function POST(request: NextRequest) {
   );
 
   if (!elevenResponse.ok) {
+    const errorBody = await elevenResponse.text().catch(() => "");
+    const details = errorBody.slice(0, 400);
+    console.error("ElevenLabs TTS failed", {
+      status: elevenResponse.status,
+      details
+    });
     return NextResponse.json(
-      { error: `ElevenLabs request failed (${elevenResponse.status})` },
+      {
+        error: `ElevenLabs request failed (${elevenResponse.status})`,
+        details: details || "No error details returned from ElevenLabs"
+      },
       { status: 502 }
     );
   }

@@ -3,7 +3,8 @@ import Link from "next/link";
 const links = [
   { href: "/", label: "Globe" },
   { href: "/data", label: "Data" },
-  { href: "/planning", label: "Planning" }
+  { href: "/planning", label: "Planning" },
+  { href: "/settings", label: "Settings" }
 ];
 
 export default function MainNav() {

@@ -1,27 +1,28 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
-import { Bot, Droplets, Mic, MicOff, Send, Sparkles, Volume2, VolumeX, X } from "lucide-react";
+import { Droplets, Mic, MicOff, Send, Volume2, VolumeX, X } from "lucide-react";
 import AthenaGlobe, { type GlobeHighlight } from "@/components/AthenaGlobe";
 import countryCentroids from "@/lib/countryCentroids";
-
-type ChatMessage = {
-  id: string;
-  role: "user" | "assistant";
-  text: string;
-};
-
-type CountryResult = {
-  iso3?: string;
-  summary?: string;
-};
+import {
+  getVoiceAssistantEnabledStorageKey,
+  readVoiceAssistantEnabled,
+  writeVoiceAssistantEnabled
+} from "@/lib/settings";
 
 type QueryResponse = {
   intent?: string;
   responseSource?: "gemini" | "fallback";
   answer?: string;
   explanation?: string;
-  filters?: Record<string, unknown>;
+  filters?: {
+    mode?: "risk" | "flood" | "sudan_map";
+    action?: "zoom_country";
+    iso3?: string | null;
+    focus?: string;
+    level?: string;
+    status?: string[];
+  };
   countries?: Array<{
     iso3?: string;
     country?: string | null;
@@ -30,6 +31,8 @@ type QueryResponse = {
     summary?: string;
   }>;
 };
+
+type QueryMapMode = "risk" | "flood" | "sudan_map";
 
 type SsdHungerRow = {
   adm1State: string;
@@ -82,9 +85,8 @@ type SpeechRecognitionCtor = new () => {
 };
 
 export default function AthenaWorkspace() {
-  const [isPanelOpen, setPanelOpen] = useState(false);
   const [isDataPanelOpen, setDataPanelOpen] = useState(true);
-  const [mode, setMode] = useState<"risk" | "flood" | "sudan_map">("risk");
+  const [mode, setMode] = useState<QueryMapMode>("risk");
   const [sudanLayers, setSudanLayers] = useState<SudanMapLayers>({
     hunger: true,
     displacement: true,
@@ -101,13 +103,6 @@ export default function AthenaWorkspace() {
   const recognitionRef = useRef<InstanceType<SpeechRecognitionCtor> | null>(null);
   const activeAudioRef = useRef<HTMLAudioElement | null>(null);
   const [highlights, setHighlights] = useState<GlobeHighlight[]>([]);
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: "welcome",
-      role: "assistant",
-      text: "Athena online. Ask: 'Where are wars happening right now?'"
-    }
-  ]);
 
   const canSend = useMemo(() => input.trim().length > 0 && !isSending, [input, isSending]);
 
@@ -116,6 +111,18 @@ export default function AthenaWorkspace() {
       recognitionRef.current?.stop();
       activeAudioRef.current?.pause();
     };
+  }, []);
+
+  useEffect(() => {
+    setVoiceEnabled(readVoiceAssistantEnabled(true));
+    const storageKey = getVoiceAssistantEnabledStorageKey();
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === storageKey) {
+        setVoiceEnabled(readVoiceAssistantEnabled(true));
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
   }, []);
 
   useEffect(() => {
@@ -174,7 +181,13 @@ export default function AthenaWorkspace() {
         body: JSON.stringify({ text })
       });
       if (!response.ok) {
-        throw new Error("Voice service unavailable");
+        const payload = (await response.json().catch(() => ({}))) as {
+          error?: string;
+          details?: string;
+        };
+        const message = payload.error ?? "Voice service unavailable";
+        const details = payload.details ? `: ${payload.details}` : "";
+        throw new Error(`${message}${details}`);
       }
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
@@ -187,18 +200,16 @@ export default function AthenaWorkspace() {
         setVoiceStatus("Voice ready");
       };
       await audio.play();
-    } catch {
-      setVoiceStatus("Voice failed, text still available");
+    } catch (error) {
+      const message =
+        error instanceof Error && error.message
+          ? error.message.slice(0, 120)
+          : "Voice failed, text still available";
+      setVoiceStatus(message);
     }
   }
 
   async function sendQuestion(question: string) {
-    const userMessage: ChatMessage = {
-      id: `${Date.now()}-user`,
-      role: "user",
-      text: question
-    };
-    setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setSending(true);
 
@@ -206,7 +217,7 @@ export default function AthenaWorkspace() {
       const response = await fetch("/api/query", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question })
+        body: JSON.stringify({ question, mode })
       });
 
       if (!response.ok) {
@@ -215,6 +226,10 @@ export default function AthenaWorkspace() {
 
       const payload = (await response.json()) as QueryResponse;
       const assistantText = toAssistantMessage(payload);
+
+      if (payload.filters?.mode) {
+        setMode(payload.filters.mode);
+      }
 
       // Parse countries into globe highlights
       if (payload.countries && Array.isArray(payload.countries)) {
@@ -226,25 +241,43 @@ export default function AthenaWorkspace() {
           .map((c) => ({
             iso3: c.iso3,
             summary: c.summary ?? "",
-            center: countryCentroids[c.iso3],
+            center: countryCentroids[c.iso3]
           }));
-        setHighlights(parsed);
-      }
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `${Date.now()}-assistant`,
-          role: "assistant",
-          text: assistantText
+        const firstParsed = parsed[0];
+        if (firstParsed) {
+          setHighlights([
+            {
+              ...firstParsed,
+              summary: assistantText
+            }
+          ]);
+        } else if (
+          payload.filters?.action === "zoom_country" &&
+          typeof payload.filters.iso3 === "string" &&
+          payload.filters.iso3 in countryCentroids
+        ) {
+          setHighlights([
+            {
+            iso3: payload.filters.iso3,
+              summary: assistantText,
+            center: countryCentroids[payload.filters.iso3]
+            }
+          ]);
+        } else {
+          setHighlights([]);
         }
-      ]);
+      } else {
+        setHighlights([]);
+      }
       void speakText(assistantText);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
-      setMessages((prev) => [
-        ...prev,
-        { id: `${Date.now()}-assistant-error`, role: "assistant", text: `Error: ${message}` }
+      setHighlights([
+        {
+          iso3: "ATH",
+          summary: `Error: ${message}`,
+          center: [0, 20]
+        }
       ]);
     } finally {
       setSending(false);
@@ -327,16 +360,6 @@ export default function AthenaWorkspace() {
           >
             <Droplets size={16} />
             {isDataPanelOpen ? "Hide Data Modes" : "Show Data Modes"}
-          </button>
-          <button
-            className="ai-toggle"
-            type="button"
-            onClick={() => setPanelOpen((prev) => !prev)}
-            aria-expanded={isPanelOpen}
-            aria-controls="athena-ai-panel"
-          >
-            <Sparkles size={16} />
-            {isPanelOpen ? "Close Athena AI" : "Open Athena AI"}
           </button>
         </div>
       </header>
@@ -453,46 +476,44 @@ export default function AthenaWorkspace() {
         </aside>
       ) : null}
 
-      {isPanelOpen ? (
-        <aside id="athena-ai-panel" className="ai-panel">
-          <div className="ai-panel-header">
-            <span className="ai-panel-title">
-              <Bot size={16} />
-              Athena Assistant
-            </span>
-            <button className="icon-btn" onClick={() => setPanelOpen(false)} aria-label="Close Athena AI panel">
-              <X size={16} />
-            </button>
-          </div>
-          <div className="ai-voice-controls">
-            <button type="button" className="icon-btn" onClick={() => setVoiceEnabled((prev) => !prev)} aria-label="Toggle voice replies">
-              {isVoiceEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
-            </button>
-            <button type="button" className={`icon-btn ${isListening ? "icon-btn-live" : ""}`} onClick={toggleListening} aria-label="Toggle microphone">
-              {isListening ? <MicOff size={16} /> : <Mic size={16} />}
-            </button>
-            <span className="voice-status">{voiceStatus}</span>
-          </div>
-          <div className="ai-messages">
-            {messages.map((message) => (
-              <div key={message.id} className={`chat-bubble chat-${message.role}`}>
-                {message.text}
-              </div>
-            ))}
-          </div>
-          <form className="ai-input-row" onSubmit={onSubmit}>
-            <input
-              value={input}
-              onChange={(event) => setInput(event.target.value)}
-              placeholder="Ask Athena..."
-              aria-label="Ask Athena"
-            />
-            <button type="submit" disabled={!canSend}>
-              {isSending ? "..." : <Send size={15} />}
-            </button>
-          </form>
-        </aside>
-      ) : null}
+      <div className="bottom-prompt-wrap">
+        <div className="bottom-prompt-controls">
+          <button
+            type="button"
+            className="icon-btn"
+            onClick={() =>
+              setVoiceEnabled((prev) => {
+                const next = !prev;
+                writeVoiceAssistantEnabled(next);
+                return next;
+              })
+            }
+            aria-label="Toggle voice replies"
+          >
+            {isVoiceEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
+          </button>
+          <button
+            type="button"
+            className={`icon-btn ${isListening ? "icon-btn-live" : ""}`}
+            onClick={toggleListening}
+            aria-label="Toggle microphone"
+          >
+            {isListening ? <MicOff size={16} /> : <Mic size={16} />}
+          </button>
+          <span className="voice-status">{voiceStatus}</span>
+        </div>
+        <form className="bottom-prompt-input-row" onSubmit={onSubmit}>
+          <input
+            value={input}
+            onChange={(event) => setInput(event.target.value)}
+            placeholder="Ask Athena..."
+            aria-label="Ask Athena"
+          />
+          <button type="submit" disabled={!canSend}>
+            {isSending ? "..." : <Send size={15} />}
+          </button>
+        </form>
+      </div>
     </main>
   );
 }

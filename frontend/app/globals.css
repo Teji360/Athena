@@ -553,6 +553,82 @@ body {
   white-space: nowrap;
 }
 
+.settings-card {
+  max-width: 860px;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.settings-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #e6eefc;
+  margin-bottom: 4px;
+}
+
+.settings-copy {
+  color: #9bb0d2;
+  font-size: 13px;
+  max-width: 620px;
+}
+
+.settings-meta {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #253757;
+  color: #8ea0c4;
+  font-size: 12px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 28px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #223252;
+  border: 1px solid #3a4f74;
+  transition: 0.2s ease;
+  border-radius: 999px;
+}
+
+.slider::before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  top: 3px;
+  background-color: #dbe7fb;
+  transition: 0.2s ease;
+  border-radius: 50%;
+}
+
+.switch input:checked + .slider {
+  background-color: #284b80;
+  border-color: #4f79bd;
+}
+
+.switch input:checked + .slider::before {
+  transform: translateX(20px);
+}
+
 /* ── Globe annotation styles ── */
 
 /* Dot with pulsing ring */
@@ -621,11 +697,15 @@ body {
   border-left: 3px solid #ef4444;
   border-radius: 8px;
   padding: 10px 12px;
-  max-width: 250px;
+  max-width: 420px;
+  max-height: 220px;
+  overflow-y: auto;
   color: #f2f5f9;
   font-size: 12px;
   line-height: 1.4;
   pointer-events: none;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .annotation-iso {
@@ -669,4 +749,59 @@ body {
 
 .annotation-close-btn:hover {
   background: #47212a;
+}
+
+.bottom-prompt-wrap {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  width: min(760px, calc(100vw - 32px));
+  border: 1px solid #2a3e63;
+  border-radius: 12px;
+  background: rgba(10, 15, 26, 0.96);
+  backdrop-filter: blur(6px);
+  z-index: 25;
+  padding: 10px;
+}
+
+.bottom-prompt-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.bottom-prompt-input-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+
+.bottom-prompt-input-row input {
+  width: 100%;
+  border: 1px solid #334a72;
+  border-radius: 10px;
+  background: #0d1526;
+  color: #f2f5f9;
+  padding: 12px 14px;
+}
+
+.bottom-prompt-input-row button {
+  border: 1px solid #355185;
+  background: #234172;
+  color: #f2f5f9;
+  border-radius: 10px;
+  width: 46px;
+  height: 46px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bottom-prompt-input-row button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
