@@ -1,6 +1,6 @@
-# Athena Agent V1
+# Angel Agent V1
 
-Athena Agent V1 uses a lightweight intent router and Databricks SQL as its primary tool.
+Angel Agent V1 uses a lightweight intent router and Databricks SQL as its primary tool.
 
 ## Runtime Path
 

@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { ssdClusters, ssdOverall } from "@/lib/ssdClusterData";
+import countyResourcesRaw from "@/lib/ssdCountyResources.json";
+import { computeFacilityAllocations, type ClusterFacilityAllocation } from "@/lib/facilityAllocation";
 
 // ── Budget constants ──────────────────────────────────────────────────────────
 // Standard humanitarian unit costs (USD/beneficiary/year) per cluster
@@ -84,6 +86,7 @@ export default function PlanningWorkspace() {
   );
   const [activeScenario, setActiveScenario] = useState(0);
   const [copied, setCopied] = useState(false);
+  const [expandedCluster, setExpandedCluster] = useState<ClusterId | null>(null);
 
   // Derived per-cluster numbers
   const clusterBudgets = useMemo(() => {
@@ -117,6 +120,21 @@ export default function PlanningWorkspace() {
     () => clusterBudgets.reduce((s, c) => s + (c?.beneficiaries ?? 0), 0),
     [clusterBudgets]
   );
+
+  // Facility-level allocations for HEA and FSC
+  const heaAllocation = useMemo(() => {
+    const hea = clusterBudgets.find((c) => c?.id === "HEA");
+    return hea ? computeFacilityAllocations(countyResourcesRaw, "HEA", hea.cost) : null;
+  }, [clusterBudgets]);
+
+  const fscAllocation = useMemo(() => {
+    const fsc = clusterBudgets.find((c) => c?.id === "FSC");
+    return fsc ? computeFacilityAllocations(countyResourcesRaw, "FSC", fsc.cost) : null;
+  }, [clusterBudgets]);
+
+  const activeAllocation: ClusterFacilityAllocation | null =
+    expandedCluster === "HEA" ? heaAllocation :
+    expandedCluster === "FSC" ? fscAllocation : null;
 
   // Apply scenario preset
   function applyScenario(idx: number) {
@@ -171,6 +189,33 @@ export default function PlanningWorkspace() {
       `TOTAL BUDGET REQUIREMENT:         ${fmt(totalBudget)}`,
       `Total beneficiaries targeted:     ${fmtN(totalBeneficiaries)}`,
       `Average cost per beneficiary:     $${totalBeneficiaries > 0 ? (totalBudget / totalBeneficiaries).toFixed(2) : "N/A"}`,
+    );
+
+    // Append facility distribution if a cluster is expanded
+    if (activeAllocation) {
+      const label = activeAllocation.clusterId === "HEA"
+        ? "EMERGENCY HEALTH SERVICES (HEA)"
+        : "FOOD SECURITY & LIVELIHOODS (FSC)";
+      lines.push(
+        ``,
+        `FACILITY-LEVEL DISTRIBUTION: ${label}`,
+        `─────────────────────────────────────────────`,
+        `Cluster budget:          ${fmt(activeAllocation.clusterBudget)}`,
+        `Facilities funded:       ${activeAllocation.totalFacilities} across ${activeAllocation.counties.length} counties`,
+        `Average per facility:    ${fmt(activeAllocation.avgPerFacility)}`,
+        ``,
+        `Top 10 Highest-Funded:`,
+      );
+      activeAllocation.topFunded.forEach((f, i) => {
+        lines.push(`  ${(i + 1).toString().padStart(2)}. ${f.name} (${f.county}) — ${fmt(f.fundingAmount)}`);
+      });
+      lines.push(
+        ``,
+        `Sources: WHO Master Facility List Apr 2025 · HPC 2026 · WFP Markets SSD`,
+      );
+    }
+
+    lines.push(
       ``,
       `DATA SOURCES`,
       `─────────────────────────────────────────────`,
@@ -190,7 +235,7 @@ export default function PlanningWorkspace() {
     );
 
     return lines.join("\n");
-  }, [clusterBudgets, totalBudget, totalBeneficiaries, planTitle, planNote]);
+  }, [clusterBudgets, totalBudget, totalBeneficiaries, planTitle, planNote, activeAllocation]);
 
   function copyPlan() {
     void navigator.clipboard.writeText(planText).then(() => {
@@ -282,9 +327,19 @@ export default function PlanningWorkspace() {
             <div className="plan-section-label">Cluster Budgets — Adjust Coverage &amp; Unit Cost</div>
             {clusterBudgets.map((c) => {
               if (!c) return null;
+              const isExpandable = c.id === "HEA" || c.id === "FSC";
+              const isExpanded = expandedCluster === c.id;
+              const allocation = c.id === "HEA" ? heaAllocation : c.id === "FSC" ? fscAllocation : null;
+
               return (
                 <div key={c.id} className="plan-cluster-row">
-                  <div className="plan-cluster-header">
+                  <div
+                    className={`plan-cluster-header ${isExpandable ? "plan-cluster-header-expandable" : ""}`}
+                    onClick={isExpandable ? () => setExpandedCluster(isExpanded ? null : c.id as ClusterId) : undefined}
+                  >
+                    {isExpandable && (
+                      <span className="plan-expand-chevron">{isExpanded ? "\u25BE" : "\u25B8"}</span>
+                    )}
                     <span
                       className="plan-cluster-badge"
                       style={{ background: c.color }}
@@ -299,7 +354,7 @@ export default function PlanningWorkspace() {
 
                   <div className="plan-cluster-meta">
                     <span>{fmtN(c.inNeed)} in need</span>
-                    <span style={{ color: c.color }}>→ {fmtN(c.beneficiaries)} targeted ({c.coveragePct}%)</span>
+                    <span style={{ color: c.color }}>&rarr; {fmtN(c.beneficiaries)} targeted ({c.coveragePct}%)</span>
                   </div>
 
                   {/* Coverage slider */}
@@ -347,6 +402,35 @@ export default function PlanningWorkspace() {
                       style={{ width: `${c.coveragePct}%`, background: c.color }}
                     />
                   </div>
+
+                  {/* Expanded facility list for HEA / FSC */}
+                  {isExpanded && allocation && (
+                    <div className="plan-facility-expand">
+                      <div className="plan-facility-summary">
+                        {allocation.totalFacilities} {c.id === "HEA" ? "health facilities" : "markets"} &middot; Avg {fmt(allocation.avgPerFacility)}/facility
+                      </div>
+                      {allocation.counties.map((county) => (
+                        <div key={county.pcode} className="plan-facility-county-group">
+                          <div className="plan-facility-county-header">
+                            <span className="plan-facility-county-name">
+                              {county.county}, {county.state}
+                            </span>
+                            <span className="plan-facility-amount">{fmt(county.countyTotal)}</span>
+                          </div>
+                          {county.facilities.map((f, fi) => (
+                            <div key={f.name + fi} className="plan-facility-item">
+                              <span className="plan-facility-rank">{fi + 1}</span>
+                              <div className="plan-facility-item-body">
+                                <span className="plan-facility-item-name">{f.name}</span>
+                                <span className="plan-facility-item-meta">{f.type} &middot; {f.distKm} km</span>
+                              </div>
+                              <span className="plan-facility-amount">{fmt(f.fundingAmount)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -410,6 +494,67 @@ export default function PlanningWorkspace() {
               ))}
             </div>
           </div>
+
+          {/* Facility distribution summary — visible when HEA or FSC expanded */}
+          {activeAllocation && (
+            <div className="content-card plan-facility-summary-card">
+              <div className="plan-section-label">
+                HPC 2026 Distribution Summary — {activeAllocation.clusterId === "HEA" ? "Health" : "Food Security"}
+              </div>
+              <div className="plan-facility-summary-stats">
+                <div className="plan-facility-summary-stat">
+                  <span className="plan-context-val">{fmt(activeAllocation.clusterBudget)}</span>
+                  <span className="plan-context-lbl">Cluster Budget</span>
+                </div>
+                <div className="plan-facility-summary-stat">
+                  <span className="plan-context-val">{activeAllocation.totalFacilities}</span>
+                  <span className="plan-context-lbl">Facilities</span>
+                </div>
+                <div className="plan-facility-summary-stat">
+                  <span className="plan-context-val">{fmt(activeAllocation.avgPerFacility)}</span>
+                  <span className="plan-context-lbl">Avg / Facility</span>
+                </div>
+              </div>
+
+              <div className="plan-section-label" style={{ marginTop: 14 }}>Top 10 Highest-Funded</div>
+              <div className="plan-facility-top-list">
+                {activeAllocation.topFunded.map((f, i) => (
+                  <div key={f.name + i} className="plan-facility-top-item">
+                    <span className="plan-facility-rank">{i + 1}</span>
+                    <div className="plan-facility-item-body">
+                      <span className="plan-facility-item-name">{f.name}</span>
+                      <span className="plan-facility-item-meta">{f.county}, {f.state}</span>
+                    </div>
+                    <span className="plan-facility-amount">{fmt(f.fundingAmount)}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="plan-section-label" style={{ marginTop: 14 }}>County Distribution (Top 10)</div>
+              <div className="plan-facility-county-bars">
+                {activeAllocation.counties.slice(0, 10).map((county) => {
+                  const maxCounty = activeAllocation.counties[0]?.countyTotal ?? 1;
+                  const pct = (county.countyTotal / maxCounty) * 100;
+                  return (
+                    <div key={county.pcode} className="plan-facility-county-bar-row">
+                      <span className="plan-facility-county-bar-name">{county.county}</span>
+                      <div className="plan-breakdown-bar-wrap">
+                        <div
+                          className="plan-breakdown-bar"
+                          style={{ width: `${pct}%`, background: activeAllocation.clusterId === "HEA" ? "#ef4444" : "#f97316" }}
+                        />
+                      </div>
+                      <span className="plan-facility-amount">{fmt(county.countyTotal)}</span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="plan-facility-attribution">
+                HPC 2026 &middot; WHO Master Facility List Apr 2025 &middot; WFP Markets SSD
+              </div>
+            </div>
+          )}
 
           {/* Plan preview + export */}
           <div className="content-card">

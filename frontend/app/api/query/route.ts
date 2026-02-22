@@ -373,7 +373,7 @@ function isGreetingOnly(question: string): boolean {
   const hasGreeting =
     /(^|\s)(hello|hi|hey|yo|sup|greetings|good morning|good afternoon|good evening|how are you|hows it going|how s it going|nice to meet you|thanks|thank you|thx)(\s|$)/.test(
       q
-    ) || /(^|\s)(athena|athina|atena|atina|athinah|athna)(\s|$)/.test(q);
+    ) || /(^|\s)(angel|athena|athina|atena|atina|athinah|athna)(\s|$)/.test(q);
   const hasActionableIntent =
     /(show|zoom|focus|open|switch|map|risk|war|conflict|flood|hunger|country|countries|where|which|analy[sz]e|explain|plan|allocate|budget|hotspot|status)/.test(
       q

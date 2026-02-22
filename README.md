@@ -1,10 +1,10 @@
-# Project Athena
+# Project Angel
 
 Agentic Geographic Information System for humanitarian intelligence.
 
 ## Mission
 
-Athena unifies UN/HDX humanitarian data, computes country-level risk and funding urgency, and serves it to an interactive globe UI with clear green/yellow/red status.
+Angel unifies UN/HDX humanitarian data, computes country-level risk and funding urgency, and serves it to an interactive globe UI with clear green/yellow/red status.
 
 ## Repo Structure
 

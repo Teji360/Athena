@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Clean Athena CSV datasets into data/clean/.
+"""Clean Angel CSV datasets into data/clean/.
 
 Rules:
 - remove HDX metadata rows (rows where values start with '#')

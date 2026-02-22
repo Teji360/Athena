@@ -28,7 +28,7 @@ Create `frontend/.env.local` with:
 
 ## Architecture
 
-**Athena** is a humanitarian crisis monitoring system combining a Databricks data pipeline with a Next.js frontend.
+**Angel** is a humanitarian crisis monitoring system combining a Databricks data pipeline with a Next.js frontend.
 
 ### Data Pipeline (Medallion Architecture)
 Located in `databricks/notebooks/`:
@@ -53,8 +53,8 @@ The daily Databricks job (`databricks/jobs/daily_pipeline.json`) runs at 06:00 U
 - `GET /api/health` — health check
 
 ### Key Components (`frontend/components/`)
-- **AthenaGlobe.tsx**: Mapbox GL 3D globe; fetches `/api/countries/risk` and colors countries by ISO3 code (green/yellow/red)
-- **AthenaWorkspace.tsx**: Main UI with AI chat panel, Web Speech API voice input, and ElevenLabs voice output
+- **AngelGlobe.tsx**: Mapbox GL 3D globe; fetches `/api/countries/risk` and colors countries by ISO3 code (green/yellow/red)
+- **AngelWorkspace.tsx**: Main UI with AI chat panel, Web Speech API voice input, and ElevenLabs voice output
 
 ### Canonical Key
 ISO3 country code (3-letter uppercase) is the join key across all data layers and the frontend map.

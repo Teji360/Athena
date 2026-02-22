@@ -1,4 +1,4 @@
-# Athena DataDoc
+# Angel DataDoc
 
 This document defines what each data layer analyzes and how it should render on the globe map.
 
@@ -92,7 +92,7 @@ This document defines what each data layer analyzes and how it should render on 
   - Financial Stress + Humanitarian Need + Hazard Exposure
 - Analysis:
   - combined country risk for operational prioritization
-  - core map status used by Athena
+  - core map status used by Angel
 - Primary metrics:
   - `risk_score` (0 to 1)
   - `status` in `green`, `yellow`, `red`

@@ -1,6 +1,6 @@
 # Databricks Scaffold
 
-This folder contains Athena's core data pipeline scaffolding.
+This folder contains Angel's core data pipeline scaffolding.
 
 ## Notebooks
 

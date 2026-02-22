@@ -1,4 +1,4 @@
-# Athena Architecture (Scaffold)
+# Angel Architecture (Scaffold)
 
 ## Layers
 

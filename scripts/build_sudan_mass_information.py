@@ -2,7 +2,7 @@
 """Build an integrated Sudan/South Sudan information database CSV.
 
 Output:
-  /Users/davidaror/Documents/Projects/Athena/sudan_mass_information.csv
+  /Users/davidaror/Documents/Projects/Angel/sudan_mass_information.csv
 """
 
 from __future__ import annotations

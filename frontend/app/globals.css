@@ -1608,3 +1608,258 @@ body {
   padding-top: 8px;
   border-top: 1px solid #1a2d4a;
 }
+
+/* ── Expandable county facility rows ────────────────────────── */
+.ssd-priority-row-expandable {
+  cursor: pointer;
+  transition: background 0.12s;
+  border-radius: 4px;
+  padding: 4px 2px;
+}
+
+.ssd-priority-row-expandable:hover {
+  background: rgba(79, 121, 189, 0.1);
+}
+
+.ssd-expand-chevron {
+  font-size: 9px;
+  color: #7a9cd4;
+  display: inline-block;
+  width: 12px;
+}
+
+.ssd-facility-expand {
+  border-left: 2px solid #2a3e63;
+  margin-left: 6px;
+  margin-bottom: 4px;
+}
+
+.ssd-facility-expand .county-action-section {
+  padding: 5px 8px;
+  border-top: none;
+}
+
+.ssd-facility-expand .county-action-section-title {
+  font-size: 8px;
+  margin-bottom: 4px;
+}
+
+.ssd-facility-expand .county-action-list {
+  gap: 3px;
+}
+
+.ssd-facility-expand .county-action-rank {
+  width: 14px;
+  height: 14px;
+  font-size: 8px;
+}
+
+.ssd-facility-expand .county-action-item-name {
+  font-size: 10px;
+}
+
+.ssd-facility-expand .county-action-item-meta {
+  font-size: 8px;
+}
+
+.ssd-alloc-badge {
+  display: inline-block;
+  background: rgba(59, 130, 246, 0.25);
+  color: #93c5fd;
+  font-size: 8px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 8px;
+  margin-left: 6px;
+  letter-spacing: 0.02em;
+}
+
+.ssd-alloc-footer {
+  font-size: 9px;
+  color: #5a7aaa;
+  text-align: center;
+  padding: 6px 0 2px;
+  border-top: 1px solid #223355;
+  margin-top: 4px;
+}
+
+/* ── Plan facility expansion (Planning tab) ────────────────── */
+.plan-cluster-header-expandable {
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 4px 6px;
+  margin: -4px -6px 4px;
+  transition: background 0.12s;
+}
+
+.plan-cluster-header-expandable:hover {
+  background: rgba(79, 121, 189, 0.1);
+}
+
+.plan-expand-chevron {
+  font-size: 10px;
+  color: #7a9cd4;
+  width: 12px;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.plan-facility-expand {
+  border: 1px solid #2a3e63;
+  border-radius: 8px;
+  background: rgba(15, 25, 50, 0.5);
+  margin-top: 8px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 8px 10px;
+}
+
+.plan-facility-summary {
+  font-size: 10px;
+  color: #7a9cd4;
+  font-weight: 600;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 6px;
+}
+
+.plan-facility-county-group {
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.plan-facility-county-group:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.plan-facility-county-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.plan-facility-county-name {
+  font-size: 10px;
+  font-weight: 700;
+  color: #c4d6f0;
+}
+
+.plan-facility-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+}
+
+.plan-facility-rank {
+  font-size: 8px;
+  font-weight: 700;
+  color: #0a0f1a;
+  background: #4f79bd;
+  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.plan-facility-item-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+
+.plan-facility-item-name {
+  font-size: 10px;
+  font-weight: 600;
+  color: #f2f5f9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.plan-facility-item-meta {
+  font-size: 8px;
+  color: #7a9cd4;
+}
+
+.plan-facility-amount {
+  font-size: 10px;
+  font-weight: 700;
+  color: #93c5fd;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+/* ── Facility distribution summary card (right column) ─────── */
+.plan-facility-summary-card {
+  border-color: #2a3e63;
+}
+
+.plan-facility-summary-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.plan-facility-summary-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 7px;
+  padding: 8px 10px;
+}
+
+.plan-facility-top-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.plan-facility-top-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.plan-facility-county-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.plan-facility-county-bar-row {
+  display: grid;
+  grid-template-columns: 70px 1fr 52px;
+  align-items: center;
+  gap: 6px;
+}
+
+.plan-facility-county-bar-name {
+  font-size: 9px;
+  font-weight: 600;
+  color: #c4d6f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.plan-facility-attribution {
+  font-size: 9px;
+  color: #4a6284;
+  font-style: italic;
+  text-align: center;
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
