@@ -46,3 +46,44 @@ SELECT
   recommended_actions,
   computed_at
 FROM gold_ss_hunger_priority;
+
+CREATE OR REFRESH MATERIALIZED VIEW gold_ss_conflict_forecast_validation_serving AS
+SELECT
+  iso3,
+  year,
+  month,
+  month_date,
+  conflict_main_mean,
+  conflict_main_dich,
+  conflict_main_mean_ln,
+  conflict_index_norm,
+  forecast_as_of_date,
+  latest_risk_score,
+  forecast_30d_score,
+  national_risk_score,
+  national_funding_gap_ratio,
+  forecast_risk_delta,
+  conflict_forecast_gap,
+  alignment_confidence,
+  outlook_signal,
+  computed_at
+FROM gold_ss_cross_validation_conflict_forecast;
+
+CREATE OR REFRESH MATERIALIZED VIEW gold_ss_needs_priority_validation_serving AS
+SELECT
+  iso3,
+  in_need_total,
+  targeted_total,
+  affected_total,
+  reached_total,
+  national_target_coverage_ratio,
+  avg_county_priority_score,
+  red_counties,
+  county_count,
+  red_county_share,
+  avg_cluster_target_coverage_ratio,
+  most_undercovered_cluster,
+  validation_pressure_score,
+  validation_band,
+  computed_at
+FROM gold_ss_cross_validation_needs_priority;

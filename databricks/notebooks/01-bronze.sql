@@ -101,6 +101,51 @@ SELECT
 FROM workspace.default.sudan_mass_information
 WHERE TRIM(iso3) IN ('SSD', 'SDN');
 
+-- South Sudan conflict forecasts (country-month)
+CREATE OR REFRESH MATERIALIZED VIEW bronze_ss_conflict_forecast AS
+SELECT
+  TRIM(isoab) AS iso3,
+  CAST(year AS INT) AS year,
+  CAST(month AS INT) AS month,
+  MAKE_DATE(CAST(year AS INT), CAST(month AS INT), 1) AS month_date,
+  CAST(main_mean_ln AS DOUBLE) AS conflict_main_mean_ln,
+  CAST(main_dich AS DOUBLE) AS conflict_main_dich,
+  CAST(main_mean AS DOUBLE) AS conflict_main_mean
+FROM workspace.default.ssd_views_conflict_forecasts_country_month
+WHERE TRIM(isoab) = 'SSD'
+  AND CAST(year AS INT) IS NOT NULL
+  AND CAST(month AS INT) IS NOT NULL
+  AND CAST(main_mean AS DOUBLE) IS NOT NULL;
+
+-- South Sudan HPC needs API extract (cluster-level)
+CREATE OR REFRESH MATERIALIZED VIEW bronze_ss_hpc_needs AS
+SELECT
+  'SSD' AS iso3,
+  TRIM(Description) AS description,
+  TRIM(Cluster) AS cluster,
+  TRIM(Category) AS category,
+  CAST(Population AS DOUBLE) AS population,
+  CAST(`In Need` AS DOUBLE) AS in_need,
+  CAST(Targeted AS DOUBLE) AS targeted,
+  CAST(Affected AS DOUBLE) AS affected,
+  CAST(Reached AS DOUBLE) AS reached
+FROM workspace.default.ssd_hpc_needs_api_2026
+WHERE TRIM(Description) IS NOT NULL
+  AND TRIM(Description) <> ''
+  AND TRIM(Description) NOT LIKE '#%'
+  AND TRIM(Description) <> 'Final caseload';
+
+-- Optional model output table from Databricks forecast job
+CREATE OR REFRESH MATERIALIZED VIEW bronze_forecast_output AS
+SELECT
+  TRIM(iso3) AS iso3,
+  TO_DATE(as_of_date) AS as_of_date,
+  CAST(risk_score AS DOUBLE) AS risk_score,
+  CAST(prediction AS DOUBLE) AS prediction
+FROM workspace.default.forecast_output
+WHERE TRIM(iso3) RLIKE '^[A-Z]{3}$'
+  AND CAST(prediction AS DOUBLE) IS NOT NULL;
+
 -- If your source table name is different, update this FROM target.
 CREATE OR REFRESH MATERIALIZED VIEW bronze_hrp_raw AS
 SELECT

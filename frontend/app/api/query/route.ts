@@ -996,6 +996,171 @@ Instructions:
   }
 }
 
+type PlannerResult = {
+  intent: AgentIntent;
+  effectiveIntent: AgentIntent;
+};
+
+type RetrievalResult = {
+  countries: AgentResult[];
+  filters: Record<string, unknown>;
+};
+
+async function planQuery(input: {
+  question: string;
+  mode?: QueryMapMode;
+}): Promise<PlannerResult> {
+  const aiDetection = await detectIntentWithGemini({
+    question: input.question,
+    mode: input.mode
+  });
+  let intent =
+    aiDetection && aiDetection.confidence >= 0.55
+      ? aiDetection.intent
+      : detectIntent(input.question);
+  if (intent === "country_focus" && !extractCountryPhrase(input.question)) {
+    intent = detectIntent(input.question);
+  }
+  return {
+    intent,
+    effectiveIntent: intent
+  };
+}
+
+function buildShortcutResponse(input: {
+  intent: AgentIntent;
+  question: string;
+}):
+  | {
+      filters: Record<string, unknown>;
+      answer: string;
+    }
+  | null {
+  const { intent, question } = input;
+  if (intent === "sudan_map_open") {
+    const answer = buildExplanation(intent, [], question);
+    return {
+      filters: { mode: "sudan_map", focus: "south_sudan", level: "county" },
+      answer
+    };
+  }
+  if (intent === "smalltalk") {
+    const answer = smalltalkReply(question);
+    return {
+      filters: {},
+      answer
+    };
+  }
+  if (intent === "ui_toggle_panel") {
+    const wantsOpen = /(show|open|display|reveal)/.test(question.toLowerCase());
+    return {
+      filters: { dataPanelOpen: wantsOpen },
+      answer: wantsOpen ? "Opening the data panel." : "Closing the data panel."
+    };
+  }
+  if (intent === "ui_toggle_layers") {
+    const q = question.toLowerCase();
+    const wantsOn = /(show|turn on|enable)/.test(q);
+    const layers: Record<string, boolean> = {};
+    if (/hunger/.test(q)) layers.hunger = wantsOn;
+    if (/displacement/.test(q)) layers.displacement = wantsOn;
+    if (/facilities/.test(q)) layers.facilities = wantsOn;
+    if (/markets/.test(q)) layers.markets = wantsOn;
+    return {
+      filters: { mode: "sudan_map", sudanLayers: layers },
+      answer: wantsOn
+        ? `Enabled layers: ${Object.keys(layers).join(", ")}.`
+        : `Disabled layers: ${Object.keys(layers).join(", ")}.`
+    };
+  }
+  if (intent === "ui_mode_switch") {
+    const q = question.toLowerCase();
+    const newMode = /flood/.test(q) ? "flood" : "risk";
+    return {
+      filters: { mode: newMode },
+      answer: `Switched to ${newMode} mode.`
+    };
+  }
+  return null;
+}
+
+function deriveMapFilters(input: {
+  intent: AgentIntent;
+  mode?: QueryMapMode;
+  topCountryIso3: string | null;
+}): Record<string, unknown> {
+  const { intent, mode, topCountryIso3 } = input;
+  if (
+    intent === "ssd_hunger_hotspots" ||
+    intent === "ssd_system_stress" ||
+    intent === "ssd_hospital_allocation"
+  ) {
+    return { mode: "risk", focus: "south_sudan", level: "county" };
+  }
+  if (intent === "forecast_outlook") {
+    return { mode: "forecast_30d" };
+  }
+  if (intent === "global_funding_allocation") {
+    return { mode: "risk", strategy: "global_allocation" };
+  }
+  if (intent === "country_focus") {
+    return { mode: "risk", action: "zoom_country", iso3: topCountryIso3 };
+  }
+  if (intent === "flood_hotspots") {
+    return { mode: "flood" };
+  }
+  if (intent === "stable_countries") {
+    return { status: ["green"], mode: "risk" };
+  }
+  return { status: ["red", "yellow"], mode: mode === "forecast_30d" ? "forecast_30d" : "risk" };
+}
+
+async function executeRetrievalPlan(input: {
+  intent: AgentIntent;
+  question: string;
+  mode?: QueryMapMode;
+  tables: { risk: string; ssdHunger: string; ssdMass: string };
+}): Promise<RetrievalResult> {
+  const sql = buildSql(input.intent, input.tables, 20, input.question);
+  const rows = await runDatabricksQuery(sql);
+  const countries = rows
+    .map(toAgentResult)
+    .filter((item): item is AgentResult => item !== null);
+  const topCountryIso3 = countries[0]?.iso3 ?? null;
+  return {
+    countries,
+    filters: deriveMapFilters({
+      intent: input.intent,
+      mode: input.mode,
+      topCountryIso3
+    })
+  };
+}
+
+async function synthesizeResponse(input: {
+  question: string;
+  intent: AgentIntent;
+  mode?: QueryMapMode;
+  countries: AgentResult[];
+}): Promise<{ answer: string; responseSource: "gemini" | "fallback"; explanation: string }> {
+  const fallbackExplanation = buildExplanation(input.intent, input.countries, input.question);
+  const contextSummary = summarizeContext(input.countries);
+  const generated = await generateGeminiAnswer({
+    question: input.question,
+    intent: input.intent,
+    countries: input.countries,
+    fallbackExplanation,
+    contextSummary,
+    mode: input.mode,
+    sudanContextText: null
+  });
+  return {
+    answer: generated.answer,
+    responseSource: generated.source,
+    explanation: fallbackExplanation
+  };
+}
+
 export async function POST(request: NextRequest) {
   const body = (await request.json().catch(() => ({}))) as QueryRequest;
   const question = (body.question ?? "").trim();
@@ -1042,89 +1207,22 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const aiDetection = await detectIntentWithGemini({ question, mode });
-  let intent =
-    aiDetection && aiDetection.confidence >= 0.55 ? aiDetection.intent : detectIntent(question);
-  if (intent === "country_focus" && !extractCountryPhrase(question)) {
-    intent = detectIntent(question);
-  }
-  const effectiveIntent: AgentIntent = intent;
+  const planned = await planQuery({ question, mode });
+  const effectiveIntent = planned.effectiveIntent;
 
-  if (effectiveIntent === "sudan_map_open") {
-    const answer = buildExplanation(effectiveIntent, [], question);
+  const shortcut = buildShortcutResponse({
+    intent: effectiveIntent,
+    question
+  });
+  if (shortcut) {
     return NextResponse.json({
       intent: effectiveIntent,
       question,
-      filters: { mode: "sudan_map", focus: "south_sudan", level: "county" },
+      filters: shortcut.filters,
       countries: [],
       responseSource: "fallback",
-      answer,
-      explanation: answer
-    });
-  }
-
-  if (effectiveIntent === "smalltalk") {
-    const answer = smalltalkReply(question);
-    return NextResponse.json({
-      intent: effectiveIntent,
-      question,
-      filters: {},
-      countries: [],
-      responseSource: "fallback",
-      answer,
-      explanation: answer
-    });
-  }
-
-  if (effectiveIntent === "ui_toggle_panel") {
-    const wantsOpen = /(show|open|display|reveal)/.test(question.toLowerCase());
-    const answer = wantsOpen ? "Opening the data panel." : "Closing the data panel.";
-    return NextResponse.json({
-      intent: effectiveIntent,
-      question,
-      filters: { dataPanelOpen: wantsOpen },
-      countries: [],
-      responseSource: "fallback",
-      answer,
-      explanation: answer
-    });
-  }
-
-  if (effectiveIntent === "ui_toggle_layers") {
-    const q = question.toLowerCase();
-    const wantsOn = /(show|turn on|enable)/.test(q);
-    const layers: Record<string, boolean> = {};
-    if (/hunger/.test(q)) layers.hunger = wantsOn;
-    if (/displacement/.test(q)) layers.displacement = wantsOn;
-    if (/facilities/.test(q)) layers.facilities = wantsOn;
-    if (/markets/.test(q)) layers.markets = wantsOn;
-    const layerNames = Object.keys(layers).join(", ");
-    const answer = wantsOn
-      ? `Enabled layers: ${layerNames}.`
-      : `Disabled layers: ${layerNames}.`;
-    return NextResponse.json({
-      intent: effectiveIntent,
-      question,
-      filters: { mode: "sudan_map", sudanLayers: layers },
-      countries: [],
-      responseSource: "fallback",
-      answer,
-      explanation: answer
-    });
-  }
-
-  if (effectiveIntent === "ui_mode_switch") {
-    const q = question.toLowerCase();
-    const newMode = /flood/.test(q) ? "flood" : "risk";
-    const answer = `Switched to ${newMode} mode.`;
-    return NextResponse.json({
-      intent: effectiveIntent,
-      question,
-      filters: { mode: newMode },
-      countries: [],
-      responseSource: "fallback",
-      answer,
-      explanation: answer
+      answer: shortcut.answer,
+      explanation: shortcut.answer
     });
   }
 
@@ -1133,51 +1231,28 @@ export async function POST(request: NextRequest) {
     ssdHunger: process.env.DATABRICKS_SSD_HUNGER_TABLE ?? "workspace.default.gold_ss_hunger_serving",
     ssdMass: process.env.DATABRICKS_SSD_MASS_TABLE ?? "workspace.default.sudan_mass_information"
   };
-  const sql = buildSql(effectiveIntent, tables, 20, question);
-
   try {
-    const rows = await runDatabricksQuery(sql);
-    const countries = rows
-      .map(toAgentResult)
-      .filter((item): item is AgentResult => item !== null);
-
-    const topCountryIso3 = countries[0]?.iso3 ?? null;
-    const filters =
-      effectiveIntent === "ssd_hunger_hotspots" || effectiveIntent === "ssd_system_stress" || effectiveIntent === "ssd_hospital_allocation"
-        ? { mode: "risk", focus: "south_sudan", level: "county" }
-        : effectiveIntent === "forecast_outlook"
-        ? { mode: "forecast_30d" }
-        : effectiveIntent === "global_funding_allocation"
-        ? { mode: "risk", strategy: "global_allocation" }
-        : effectiveIntent === "country_focus"
-        ? { mode: "risk", action: "zoom_country", iso3: topCountryIso3 }
-        : effectiveIntent === "flood_hotspots"
-        ? { mode: "flood" }
-        : effectiveIntent === "stable_countries"
-          ? { status: ["green"], mode: "risk" }
-          : { status: ["red", "yellow"], mode: "risk" };
-
-    const sudanContextText = null;
-    const contextSummary = summarizeContext(countries);
-    const fallbackExplanation = buildExplanation(effectiveIntent, countries, question);
-    const generated = await generateGeminiAnswer({
+    const retrieval = await executeRetrievalPlan({
+      intent: effectiveIntent,
+      question,
+      mode,
+      tables
+    });
+    const synthesized = await synthesizeResponse({
       question,
       intent: effectiveIntent,
-      countries,
-      fallbackExplanation,
-      contextSummary,
       mode,
-      sudanContextText
+      countries: retrieval.countries
     });
 
     return NextResponse.json({
       intent: effectiveIntent,
       question,
-      filters,
-      countries: countries.slice(0, 10),
-      responseSource: generated.source,
-      answer: generated.answer,
-      explanation: fallbackExplanation
+      filters: retrieval.filters,
+      countries: retrieval.countries.slice(0, 10),
+      responseSource: synthesized.responseSource,
+      answer: synthesized.answer,
+      explanation: synthesized.explanation
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Databricks query failed.";

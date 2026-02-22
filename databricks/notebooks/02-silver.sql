@@ -136,6 +136,60 @@ WHERE iso3 = 'SSD'
   AND county_pcode IS NOT NULL
   AND county_pcode <> '';
 
+CREATE OR REFRESH MATERIALIZED VIEW silver_ss_conflict_monthly AS
+SELECT
+  iso3,
+  year,
+  month,
+  month_date,
+  AVG(conflict_main_mean) AS conflict_main_mean,
+  AVG(conflict_main_dich) AS conflict_main_dich,
+  AVG(conflict_main_mean_ln) AS conflict_main_mean_ln
+FROM bronze_ss_conflict_forecast
+GROUP BY iso3, year, month, month_date;
+
+CREATE OR REFRESH MATERIALIZED VIEW silver_ss_hpc_needs_cluster AS
+SELECT
+  iso3,
+  description,
+  cluster,
+  category,
+  COALESCE(population, 0.0) AS population,
+  COALESCE(in_need, 0.0) AS in_need,
+  COALESCE(targeted, 0.0) AS targeted,
+  COALESCE(affected, 0.0) AS affected,
+  COALESCE(reached, 0.0) AS reached
+FROM bronze_ss_hpc_needs;
+
+CREATE OR REFRESH MATERIALIZED VIEW silver_ss_hpc_needs_total AS
+SELECT
+  iso3,
+  SUM(in_need) AS in_need_total,
+  SUM(targeted) AS targeted_total,
+  SUM(affected) AS affected_total,
+  SUM(reached) AS reached_total
+FROM silver_ss_hpc_needs_cluster
+GROUP BY iso3;
+
+CREATE OR REFRESH MATERIALIZED VIEW silver_ss_forecast_latest AS
+WITH ranked AS (
+  SELECT
+    iso3,
+    as_of_date,
+    risk_score,
+    prediction,
+    ROW_NUMBER() OVER (PARTITION BY iso3 ORDER BY as_of_date DESC) AS rn
+  FROM bronze_forecast_output
+  WHERE iso3 = 'SSD'
+)
+SELECT
+  iso3,
+  as_of_date,
+  risk_score AS latest_risk_score,
+  prediction AS forecast_30d_score
+FROM ranked
+WHERE rn = 1;
+
 CREATE OR REFRESH MATERIALIZED VIEW silver_country_daily AS
 SELECT
   s.iso3,

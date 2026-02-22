@@ -220,3 +220,155 @@ SELECT
   END AS recommended_actions,
   CURRENT_TIMESTAMP() AS computed_at
 FROM ranked;
+
+CREATE OR REFRESH MATERIALIZED VIEW gold_ss_cross_validation_conflict_forecast AS
+WITH national AS (
+  SELECT
+    iso3,
+    as_of_date,
+    risk_score AS national_risk_score,
+    funding_gap_ratio AS national_funding_gap_ratio
+  FROM gold_country_risk_daily
+  WHERE iso3 = 'SSD'
+),
+conflict_norm AS (
+  SELECT
+    c.*,
+    CASE
+      WHEN MAX(c.conflict_main_mean) OVER () > MIN(c.conflict_main_mean) OVER ()
+      THEN (c.conflict_main_mean - MIN(c.conflict_main_mean) OVER ())
+           / (MAX(c.conflict_main_mean) OVER () - MIN(c.conflict_main_mean) OVER ())
+      ELSE 0.0
+    END AS conflict_index_norm
+  FROM silver_ss_conflict_monthly c
+  WHERE c.iso3 = 'SSD'
+),
+base AS (
+  SELECT
+    c.iso3,
+    c.year,
+    c.month,
+    c.month_date,
+    c.conflict_main_mean,
+    c.conflict_main_dich,
+    c.conflict_main_mean_ln,
+    c.conflict_index_norm,
+    f.as_of_date AS forecast_as_of_date,
+    f.latest_risk_score,
+    f.forecast_30d_score,
+    n.national_risk_score,
+    n.national_funding_gap_ratio
+  FROM conflict_norm c
+  LEFT JOIN silver_ss_forecast_latest f ON c.iso3 = f.iso3
+  LEFT JOIN national n ON c.iso3 = n.iso3
+),
+scored AS (
+  SELECT
+    *,
+    COALESCE(forecast_30d_score, 0.0) - COALESCE(national_risk_score, 0.0) AS forecast_risk_delta,
+    ABS(COALESCE(conflict_index_norm, 0.0) - COALESCE(forecast_30d_score, 0.0)) AS conflict_forecast_gap
+  FROM base
+)
+SELECT
+  iso3,
+  year,
+  month,
+  month_date,
+  conflict_main_mean,
+  conflict_main_dich,
+  conflict_main_mean_ln,
+  conflict_index_norm,
+  forecast_as_of_date,
+  latest_risk_score,
+  forecast_30d_score,
+  national_risk_score,
+  national_funding_gap_ratio,
+  forecast_risk_delta,
+  conflict_forecast_gap,
+  CASE
+    WHEN conflict_forecast_gap <= 0.10 THEN 'high'
+    WHEN conflict_forecast_gap <= 0.25 THEN 'medium'
+    ELSE 'low'
+  END AS alignment_confidence,
+  CASE
+    WHEN forecast_risk_delta > 0.05 THEN 'risk_upside_warning'
+    WHEN forecast_risk_delta < -0.05 THEN 'risk_downside_relief'
+    ELSE 'stable_outlook'
+  END AS outlook_signal,
+  CURRENT_TIMESTAMP() AS computed_at
+FROM scored;
+
+CREATE OR REFRESH MATERIALIZED VIEW gold_ss_cross_validation_needs_priority AS
+WITH county_priority AS (
+  SELECT
+    iso3,
+    AVG(priority_score) AS avg_county_priority_score,
+    SUM(CASE WHEN priority_band = 'red' THEN 1 ELSE 0 END) AS red_counties,
+    COUNT(*) AS county_count
+  FROM gold_ss_hunger_priority
+  WHERE iso3 = 'SSD'
+  GROUP BY iso3
+),
+needs AS (
+  SELECT
+    iso3,
+    in_need_total,
+    targeted_total,
+    affected_total,
+    reached_total
+  FROM silver_ss_hpc_needs_total
+  WHERE iso3 = 'SSD'
+),
+cluster_pressure AS (
+  SELECT
+    iso3,
+    cluster,
+    in_need,
+    targeted,
+    CASE WHEN in_need > 0 THEN targeted / in_need ELSE NULL END AS cluster_target_coverage_ratio
+  FROM silver_ss_hpc_needs_cluster
+  WHERE iso3 = 'SSD'
+),
+cluster_summary AS (
+  SELECT
+    iso3,
+    AVG(COALESCE(cluster_target_coverage_ratio, 0.0)) AS avg_cluster_target_coverage_ratio,
+    MAX(CASE WHEN in_need > 0 AND (targeted / in_need) < 0.45 THEN cluster END) AS most_undercovered_cluster
+  FROM cluster_pressure
+  GROUP BY iso3
+)
+SELECT
+  p.iso3,
+  n.in_need_total,
+  n.targeted_total,
+  n.affected_total,
+  n.reached_total,
+  CASE WHEN n.in_need_total > 0 THEN n.targeted_total / n.in_need_total ELSE NULL END AS national_target_coverage_ratio,
+  p.avg_county_priority_score,
+  p.red_counties,
+  p.county_count,
+  CASE WHEN p.county_count > 0 THEN p.red_counties / p.county_count ELSE NULL END AS red_county_share,
+  c.avg_cluster_target_coverage_ratio,
+  c.most_undercovered_cluster,
+  (
+    0.45 * COALESCE(p.avg_county_priority_score, 0.0) +
+    0.35 * LEAST(GREATEST(1.0 - COALESCE(CASE WHEN n.in_need_total > 0 THEN n.targeted_total / n.in_need_total ELSE NULL END, 0.0), 0.0), 1.0) +
+    0.20 * LEAST(GREATEST(COALESCE(CASE WHEN p.county_count > 0 THEN p.red_counties / p.county_count ELSE NULL END, 0.0), 0.0), 1.0)
+  ) AS validation_pressure_score,
+  CASE
+    WHEN (
+      0.45 * COALESCE(p.avg_county_priority_score, 0.0) +
+      0.35 * LEAST(GREATEST(1.0 - COALESCE(CASE WHEN n.in_need_total > 0 THEN n.targeted_total / n.in_need_total ELSE NULL END, 0.0), 0.0), 1.0) +
+      0.20 * LEAST(GREATEST(COALESCE(CASE WHEN p.county_count > 0 THEN p.red_counties / p.county_count ELSE NULL END, 0.0), 0.0), 1.0)
+    ) >= 0.60 THEN 'high_pressure'
+    WHEN (
+      0.45 * COALESCE(p.avg_county_priority_score, 0.0) +
+      0.35 * LEAST(GREATEST(1.0 - COALESCE(CASE WHEN n.in_need_total > 0 THEN n.targeted_total / n.in_need_total ELSE NULL END, 0.0), 0.0), 1.0) +
+      0.20 * LEAST(GREATEST(COALESCE(CASE WHEN p.county_count > 0 THEN p.red_counties / p.county_count ELSE NULL END, 0.0), 0.0), 1.0)
+    ) >= 0.35 THEN 'medium_pressure'
+    ELSE 'lower_pressure'
+  END AS validation_band,
+  CURRENT_TIMESTAMP() AS computed_at
+FROM county_priority p
+LEFT JOIN needs n ON p.iso3 = n.iso3
+LEFT JOIN cluster_summary c ON p.iso3 = c.iso3;
