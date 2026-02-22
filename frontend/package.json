@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "lucide-react": "^0.469.0",
     "mapbox-gl": "^3.6.0",
     "next": "^14.2.15",
@@ -17,11 +18,11 @@
     "react-map-gl": "^7.1.7"
   },
   "devDependencies": {
+    "@types/node": "^22.7.4",
     "@types/react": "^18.3.9",
     "@types/react-dom": "^18.3.0",
-    "typescript": "^5.6.3",
-    "@types/node": "^22.7.4",
     "eslint": "^8.57.1",
-    "eslint-config-next": "^14.2.15"
+    "eslint-config-next": "^14.2.15",
+    "typescript": "^5.6.3"
   }
 }

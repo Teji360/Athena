@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDatabricksConfig, runDatabricksQuery } from "@/lib/databricks";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 type QueryRequest = {
   question?: string;
@@ -23,7 +24,8 @@ type AgentIntent =
   | "ssd_hospital_allocation"
   | "ui_toggle_layers"
   | "ui_toggle_panel"
-  | "ui_mode_switch";
+  | "ui_mode_switch"
+  | "agentic_fallback";
 
 type AgentResult = {
   iso3: string;
@@ -73,7 +75,8 @@ const ALLOWED_INTENTS: AgentIntent[] = [
   "country_focus",
   "ssd_hunger_hotspots",
   "ssd_system_stress",
-  "ssd_hospital_allocation"
+  "ssd_hospital_allocation",
+  "agentic_fallback"
 ];
 
 function toNumberOrNull(value: unknown): number | null {
@@ -259,8 +262,7 @@ async function detectIntentWithGemini(input: {
   if (!apiKey) {
     return null;
   }
-  const model = process.env.GEMINI_MODEL ?? "gemini-1.5-flash";
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  const modelName = process.env.GEMINI_MODEL ?? "gemini-1.5-flash";
   const prompt = `
 Classify the user message into one intent.
 Return strict JSON only with keys: intent, confidence.
@@ -294,26 +296,10 @@ User message: ${input.question}
 `.trim();
 
   try {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }]
-      })
-    });
-    if (!response.ok) {
-      return null;
-    }
-    const data = (await response.json()) as {
-      candidates?: Array<{
-        content?: { parts?: Array<{ text?: string }> };
-      }>;
-    };
-    const text =
-      data.candidates?.[0]?.content?.parts
-        ?.map((part) => part.text ?? "")
-        .join("\n")
-        .trim() ?? "";
+    const genai = new GoogleGenerativeAI(apiKey);
+    const model = genai.getGenerativeModel({ model: modelName });
+    const result = await model.generateContent(prompt);
+    const text = result.response.text().trim();
     const jsonText = extractJsonObject(text);
     if (!jsonText) {
       return null;
@@ -328,7 +314,8 @@ User message: ${input.question}
       intent: intent as AgentIntent,
       confidence: Math.max(0, Math.min(1, confidence))
     };
-  } catch {
+  } catch (err) {
+    console.error("[detectIntentWithGemini] error:", err);
     return null;
   }
 }
@@ -483,7 +470,7 @@ function detectIntent(question: string): AgentIntent {
   if (/(war|wars|conflict|fighting|violence|civil war|armed|battle|frontline|crisis|red|hotspot|high risk|danger)/.test(q)) {
     return "crisis_hotspots";
   }
-  return "top_risk_countries";
+  return "agentic_fallback";
 }
 
 function buildSql(
@@ -845,7 +832,6 @@ async function generateGeminiAnswer(input: {
   }
 
   const model = process.env.GEMINI_MODEL ?? "gemini-1.5-flash";
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
   const contextCountries = input.countries.slice(0, 12).map((c) => ({
     iso3: c.iso3,
@@ -897,36 +883,22 @@ Rules:
 `.trim();
 
   try {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }]
-      })
-    });
-    if (!response.ok) {
-      return { answer: input.fallbackExplanation, source: "fallback" };
-    }
-    const data = (await response.json()) as {
-      candidates?: Array<{
-        content?: { parts?: Array<{ text?: string }> };
-      }>;
-    };
-    const text =
-      data.candidates?.[0]?.content?.parts
-        ?.map((part) => part.text ?? "")
-        .join("\n")
-        .trim() ?? "";
+    const genai = new GoogleGenerativeAI(apiKey);
+    const geminiModel = genai.getGenerativeModel({ model });
+    const result = await geminiModel.generateContent(prompt);
+    const text = result.response.text().trim();
     return text
       ? { answer: text, source: "gemini" }
       : { answer: input.fallbackExplanation, source: "fallback" };
-  } catch {
+  } catch (err) {
+    console.error("[generateGeminiAnswer] error:", err);
     return { answer: input.fallbackExplanation, source: "fallback" };
   }
 }
 
-async function generateSudanModeGeminiAnswer(input: {
+async function generateAgenticAnswer(input: {
   question: string;
+  mode?: QueryMapMode;
   sudanContextText?: string | null;
 }): Promise<{ answer: string; source: "gemini" | "fallback" }> {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -934,64 +906,55 @@ async function generateSudanModeGeminiAnswer(input: {
     return {
       source: "fallback",
       answer:
-        "Sudan mode is active, but Gemini is not configured right now. Add GEMINI_API_KEY to enable direct generative answers."
+        "Generative analysis is temporarily unavailable. The system is configured and will retry automatically. Please ask your question again."
     };
   }
 
-  const model = process.env.GEMINI_MODEL ?? "gemini-1.5-flash";
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-  const prompt = `
-You are Athena, an AI humanitarian analyst focused on Sudan and South Sudan.
-Map mode: sudan_map
-User question: ${input.question}
+  const modelName = process.env.GEMINI_MODEL ?? "gemini-1.5-flash";
 
-${input.sudanContextText ? `Operational Sudan context:
-${input.sudanContextText}` : "No supplemental Sudan text was provided."}
+  const sudanSection =
+    input.mode === "sudan_map" && input.sudanContextText
+      ? `\nOperational Sudan/South Sudan context:\n${input.sudanContextText}\n\nFocus on South Sudan county-level analysis.`
+      : input.mode === "sudan_map"
+      ? "\nNo supplemental Sudan text was provided. Answer from general knowledge about South Sudan."
+      : "";
+
+  const prompt = `
+You are Angel, an AI humanitarian analyst.
+User question: ${input.question}
+${input.mode ? `Current map mode: ${input.mode}` : ""}
+${sudanSection}
 
 Instructions:
-- Answer to the best of your ability, directly and confidently.
+- Answer directly and confidently.
 - Prioritize actionable planning insight.
 - Be explicit when uncertainty remains.
 - Keep response concise (2-5 sentences).
 `.trim();
 
   try {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }]
-      })
-    });
-    if (!response.ok) {
+    const genai = new GoogleGenerativeAI(apiKey);
+    const model = genai.getGenerativeModel({ model: modelName });
+    const result = await model.generateContent(prompt);
+    const text = result.response.text().trim();
+    if (!text) {
+      const contextSnippet = input.sudanContextText
+        ? ` Based on operational context: ${input.sudanContextText.slice(0, 300)}.`
+        : "";
       return {
         source: "fallback",
-        answer:
-          "Sudan mode is active, but Gemini could not be reached right now. Please retry in a moment."
+        answer: `Generative analysis unavailable right now.${contextSnippet} Ask again for a live answer.`
       };
     }
-    const data = (await response.json()) as {
-      candidates?: Array<{
-        content?: { parts?: Array<{ text?: string }> };
-      }>;
-    };
-    const text =
-      data.candidates?.[0]?.content?.parts
-        ?.map((part) => part.text ?? "")
-        .join("\n")
-        .trim() ?? "";
-    return text
-      ? { answer: text, source: "gemini" }
-      : {
-          answer:
-            "Sudan mode is active, but Gemini returned an empty response. Please ask again with a bit more detail.",
-          source: "fallback"
-        };
-  } catch {
+    return { answer: text, source: "gemini" };
+  } catch (err) {
+    console.error("[generateAgenticAnswer] Gemini SDK error:", err);
+    const contextSnippet = input.sudanContextText
+      ? ` Based on operational context: ${input.sudanContextText.slice(0, 300)}.`
+      : "";
     return {
       source: "fallback",
-      answer:
-        "Sudan mode is active, but Gemini request failed right now. Please retry shortly."
+      answer: `Generative analysis is temporarily unavailable.${contextSnippet} Please ask your question again.`
     };
   }
 }
@@ -1175,10 +1138,7 @@ export async function POST(request: NextRequest) {
 
   if (mode === "sudan_map") {
     const sudanContextText = await loadSudanContextText();
-    const generated = await generateSudanModeGeminiAnswer({
-      question,
-      sudanContextText
-    });
+    const generated = await generateAgenticAnswer({ question, mode, sudanContextText });
     return NextResponse.json({
       intent: "ssd_system_stress",
       question,
@@ -1223,6 +1183,19 @@ export async function POST(request: NextRequest) {
       responseSource: "fallback",
       answer: shortcut.answer,
       explanation: shortcut.answer
+    });
+  }
+
+  if (effectiveIntent === "agentic_fallback") {
+    const generated = await generateAgenticAnswer({ question, mode });
+    return NextResponse.json({
+      intent: "agentic_fallback",
+      question,
+      filters: {},
+      countries: [],
+      responseSource: generated.source,
+      answer: generated.answer,
+      explanation: generated.answer
     });
   }
 
