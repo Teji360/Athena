@@ -840,3 +840,279 @@ body {
   from { opacity: 0; transform: translateX(-50%) translateY(8px); }
   to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
+
+/* ── Sudan Map Mode: view tabs ──────────────────────────────── */
+.sudan-view-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.sudan-view-tab {
+  flex: 1;
+  padding: 6px 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: 7px;
+  border: 1px solid #2a3e63;
+  background: transparent;
+  color: #7a9cd4;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.sudan-view-tab.active {
+  background: #1b2f52;
+  color: #f2f5f9;
+  border-color: #4f79bd;
+}
+
+/* ── UN Cluster Panel ───────────────────────────────────────── */
+.cluster-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+}
+
+.cluster-overview {
+  background: rgba(15, 25, 50, 0.6);
+  border: 1px solid #1e3256;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+
+.cluster-overview-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7a9cd4;
+  margin-bottom: 8px;
+}
+
+.cluster-overview-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.cluster-overview-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cluster-overview-num {
+  font-size: 15px;
+  font-weight: 700;
+  color: #f2f5f9;
+  letter-spacing: -0.01em;
+}
+
+.cluster-overview-lbl {
+  font-size: 10px;
+  color: #7a9cd4;
+}
+
+.cluster-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ── Individual cluster card ───────────────────────────────── */
+.cluster-card {
+  border: 1px solid;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.cluster-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.cluster-badge {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #fff;
+  border-radius: 4px;
+  padding: 2px 5px;
+  flex-shrink: 0;
+}
+
+.cluster-name {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 600;
+  color: #f2f5f9;
+}
+
+.cluster-chevron {
+  font-size: 9px;
+  opacity: 0.6;
+  color: #f2f5f9;
+}
+
+.cluster-summary {
+  display: flex;
+  align-items: center;
+  padding: 0 10px 8px;
+  gap: 0;
+}
+
+.cluster-summary-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+.cluster-summary-divider {
+  width: 1px;
+  height: 28px;
+  background: rgba(255,255,255,0.1);
+  margin: 0 4px;
+}
+
+.cluster-metric-label {
+  font-size: 9px;
+  color: #7a9cd4;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cluster-metric-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: #f2f5f9;
+}
+
+.cluster-bar-track {
+  height: 3px;
+  background: rgba(255,255,255,0.08);
+  margin: 0 10px 0;
+}
+
+.cluster-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+/* ── Expanded detail ────────────────────────────────────────── */
+.cluster-detail {
+  padding: 10px 10px 10px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cluster-desc {
+  font-size: 11px;
+  color: #9ab2d6;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.cluster-section-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7a9cd4;
+  margin-bottom: 5px;
+}
+
+.cluster-services ul {
+  margin: 0;
+  padding-left: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.cluster-services li {
+  font-size: 11px;
+  color: #c4d6f0;
+  line-height: 1.4;
+}
+
+.cluster-extra-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cluster-extra-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 11px;
+  color: #9ab2d6;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  padding-bottom: 3px;
+}
+
+.cluster-extra-row span:last-child {
+  font-weight: 600;
+  font-size: 12px;
+}
+
+/* NFI grid */
+.cluster-nfi-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+}
+
+.cluster-nfi-item {
+  background: rgba(255,255,255,0.04);
+  border-radius: 5px;
+  padding: 5px 7px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cluster-nfi-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #f2f5f9;
+}
+
+.cluster-nfi-desc {
+  font-size: 9px;
+  color: #7a9cd4;
+  line-height: 1.35;
+}
+
+.cluster-source {
+  font-size: 9px;
+  color: #4a6284;
+  font-style: italic;
+}
+
+.cluster-panel-footer {
+  font-size: 9px;
+  color: #3a5275;
+  text-align: center;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #1a2d4a;
+}

@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { Droplets, Mic, MicOff, Send, Volume2, VolumeX } from "lucide-react";
 import AngelGlobe, { type GlobeHighlight } from "@/components/AngelGlobe";
+import SsdClusterPanel from "@/components/SsdClusterPanel";
 import countryCentroids from "@/lib/countryCentroids";
 import {
   getVoiceAssistantEnabledStorageKey,
@@ -85,8 +86,11 @@ type SpeechRecognitionCtor = new () => {
   onend: (() => void) | null;
 };
 
+type SudanView = "map" | "clusters";
+
 export default function AngelWorkspace() {
   const [mode, setMode] = useState<QueryMapMode>("risk");
+  const [sudanView, setSudanView] = useState<SudanView>("map");
   const [sudanLayers, setSudanLayers] = useState<SudanMapLayers>({
     hunger: true,
     displacement: true,
@@ -431,68 +435,93 @@ export default function AngelWorkspace() {
               Sudan Map Mode
             </button>
             {mode === "sudan_map" ? (
-              <div className="ssd-priority-panel">
-                <div className="ssd-priority-title">Layers</div>
-                <label className="layer-check">
-                  <input
-                    type="checkbox"
-                    checked={sudanLayers.hunger}
-                    onChange={(event) =>
-                      setSudanLayers((prev) => ({ ...prev, hunger: event.target.checked }))
-                    }
-                  />
-                  Hunger priority
-                </label>
-                <label className="layer-check">
-                  <input
-                    type="checkbox"
-                    checked={sudanLayers.displacement}
-                    onChange={(event) =>
-                      setSudanLayers((prev) => ({
-                        ...prev,
-                        displacement: event.target.checked
-                      }))
-                    }
-                  />
-                  Displacement pressure
-                </label>
-                <label className="layer-check">
-                  <input
-                    type="checkbox"
-                    checked={sudanLayers.facilities}
-                    onChange={(event) =>
-                      setSudanLayers((prev) => ({ ...prev, facilities: event.target.checked }))
-                    }
-                  />
-                  Health facilities
-                </label>
-                <label className="layer-check">
-                  <input
-                    type="checkbox"
-                    checked={sudanLayers.markets}
-                    onChange={(event) =>
-                      setSudanLayers((prev) => ({ ...prev, markets: event.target.checked }))
-                    }
-                  />
-                  Markets
-                </label>
-              </div>
-            ) : null}
-            {mode === "sudan_map" ? (
-              <div className="ssd-priority-panel">
-                <div className="ssd-priority-title">Top South Sudan county priorities</div>
-                {ssdRows.slice(0, 8).map((row) => (
-                  <div key={`${row.adm1State}-${row.adm2County}`} className="ssd-priority-row">
-                    <span>
-                      {row.adm2County}, {row.adm1State}
-                    </span>
-                    <span>
-                      {row.priorityBand.toUpperCase()} | {row.priorityScore?.toFixed(3) ?? "N/A"}
-                    </span>
-                  </div>
-                ))}
-                {ssdError ? <div className="ssd-priority-error">{ssdError}</div> : null}
-              </div>
+              <>
+                {/* View toggle tabs */}
+                <div className="sudan-view-tabs">
+                  <button
+                    type="button"
+                    className={`sudan-view-tab ${sudanView === "map" ? "active" : ""}`}
+                    onClick={() => setSudanView("map")}
+                  >
+                    Map Layers
+                  </button>
+                  <button
+                    type="button"
+                    className={`sudan-view-tab ${sudanView === "clusters" ? "active" : ""}`}
+                    onClick={() => setSudanView("clusters")}
+                  >
+                    UN Clusters
+                  </button>
+                </div>
+
+                {sudanView === "map" ? (
+                  <>
+                    <div className="ssd-priority-panel">
+                      <div className="ssd-priority-title">Layers</div>
+                      <label className="layer-check">
+                        <input
+                          type="checkbox"
+                          checked={sudanLayers.hunger}
+                          onChange={(event) =>
+                            setSudanLayers((prev) => ({ ...prev, hunger: event.target.checked }))
+                          }
+                        />
+                        Hunger priority
+                      </label>
+                      <label className="layer-check">
+                        <input
+                          type="checkbox"
+                          checked={sudanLayers.displacement}
+                          onChange={(event) =>
+                            setSudanLayers((prev) => ({
+                              ...prev,
+                              displacement: event.target.checked
+                            }))
+                          }
+                        />
+                        Displacement pressure
+                      </label>
+                      <label className="layer-check">
+                        <input
+                          type="checkbox"
+                          checked={sudanLayers.facilities}
+                          onChange={(event) =>
+                            setSudanLayers((prev) => ({ ...prev, facilities: event.target.checked }))
+                          }
+                        />
+                        Health facilities
+                      </label>
+                      <label className="layer-check">
+                        <input
+                          type="checkbox"
+                          checked={sudanLayers.markets}
+                          onChange={(event) =>
+                            setSudanLayers((prev) => ({ ...prev, markets: event.target.checked }))
+                          }
+                        />
+                        Markets
+                      </label>
+                    </div>
+
+                    <div className="ssd-priority-panel">
+                      <div className="ssd-priority-title">Top South Sudan county priorities</div>
+                      {ssdRows.slice(0, 8).map((row) => (
+                        <div key={`${row.adm1State}-${row.adm2County}`} className="ssd-priority-row">
+                          <span>
+                            {row.adm2County}, {row.adm1State}
+                          </span>
+                          <span>
+                            {row.priorityBand.toUpperCase()} | {row.priorityScore?.toFixed(3) ?? "N/A"}
+                          </span>
+                        </div>
+                      ))}
+                      {ssdError ? <div className="ssd-priority-error">{ssdError}</div> : null}
+                    </div>
+                  </>
+                ) : (
+                  <SsdClusterPanel />
+                )}
+              </>
             ) : null}
           </div>
         </aside>
